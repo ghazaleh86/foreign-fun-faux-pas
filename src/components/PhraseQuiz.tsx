@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Card, CardHeader, CardTitle, CardContent, CardFooter
@@ -13,6 +12,7 @@ import GameSummary from "./GameSummary";
 import StagePreview from "./StagePreview";
 import MultipleChoiceOptions, { Option } from "./MultipleChoiceOptions";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
+import { languageToFlag } from "@/utils/languageToFlag";
 
 type Phrase = {
   id: string;
@@ -323,8 +323,13 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
               <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
             </div>
-            <div className="text-lg font-semibold tracking-wide mb-0">
-              {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
+            <div className="text-lg font-semibold tracking-wide mb-0 flex items-center gap-2">
+              <span>
+                {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
+              </span>
+              <span className="text-2xl" title={phrase.language}>
+                {languageToFlag(phrase.language)}
+              </span>
             </div>
             <div className="text-xs text-muted-foreground mt-1">
               Language: <span className="font-bold">{phrase.language}</span>
@@ -335,9 +340,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               size="sm"
               onClick={() => {
                 const ttsText = phrase.pronunciation || phrase.phrase_text;
-                const voiceId = getCurrentVoice(current);
                 import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-                  playWithElevenLabsTTS({ text: ttsText, voiceId }).catch(() => {
+                  playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
                     if ("speechSynthesis" in window) {
                       window.speechSynthesis.cancel();
                       const u = new window.SpeechSynthesisUtterance(ttsText);
@@ -349,7 +353,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                 );
               }}
             >
-              🔈 Play Again (Voice: {ELEVENLABS_VOICES[current % ELEVENLABS_VOICES.length].name})
+              🔈 Play Again
             </Button>
           </div>
         }
