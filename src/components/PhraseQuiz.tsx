@@ -191,7 +191,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Ref to block duplicate playback for a given question
   const audioPlayedForStep = useRef<number | null>(null);
 
-  // Play TTS when a new phrase is shown, using alternated voices
+  // Play TTS when a new phrase is shown, using alternated voices (Prevents duplicates)
   useEffect(() => {
     // Only play if: quiz is running, not in stage preview, not completed, not revealing answer
     if (!phrase || state !== "quiz" || showAnswer || showStagePreview || stageCompleted) return;
