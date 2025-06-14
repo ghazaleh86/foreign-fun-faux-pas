@@ -96,6 +96,9 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const questionTimeStarted = useRef<number>(Date.now());
 
+  // Add: stage preview state
+  const [showStagePreview, setShowStagePreview] = useState(true);
+
   const phrase = phrases[current];
 
   // Refs to avoid replaying sound when option is clicked
@@ -219,31 +222,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   useEffect(() => {
     audioPlayedForStep.current = null;
   }, [current, state, showStagePreview, stageCompleted]);
-
-  // Remove the OLD (duplicate) effect that played TTS immediately after question changed!
-  // (the original effect was this, but it's now replaced above:)
-  /*
-  useEffect(() => {
-    if (!phrase || state !== "quiz") return;
-    const ttsText = phrase.pronunciation || phrase.phrase_text;
-    const voiceId = getCurrentVoice(current);
-    playWithElevenLabsTTS({ text: ttsText, voiceId })
-      .catch(() => {
-        if ("speechSynthesis" in window) {
-          const u = new window.SpeechSynthesisUtterance(ttsText);
-          u.lang = guessSpeechLang(phrase.language);
-          u.rate = 0.98;
-          ttsRef.current = u;
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(u);
-        }
-      });
-    // eslint-disable-next-line
-  }, [phrase, state, current]);
-  */
-
-  // Add: stage preview state
-  const [showStagePreview, setShowStagePreview] = useState(true);
 
   // ADD THIS FUNCTION TO FIX THE ERROR
   function handleStartStage() {
