@@ -209,6 +209,26 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     setShowStagePreview(false);
   }
 
+  // Fix: only play audio when we're NOT in preview, and NOT in stage-completed UI
+  useEffect(() => {
+    if (!phrase || state !== "quiz" || showAnswer || showStagePreview || stageCompleted) return;
+    const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const voiceId = getCurrentVoice(current);
+
+    playWithElevenLabsTTS({ text: ttsText, voiceId })
+      .catch(() => {
+        if ("speechSynthesis" in window) {
+          const u = new window.SpeechSynthesisUtterance(ttsText);
+          u.lang = guessSpeechLang(phrase.language);
+          u.rate = 0.98;
+          ttsRef.current = u;
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(u);
+        }
+      });
+    // eslint-disable-next-line
+  }, [phrase, state, current, showStagePreview, showAnswer, stageCompleted]);
+
   if (state === "loading") {
     return (
       <div className="flex flex-col items-center">
