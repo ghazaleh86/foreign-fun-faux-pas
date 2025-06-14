@@ -11,7 +11,7 @@ export function useSupabaseUser() {
 
   useEffect(() => {
     // Subscribe first
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { subscription } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -21,7 +21,7 @@ export function useSupabaseUser() {
     });
 
     return () => {
-      authListener?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
