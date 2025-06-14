@@ -10,6 +10,7 @@ import { playWithElevenLabsTTS } from "@/lib/elevenlabsTtsClient";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import StageSummary from "./StageSummary";
 import GameSummary from "./GameSummary";
+import StagePreview from "./StagePreview";
 
 type Phrase = {
   id: string;
@@ -200,6 +201,9 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     // eslint-disable-next-line
   }, [phrase, state, current]);
 
+  // Add: stage preview state
+  const [showStagePreview, setShowStagePreview] = useState(true);
+
   if (state === "loading") {
     return (
       <div className="flex flex-col items-center">
@@ -299,6 +303,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     setCurrent(currentStageEnd); // Move to first question in next stage
     setStageCompleted(false);
     setStageBonus(0);
+    setShowStagePreview(true); // Show preview on next render
   }
 
   // Animations for correct/wrong
@@ -362,6 +367,22 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         opponentEmoji={opponentEmoji}
         opponentScore={opponentScores[stage] || 0}
         onAdvanceStage={handleAdvanceStage}
+      />
+    );
+  }
+
+  // Show Stage Preview at START of every stage (when current == start)
+  if (showStagePreview && state === "quiz" && current < phrases.length) {
+    // Show prior scores (except for first stage, where scores will be 0 or undefined)
+    const prevStageIdx = stage - 1;
+    return (
+      <StagePreview
+        stage={stage}
+        stageScore={stageScores[prevStageIdx] ?? 0}
+        opponentName={opponentName}
+        opponentEmoji={opponentEmoji}
+        opponentScore={opponentScores[prevStageIdx] ?? 0}
+        onStartStage={handleStartStage}
       />
     );
   }
