@@ -488,8 +488,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
             variant="default"
             className="animate-bounce"
             disabled={
-              current + 1 > currentStageEnd - 1 ||
-              (current + 1) >= phrases.length
+              (current + 1) >= phrases.length // Only disable if we're at end of quiz
             }
           >
             {current + 1 < currentStageEnd ? "Next" : "Finish Stage"}
