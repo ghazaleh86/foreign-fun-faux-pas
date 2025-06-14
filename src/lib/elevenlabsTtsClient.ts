@@ -1,8 +1,12 @@
-
 const EDGE_URL =
   "https://ayfmkmnecfjyhdutxfjp.supabase.co/functions/v1/elevenlabs-tts";
 
+import { validateTtsTextInput } from './validateTtsInput';
+
 export async function playWithElevenLabsTTS({ text, voiceId = "9BWtsMINqrJLrRacOk9x" }: { text: string, voiceId?: string }) {
+  const error = validateTtsTextInput(text);
+  if (error) throw new Error(error);
+
   try {
     const res = await fetch(EDGE_URL, {
       method: "POST",
