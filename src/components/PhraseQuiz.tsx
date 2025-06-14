@@ -204,6 +204,11 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Add: stage preview state
   const [showStagePreview, setShowStagePreview] = useState(true);
 
+  // ADD THIS FUNCTION TO FIX THE ERROR
+  function handleStartStage() {
+    setShowStagePreview(false);
+  }
+
   if (state === "loading") {
     return (
       <div className="flex flex-col items-center">
