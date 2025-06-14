@@ -68,6 +68,49 @@ function setPlayedPhraseIds(ids: string[]) {
   window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(ids));
 }
 
+// Add this utility function to guess language codes for Web Speech API.
+function guessSpeechLang(language: string): string {
+  // Add to this mapping if you support more languages.
+  const languageMap: Record<string, string> = {
+    English: "en-US",
+    Spanish: "es-ES",
+    French: "fr-FR",
+    German: "de-DE",
+    Italian: "it-IT",
+    Dutch: "nl-NL",
+    Portuguese: "pt-PT",
+    Russian: "ru-RU",
+    Japanese: "ja-JP",
+    Chinese: "zh-CN",
+    Korean: "ko-KR",
+    Arabic: "ar-SA",
+    Hindi: "hi-IN",
+    Polish: "pl-PL",
+    Turkish: "tr-TR",
+    Ukrainian: "uk-UA",
+    Swedish: "sv-SE",
+    Norwegian: "no-NO",
+    Danish: "da-DK",
+    Finnish: "fi-FI",
+    Czech: "cs-CZ",
+    Greek: "el-GR",
+    Hungarian: "hu-HU",
+    Romanian: "ro-RO",
+    Hebrew: "he-IL",
+    Slovak: "sk-SK",
+    Bulgarian: "bg-BG",
+    Croatian: "hr-HR",
+    Serbian: "sr-RS",
+    Catalan: "ca-ES",
+    Indonesian: "id-ID",
+    Malay: "ms-MY",
+    Thai: "th-TH",
+    Vietnamese: "vi-VN"
+    // Extend as needed
+  };
+  return languageMap[language] || "en-US";
+}
+
 const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) => {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [state, setState] = useState<State>("loading");
