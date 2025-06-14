@@ -424,19 +424,20 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           Stage {stage + 1} Score:{" "}
           <span className="font-bold">{stageScores[stage] || 0}</span>
         </div>
-        {showAnswer && (
-          <Button
-            onClick={handleNext}
-            variant="default"
-            className="animate-bounce"
-            disabled={
-              // Disable if this is the last in the stage, to enforce showing StageSummary
-              (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart)
-            }
-          >
-            {current + 1 < currentStageEnd ? "Next" : "Finish Stage"}
-          </Button>
-        )}
+        {/* Only show Next button if not the last in stage */}
+        {showAnswer &&
+          (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
+            <Button
+              onClick={handleNext}
+              variant="default"
+              className="animate-bounce"
+            >
+              Next
+            </Button>
+          )
+        }
+        {/* Optionally, could show a disabled "Finish Stage" button or nothing at all,
+            but letting StageSummary auto-appear is cleanest UX */}
       </CardFooter>
     </Card>
   );
