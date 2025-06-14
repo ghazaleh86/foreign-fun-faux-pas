@@ -1,21 +1,28 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { User, Session } from "@supabase/supabase-js";
 
 /**
  * Simple React hook to get the current Supabase user, or null if not logged in.
  */
 export function useSupabaseUser() {
-  const [user, setUser] = useState<ReturnType<typeof supabase.auth.getUser> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    let unsub: any;
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
-    unsub = supabase.auth.onAuthStateChange((_event, session) => {
+    // Subscribe first
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-    // Return unsubscribe function on cleanup
-    return () => { unsub?.data?.subscription?.unsubscribe?.(); };
+
+    // Fetch current session and set user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener?.unsubscribe();
+    };
   }, []);
 
   return user;
