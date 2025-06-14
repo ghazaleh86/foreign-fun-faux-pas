@@ -49,6 +49,21 @@ type PhraseQuizProps = {
   opponentEmoji: string;
 };
 
+// Helper to handle localStorage for played phrase IDs
+const LOCAL_STORAGE_KEY = "playedPhraseIds_v1";
+
+// Safely get/set localStorage
+function getPlayedPhraseIds(): string[] {
+  try {
+    return JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+function setPlayedPhraseIds(ids: string[]) {
+  window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(ids));
+}
+
 const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) => {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [state, setState] = useState<State>("loading");
@@ -65,20 +80,36 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Refs to avoid replaying sound when option is clicked
   const ttsRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  // Step 1: On mount, fetch phrases NOT previously played
   useEffect(() => {
     const fetchPhrases = async () => {
       setState("loading");
+      let playedIds: string[] = [];
+      try {
+        playedIds = getPlayedPhraseIds();
+      } catch { playedIds = []; }
+
+      // Fetch most recent 30 phrases to keep quiz fresh
       const { data, error } = await supabase
         .from("phrases")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(10);
-      if (error) {
+        .limit(30);
+
+      if (!data || error) {
         setPhrases([]);
         setState("quiz");
         setFeedback("Error fetching phrases. Please try again.");
       } else {
-        setPhrases(data as Phrase[]);
+        // Remove phrases the user already played
+        const unseen = data.filter((p: Phrase) => !playedIds.includes(p.id));
+        if (unseen.length === 0) {
+          // If all have been played, reset played IDs and use all phrases again
+          setPlayedPhraseIds([]);
+          setPhrases(data as Phrase[]);
+        } else {
+          setPhrases(unseen as Phrase[]);
+        }
         setState("quiz");
       }
     };
@@ -133,6 +164,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         <CardContent className="p-6">
           <div className="text-center my-10">
             <p className="mb-2">No phrases found.</p>
+            <Button onClick={() => window.location.reload()}>Restart Quiz</Button>
           </div>
         </CardContent>
       </Card>
@@ -142,6 +174,19 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   if (state === "finished") {
     const total = phrases.length;
     const percent = Math.round((score / total) * 100);
+
+    // Record newly played phrase IDs in localStorage
+    useEffect(() => {
+      if (total > 0 && phrases[0]?.id) {
+        const playedIds = getPlayedPhraseIds();
+        const currentIds = phrases.map(p => p.id);
+        const merged = Array.from(new Set([...playedIds, ...currentIds]));
+        setPlayedPhraseIds(merged);
+      }
+      // Only run once at finish
+      // eslint-disable-next-line
+    }, []);
+
     return (
       <Card className="max-w-xl w-full bg-gradient-to-tr from-pink-200/60 to-yellow-100/70 border-pink-300/60 shadow-fuchsia-200/40 shadow-2xl">
         <CardHeader>
@@ -155,15 +200,11 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           </div>
           <div className="mb-1">Your Score: {percent}%</div>
           <div className="mt-4 text-lg font-bold text-teal-700 flex items-center justify-center gap-2">
-            <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Next time, I''ll bring my A-game!”
+            <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Next time, I'll bring my A-game!”
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full" onClick={() => {
-            setCurrent(0);
-            setScore(0);
-            setState("quiz");
-          }}>
+          <Button className="w-full" onClick={() => window.location.reload()}>
             Play Again
           </Button>
         </CardFooter>
@@ -181,6 +222,14 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     if (lang.startsWith("th")) return "th-TH";
     if (lang.startsWith("it")) return "it-IT";
     if (lang.startsWith("sw")) return "sv-SE";
+    if (lang.startsWith("pl")) return "pl-PL";
+    if (lang.startsWith("vi")) return "vi-VN";
+    if (lang.startsWith("tr")) return "tr-TR";
+    if (lang.startsWith("ar")) return "ar-EG";
+    if (lang.startsWith("ko")) return "ko-KR";
+    if (lang.startsWith("no")) return "no-NO";
+    if (lang.startsWith("fi")) return "fi-FI";
+    if (lang.startsWith("af")) return "af-ZA";
     return "en-US";
   }
 
@@ -197,15 +246,11 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
       setAnimateResult("wrong");
     }
-    // Play celebration sound/animation? (Optional)
+    // No need to update played here; will be set after finish
   }
 
   function handleNext() {
-    if (current + 1 < phrases.length) {
-      setCurrent((c) => c + 1);
-    } else {
-      setState("finished");
-    }
+    setCurrent((c) => c + 1);
   }
 
   // Animations for correct/wrong
@@ -331,7 +376,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           Score: <span className="font-bold">{score}</span>
         </div>
         {showAnswer && (
-          <Button onClick={handleNext} variant="default" className="animate-bounce">
+          <Button onClick={handleNext} variant="default" className="animate-bounce" disabled={current + 1 >= phrases.length}>
             {current + 1 < phrases.length ? "Next" : "Finish"}
           </Button>
         )}
