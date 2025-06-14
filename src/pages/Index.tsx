@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
 import FakeOpponentBadge from "@/components/FakeOpponentBadge";
+import MascotAvatar from "../components/MascotAvatar";
 
 const OPPONENTS = [
   { name: "Pretentious Pete", emoji: "🎩" },
@@ -18,6 +18,7 @@ const Index = () => {
   if (!started) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 flex flex-col items-center justify-center px-4">
+        <MascotAvatar size={124} className="mb-6" />
         <h1 className="text-5xl font-extrabold mb-4 text-pink-600 drop-shadow-[0_2px_8px_rgba(255,0,120,0.18)] animate-[pop_0.6s]">
           Guess That Phrase!
         </h1>

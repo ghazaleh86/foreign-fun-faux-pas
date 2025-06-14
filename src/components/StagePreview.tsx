@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, Zap } from "lucide-react";
+import MascotAvatar from "./MascotAvatar";
 
 type StagePreviewProps = {
   stage: number;
@@ -31,9 +32,11 @@ const StagePreview: React.FC<StagePreviewProps> = ({
   opponentScore,
   onStartStage
 }) => {
+  const isFirstStage = stage === 0;
   return (
     <Card className={`max-w-xl w-full py-8 bg-gradient-to-br ${getFunColor(stage)} relative shadow-2xl`}>
       <CardHeader className="flex flex-col items-center gap-5">
+        <MascotAvatar size={78} className="mb-2 animate-pop" />
         <div className="text-5xl font-extrabold flex items-center gap-2 mb-2">
           <span className="drop-shadow glow">{opponentEmoji}</span>
           <span className="text-black">STAGE {stage + 1}</span>
@@ -63,7 +66,19 @@ const StagePreview: React.FC<StagePreviewProps> = ({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
-        <div className="text-2xl mb-5 font-extrabold text-black animate-pop">Ready for the next stage?</div>
+        <div className="text-2xl mb-5 font-extrabold text-black animate-pop flex items-center gap-2">
+          {isFirstStage
+            ? (
+              <>
+                Ready to start your journey? <span role="img" aria-label="party">🎉</span>
+              </>
+            )
+            : (
+              <>
+                Can you beat your last stage? <span role="img" aria-label="challenge">🦸‍♂️</span>
+              </>
+            )}
+        </div>
         <Button
           size="lg"
           className="text-lg font-black px-10 py-5 bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-fuchsia-400 shadow-xl rounded-full border-none transition-all animate-bounce"
@@ -77,7 +92,6 @@ const StagePreview: React.FC<StagePreviewProps> = ({
       <div className="absolute top-6 right-10 w-5 h-5 rounded-full bg-pink-300 animate-bounce [animation-delay:0.3s]" />
       <div className="absolute bottom-8 left-10 w-5 h-5 rounded-full bg-yellow-200 animate-pulse" />
       <div className="absolute bottom-5 right-12 w-4 h-4 rounded-full bg-lime-300 animate-bounce [animation-delay:0.15s]" />
-      {/* Decorative DJ style graphic would be here in production */}
     </Card>
   );
 };
