@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { CircleCheck, CircleX } from "lucide-react";
 import { playWithElevenLabsTTS } from "@/lib/elevenlabsTtsClient";
+import { guessSpeechLang } from "@/utils/guessSpeechLang";
+import StageSummary from "./StageSummary";
+import GameSummary from "./GameSummary";
 
 type Phrase = {
   id: string;
@@ -378,79 +381,31 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }, []);
 
     return (
-      <Card className="max-w-xl w-full bg-gradient-to-tr from-pink-200/60 to-yellow-100/70 border-pink-300/60 shadow-fuchsia-200/40 shadow-2xl">
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2">
-            🎉 Game Finished!
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="text-5xl font-extrabold mb-1 text-gradient bg-gradient-to-r from-fuchsia-500 via-pink-500 to-yellow-400 bg-clip-text text-transparent animate-fade-pop">
-            {score} / {phrases.length}
-          </div>
-          <div className="mb-1">Your Score: {percent}%</div>
-
-          <div className="flex flex-col items-center mt-6">
-            <div className="font-bold text-base text-teal-700 mb-2">Stage Results</div>
-            <table className="w-full text-sm mb-2 border rounded">
-              <thead>
-                <tr>
-                  <th className="border px-2 py-1">Stage</th>
-                  <th className="border px-2 py-1">You</th>
-                  <th className="border px-2 py-1">{opponentName}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: totalStages }).map((_, i) => (
-                  <tr key={i}>
-                    <td className="border text-center font-semibold">{i + 1}</td>
-                    <td className="border text-center">{stageScores[i] || 0}</td>
-                    <td className="border text-center">{opponentScores[i] || 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-4 text-lg font-bold text-teal-700 flex items-center justify-center gap-2">
-            <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Great game!”
-          </div>
-          <div className="mt-4 text-pink-700 font-semibold text-base">
-            {total === 0
-              ? "You've played every phrase available! Please come back when new content is added, or clear your browser history to replay."
-              : null}
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" onClick={() => window.location.reload()}>
-            Play Again
-          </Button>
-        </CardFooter>
-      </Card>
+      <GameSummary
+        score={score}
+        total={total}
+        percent={percent}
+        totalStages={totalStages}
+        stageScores={stageScores}
+        opponentScores={opponentScores}
+        opponentName={opponentName}
+        opponentEmoji={opponentEmoji}
+        onPlayAgain={() => window.location.reload()}
+      />
     );
   }
 
   // === Stage completion screen ===
   if (stageCompleted && state === "quiz" && current < phrases.length) {
     return (
-      <Card className="max-w-xl w-full bg-gradient-to-tr from-fuchsia-100/80 to-yellow-100 border-pink-300/70 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-gradient bg-gradient-to-r from-fuchsia-500 via-pink-500 to-yellow-400 bg-clip-text text-transparent">
-            Stage {stage + 1} Complete!
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center">
-          <div className="mb-4 text-3xl font-extrabold text-green-600">{stageScores[stage] || 0} Points</div>
-          <div className="mb-1 text-lg">Your Score this Stage</div>
-          <div className="mb-2">
-            <span className="text-base font-bold text-teal-600">
-              {opponentName}
-            </span>: {opponentScores[stage] || 0} Points
-          </div>
-          <div className="mb-1">Advance to the next stage!</div>
-          <Button onClick={handleAdvanceStage}>Next Stage</Button>
-        </CardContent>
-      </Card>
+      <StageSummary
+        stage={stage}
+        stageScore={stageScores[stage] || 0}
+        opponentName={opponentName}
+        opponentEmoji={opponentEmoji}
+        opponentScore={opponentScores[stage] || 0}
+        onAdvanceStage={handleAdvanceStage}
+      />
     );
   }
 
