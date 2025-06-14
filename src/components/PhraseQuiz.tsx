@@ -194,23 +194,19 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
 
   function handleNext() {
     const nextIdx = current + 1;
-    if ((nextIdx % STAGE_SIZE === 0) || (nextIdx >= currentStageEnd)) {
-      setStageCompleted(true);
-      setCurrent(nextIdx);
-    } else {
-      setCurrent(nextIdx);
-    }
+    // Instead of marking stageCompleted here, we just step to next question.
+    setCurrent(nextIdx);
+    // If the next question crosses the stage, we set completed in useEffect below.
   }
 
   function handleAdvanceStage() {
-    setStage((s) => s + 1);
-    setCurrent(currentStageEnd);
-    setStageCompleted(false);
     setShowStagePreview(true);
-  }
-
-  function handleStartStage() {
-    setShowStagePreview(false);
+    setStage((s) => s + 1);
+    setStageCompleted(false);
+    setSelected(null);
+    setShowAnswer(false);
+    setFeedback(null);
+    // current will be set by useEffect after stage changes.
   }
 
   function randomWrongTaunt(name: string) {
@@ -220,7 +216,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       `Still one step behind ${name}!`,
       `Maybe try a random guess?`,
       `You can do it! Just not on this question.`,
-    ];
+      ];
     return taunts[Math.floor(Math.random() * taunts.length)];
   }
 
@@ -235,6 +231,43 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }
   // eslint-disable-next-line
   }, [state]);
+
+  // -- Updated effect for stage progression
+  useEffect(() => {
+    // If the current question is at the end of a stage, trigger stage completion
+    if (
+      state === "quiz" &&
+      !stageCompleted &&
+      (current > 0) &&
+      (current % STAGE_SIZE === 0 || current >= phrases.length)
+    ) {
+      setStageCompleted(true);
+    } else if (
+      state === "quiz" &&
+      stageCompleted &&
+      (current % STAGE_SIZE !== 0 && current < phrases.length)
+    ) {
+      // If user advanced to a new question in the next stage, exit stageCompleted
+      setStageCompleted(false);
+    }
+    // eslint-disable-next-line
+  }, [current, state, stage, phrases.length]);
+
+  // -- Show StageSummary when stageCompleted and not finished
+  if (stageCompleted && state === "quiz" && current <= phrases.length) {
+    // Stage score: previous stage if just completed, else last available.
+    const thisStage = stage;
+    return (
+      <StageSummary
+        stage={thisStage}
+        stageScore={stageScores[thisStage] || 0}
+        opponentName={opponentName}
+        opponentEmoji={opponentEmoji}
+        opponentScore={opponentScores[thisStage] || 0}
+        onAdvanceStage={handleAdvanceStage}
+      />
+    );
+  }
 
   if (state === "loading") {
     return (
