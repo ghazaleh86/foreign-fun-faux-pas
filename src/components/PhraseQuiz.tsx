@@ -209,6 +209,10 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     // current will be set by useEffect after stage changes.
   }
 
+  function handleStartStage() {
+    setShowStagePreview(false);
+  }
+
   function randomWrongTaunt(name: string) {
     const taunts = [
       `Better luck next time!`,
