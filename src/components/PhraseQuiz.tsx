@@ -181,11 +181,25 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Used to track the current step for voice cycling
   const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
 
+  // ===============================
+  // *** AUDIO PLAYBACK CONTROL LOGIC ***
+  // ===============================
+
+  // Ref to block duplicate playback for a given question
+  const audioPlayedForStep = useRef<number | null>(null);
+
   // Play TTS when a new phrase is shown, using alternated voices
   useEffect(() => {
-    if (!phrase || state !== "quiz") return;
+    // Only play if: quiz is running, not in stage preview, not completed, not revealing answer
+    if (!phrase || state !== "quiz" || showAnswer || showStagePreview || stageCompleted) return;
+    // Prevent duplicate playback for current
+    if (audioPlayedForStep.current === current) return;
+    audioPlayedForStep.current = current;
+
     const ttsText = phrase.pronunciation || phrase.phrase_text;
     const voiceId = getCurrentVoice(current);
+
+    console.log("Playing TTS for step", current, "phrase:", ttsText, "voice:", voiceId);
 
     playWithElevenLabsTTS({ text: ttsText, voiceId })
       .catch(() => {
@@ -199,7 +213,34 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         }
       });
     // eslint-disable-next-line
+  }, [phrase, state, current, showStagePreview, showAnswer, stageCompleted]);
+
+  // When advancing to the next step, allow playback again
+  useEffect(() => {
+    audioPlayedForStep.current = null;
+  }, [current, state, showStagePreview, stageCompleted]);
+
+  // Remove the OLD (duplicate) effect that played TTS immediately after question changed!
+  // (the original effect was this, but it's now replaced above:)
+  /*
+  useEffect(() => {
+    if (!phrase || state !== "quiz") return;
+    const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const voiceId = getCurrentVoice(current);
+    playWithElevenLabsTTS({ text: ttsText, voiceId })
+      .catch(() => {
+        if ("speechSynthesis" in window) {
+          const u = new window.SpeechSynthesisUtterance(ttsText);
+          u.lang = guessSpeechLang(phrase.language);
+          u.rate = 0.98;
+          ttsRef.current = u;
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(u);
+        }
+      });
+    // eslint-disable-next-line
   }, [phrase, state, current]);
+  */
 
   // Add: stage preview state
   const [showStagePreview, setShowStagePreview] = useState(true);
