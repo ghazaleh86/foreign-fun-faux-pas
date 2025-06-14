@@ -334,10 +334,14 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   return (
     <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold">
-          <span className="text-2xl">{opponentEmoji}</span>
-          Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
-          <span className="ml-2 text-base font-normal text-muted-foreground"></span>
+        <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
+          <div className="flex items-center justify-center gap-2 w-full">
+            <span className="text-2xl">{opponentEmoji}</span>
+            <span>
+              Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
+            </span>
+          </div>
+          {/* Optionally, add subtext here if needed */}
         </CardTitle>
         {/* Audio controls */}
         {phrase &&
