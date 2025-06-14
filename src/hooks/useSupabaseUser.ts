@@ -10,10 +10,12 @@ export function useSupabaseUser() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Subscribe first
-    const { subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    // Correct destructuring to fix error
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
 
     // Fetch current session and set user
     supabase.auth.getSession().then(({ data: { session } }) => {
