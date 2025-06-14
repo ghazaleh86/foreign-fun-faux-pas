@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card, CardHeader, CardTitle, CardContent, CardFooter
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +20,8 @@ type Phrase = {
 };
 
 type State = "loading" | "quiz" | "finished";
+
+const STAGE_SIZE = 10;
 
 const ELEVENLABS_VOICES = [
   { name: "Aria", id: "9BWtsMINqrJLrRacOk9x" },
@@ -75,6 +79,19 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const [feedback, setFeedback] = useState<string | null>(null);
   const [animateResult, setAnimateResult] = useState<"right" | "wrong" | null>(null);
 
+  // For new: stage logic!
+  const [stage, setStage] = useState(0); // Index (0-based)
+  const [stageScores, setStageScores] = useState<number[]>([]);
+  const [stageTimes, setStageTimes] = useState<number[]>([]);
+  const [stageCompleted, setStageCompleted] = useState(false);
+  const [opponentScores, setOpponentScores] = useState<number[]>([]);
+  const [stageBonus, setStageBonus] = useState<number>(0);
+
+  // Timer for fast/slow bonus logic
+  const [timer, setTimer] = useState<number>(0); // seconds timer
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const questionTimeStarted = useRef<number>(Date.now());
+
   const phrase = phrases[current];
 
   // Refs to avoid replaying sound when option is clicked
@@ -108,6 +125,44 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     };
     fetchPhrases();
   }, []);
+
+  // Staging logic
+  const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
+  const currentStageStart = stage * STAGE_SIZE;
+  const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
+  const currentStageIndexes = Array.from({ length: currentStageEnd - currentStageStart }, (_, i) => currentStageStart + i);
+
+  // Map current "current" to stage
+  useEffect(() => {
+    const nextStageIdx = Math.floor(current / STAGE_SIZE);
+    if (nextStageIdx !== stage) setStage(nextStageIdx);
+    // If we finished a stage
+    if ((current % STAGE_SIZE === 0 && current !== 0) && state === "quiz") {
+      setStageCompleted(true);
+    }
+    // eslint-disable-next-line
+  }, [current]);
+
+  // Reset/prepare for each stage
+  useEffect(() => {
+    setStageCompleted(false);
+    setStageBonus(0);
+  }, [stage]);
+
+  // Setup timer for speed-bonus every question
+  useEffect(() => {
+    if (!phrase || state !== "quiz" || showAnswer) return;
+    setTimer(0);
+    questionTimeStarted.current = Date.now();
+    if (timerRef.current) clearInterval(timerRef.current as any);
+    timerRef.current = setInterval(() => {
+      setTimer((t) => t + 1);
+    }, 1000);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current as any);
+    };
+    // eslint-disable-next-line
+  }, [current, phrase, state, showAnswer]);
 
   useEffect(() => {
     if (phrases.length > 0 && state === "quiz") {
@@ -168,6 +223,101 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     );
   }
 
+  // Calculating per stage score
+  const currentStageScore = stageScores[stage] || 0;
+  const currentOpponentScore = opponentScores[stage] || 0;
+  const percent = phrases.length ? Math.round((score / phrases.length) * 100) : 0;
+
+  // Award points based on the response time (faster = more)
+  function computeSpeedBonus(secondsElapsed: number): number {
+    // <3s = 3pts, <7s=2pts, else 1pt for correct
+    if (secondsElapsed < 3) return 3;
+    if (secondsElapsed < 7) return 2;
+    return 1;
+  }
+
+  function handleSelect(idx: number) {
+    if (selected !== null) return;
+    setSelected(idx);
+    setShowAnswer(true);
+
+    let timeTaken = Math.floor((Date.now() - questionTimeStarted.current) / 1000);
+
+    // Award points based on speed
+    if (optionOrder[idx].isCorrect) {
+      const bonus = computeSpeedBonus(timeTaken);
+      setScore((s) => s + bonus);
+
+      setStageBonus((prev) => prev + bonus);
+      updateStageScores(stage, bonus);
+      setFeedback(`🎉 Correct! (+${bonus}pt${bonus > 1 ? "s" : ""}) Time: ${timeTaken}s`);
+      setAnimateResult("right");
+    } else {
+      // For opponent: assume they get 1pt randomly 70% of time on user misses
+      const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
+      updateOpponentScores(stage, opponentGotIt);
+      setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
+      setAnimateResult("wrong");
+    }
+    // No need to update played IDs here, handled at quiz end.
+    if (timerRef.current) clearInterval(timerRef.current as any);
+  }
+
+  // Update stage score arrays
+  function updateStageScores(idx: number, pts: number) {
+    setStageScores((arr) => {
+      const next = [...arr];
+      next[idx] = (next[idx] || 0) + pts;
+      return next;
+    });
+  }
+  function updateOpponentScores(idx: number, pts: number) {
+    setOpponentScores((arr) => {
+      const next = [...arr];
+      next[idx] = (next[idx] || 0) + pts;
+      return next;
+    });
+  }
+
+  function handleNext() {
+    // If at the end of a stage, trigger stageComplete UI
+    const nextIdx = current + 1;
+    if ((nextIdx % STAGE_SIZE === 0) || (nextIdx >= currentStageEnd)) {
+      setStageCompleted(true);
+      setCurrent(nextIdx);
+    } else {
+      setCurrent(nextIdx);
+    }
+  }
+
+  // Prevent going to next stage until all in stage answered
+  function handleAdvanceStage() {
+    setStage((s) => s + 1);
+    setCurrent(currentStageEnd); // Move to first question in next stage
+    setStageCompleted(false);
+    setStageBonus(0);
+  }
+
+  // Animations for correct/wrong
+  const optionFlash = (idx: number) => {
+    if (!showAnswer) return "";
+    if (optionOrder[idx].isCorrect) return "bg-green-200 border-green-500 text-green-800 scale-105";
+    if (idx === selected) return "bg-pink-200 border-pink-500 text-pink-800 animate-wiggle";
+    return "opacity-70";
+  };
+
+  // Playful wrong answer taunts
+  function randomWrongTaunt(name: string) {
+    const taunts = [
+      `Better luck next time!`,
+      `Oof! ${name} is still in the game!`,
+      `Still one step behind ${name}!`,
+      `Maybe try a random guess?`,
+      `You can do it! Just not on this question.`,
+    ];
+    return taunts[Math.floor(Math.random() * taunts.length)];
+  }
+
   if (state === "finished") {
     const total = phrases.length;
     const percent = Math.round((score / total) * 100);
@@ -193,11 +343,34 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-5xl font-extrabold mb-1 text-gradient bg-gradient-to-r from-fuchsia-500 via-pink-500 to-yellow-400 bg-clip-text text-transparent animate-fade-pop">
-            {score} / {total}
+            {score} / {phrases.length}
           </div>
           <div className="mb-1">Your Score: {percent}%</div>
+
+          <div className="flex flex-col items-center mt-6">
+            <div className="font-bold text-base text-teal-700 mb-2">Stage Results</div>
+            <table className="w-full text-sm mb-2 border rounded">
+              <thead>
+                <tr>
+                  <th className="border px-2 py-1">Stage</th>
+                  <th className="border px-2 py-1">You</th>
+                  <th className="border px-2 py-1">{opponentName}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: totalStages }).map((_, i) => (
+                  <tr key={i}>
+                    <td className="border text-center font-semibold">{i + 1}</td>
+                    <td className="border text-center">{stageScores[i] || 0}</td>
+                    <td className="border text-center">{opponentScores[i] || 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <div className="mt-4 text-lg font-bold text-teal-700 flex items-center justify-center gap-2">
-            <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Next time, I'll bring my A-game!”
+            <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Great game!”
           </div>
           <div className="mt-4 text-pink-700 font-semibold text-base">
             {total === 0
@@ -214,76 +387,38 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     );
   }
 
-  function guessSpeechLang(lang: string) {
-    lang = lang.toLowerCase();
-    if (lang.startsWith("fr")) return "fr-FR";
-    if (lang.startsWith("de")) return "de-DE";
-    if (lang.startsWith("es")) return "es-ES";
-    if (lang.startsWith("ja") || lang.startsWith("jp")) return "ja-JP";
-    if (lang.startsWith("ru")) return "ru-RU";
-    if (lang.startsWith("th")) return "th-TH";
-    if (lang.startsWith("it")) return "it-IT";
-    if (lang.startsWith("sw")) return "sv-SE";
-    if (lang.startsWith("pl")) return "pl-PL";
-    if (lang.startsWith("vi")) return "vi-VN";
-    if (lang.startsWith("tr")) return "tr-TR";
-    if (lang.startsWith("ar")) return "ar-EG";
-    if (lang.startsWith("ko")) return "ko-KR";
-    if (lang.startsWith("no")) return "no-NO";
-    if (lang.startsWith("fi")) return "fi-FI";
-    if (lang.startsWith("af")) return "af-ZA";
-    return "en-US";
+  // === Stage completion screen ===
+  if (stageCompleted && state === "quiz" && current < phrases.length) {
+    return (
+      <Card className="max-w-xl w-full bg-gradient-to-tr from-fuchsia-100/80 to-yellow-100 border-pink-300/70 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-gradient bg-gradient-to-r from-fuchsia-500 via-pink-500 to-yellow-400 bg-clip-text text-transparent">
+            Stage {stage + 1} Complete!
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center">
+          <div className="mb-4 text-3xl font-extrabold text-green-600">{stageScores[stage] || 0} Points</div>
+          <div className="mb-1 text-lg">Your Score this Stage</div>
+          <div className="mb-2">
+            <span className="text-base font-bold text-teal-600">
+              {opponentName}
+            </span>: {opponentScores[stage] || 0} Points
+          </div>
+          <div className="mb-1">Advance to the next stage!</div>
+          <Button onClick={handleAdvanceStage}>Next Stage</Button>
+        </CardContent>
+      </Card>
+    );
   }
 
-  function handleSelect(idx: number) {
-    if (selected !== null) return;
-    setSelected(idx);
-    setShowAnswer(true);
-
-    if (optionOrder[idx].isCorrect) {
-      setScore((s) => s + 1);
-      setFeedback("🎉 Correct! You earned a point!");
-      setAnimateResult("right");
-    } else {
-      setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
-      setAnimateResult("wrong");
-    }
-    // No need to update played here; will be set after finish
-  }
-
-  function handleNext() {
-    setCurrent((c) => c + 1);
-  }
-
-  // Animations for correct/wrong
-  const optionFlash = (idx: number) => {
-    if (!showAnswer) return "";
-    if (optionOrder[idx].isCorrect) return "bg-green-200 border-green-500 text-green-800 scale-105";
-    if (idx === selected) return "bg-pink-200 border-pink-500 text-pink-800 animate-wiggle";
-    return "opacity-70";
-  };
-
-  // For score bar
-  const percent = phrases.length ? Math.round((score / phrases.length) * 100) : 0;
-
-  // Playful wrong answer taunts
-  function randomWrongTaunt(name: string) {
-    const taunts = [
-      `Better luck next time!`,
-      `Oof! ${name} is still in the game!`,
-      `Still one step behind ${name}!`,
-      `Maybe try a random guess?`,
-      `You can do it! Just not on this question.`,
-    ];
-    return taunts[Math.floor(Math.random() * taunts.length)];
-  }
-
+  // Main quiz screen (in stage)
   return (
     <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold">
           <span className="text-2xl">{opponentEmoji}</span>
-          Guess That Phrase! <span className="ml-2 text-base font-normal text-muted-foreground">(Phrase {current + 1} of {phrases.length})</span>
+          Stage {stage + 1} of {totalStages} – Phrase {current - currentStageStart + 1} of {currentStageEnd - currentStageStart}
+          <span className="ml-2 text-base font-normal text-muted-foreground"></span>
         </CardTitle>
         {/* Audio area */}
         {phrase &&
@@ -322,13 +457,25 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         }
       </CardHeader>
       <CardContent>
-        {/* Score bar */}
-        <div className="mb-6 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
+        {/* Stage score bar */}
+        <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
           <div
             className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
-            style={{ width: `${percent}%` }}
+            style={{
+              width:
+                (
+                  ((stageScores[stage] || 0) /
+                    ((currentStageEnd - currentStageStart) * 3)) *
+                  100
+                ).toFixed(1) + "%"
+            }}
           />
         </div>
+        <div className="mb-2 text-sm font-bold text-fuchsia-700">
+          Time: {timer}s
+        </div>
+
+        {/* Multiple choice */}
         <div className="flex flex-col gap-3 mb-2">
           {optionOrder.map((option, idx) => (
             <Button
@@ -342,8 +489,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                   ? option.isCorrect
                     ? "animate-bounce-in"
                     : idx === selected
-                      ? "animate-shake"
-                      : ""
+                    ? "animate-shake"
+                    : ""
                   : "hover:scale-105 hover:shadow-lg",
                 optionFlash(idx)
               )}
@@ -361,7 +508,9 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           <div
             className={cn(
               "text-center mt-5 text-lg font-semibold transition-all",
-              animateResult === "right" ? "text-green-700 animate-pop" : "text-pink-700 animate-shake-fast"
+              animateResult === "right"
+                ? "text-green-700 animate-pop"
+                : "text-pink-700 animate-shake-fast"
             )}
           >
             {feedback}
@@ -375,11 +524,20 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <div>
-          Score: <span className="font-bold">{score}</span>
+          Stage {stage + 1} Score:{" "}
+          <span className="font-bold">{stageScores[stage] || 0}</span>
         </div>
         {showAnswer && (
-          <Button onClick={handleNext} variant="default" className="animate-bounce" disabled={current + 1 >= phrases.length}>
-            {current + 1 < phrases.length ? "Next" : "Finish"}
+          <Button
+            onClick={handleNext}
+            variant="default"
+            className="animate-bounce"
+            disabled={
+              current + 1 > currentStageEnd - 1 ||
+              (current + 1) >= phrases.length
+            }
+          >
+            {current + 1 < currentStageEnd ? "Next" : "Finish Stage"}
           </Button>
         )}
       </CardFooter>
