@@ -197,6 +197,10 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
 
     if (!isLastInStage && current < phrases.length - 1) {
       setCurrent((c) => c + 1);
+      // Reset state for fresh step
+      setSelected(null);
+      setShowAnswer(false);
+      setFeedback(null);
     }
   }
 
