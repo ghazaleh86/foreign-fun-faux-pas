@@ -58,6 +58,29 @@ type PhraseQuizProps = {
   opponentEmoji: string;
 };
 
+// --- ADDED HELPERS ---
+function computeSpeedBonus(timeTaken: number): number {
+  if (timeTaken <= 4) return 3;
+  if (timeTaken <= 8) return 2;
+  return 1;
+}
+
+function updateStageScores(stageIdx: number, value: number) {
+  setStageScores((prev) => {
+    const next = [...prev];
+    next[stageIdx] = (next[stageIdx] ?? 0) + value;
+    return next;
+  });
+}
+
+function updateOpponentScores(stageIdx: number, value: number) {
+  setOpponentScores((prev) => {
+    const next = [...prev];
+    next[stageIdx] = (next[stageIdx] ?? 0) + value;
+    return next;
+  });
+}
+
 const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) => {
   // Quiz/load state and data
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -131,6 +154,13 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
 
   // Explicitly trigger stageCompleted after the LAST question in a stage is ANSWERED
+  useEffect(() => {
+    if (phrase) {
+      setOptionOrder(getShuffledOptions(phrase));
+      resetTimer();
+    }
+  }, [phrase, resetTimer]);
+
   function handleSelect(idx: number) {
     if (selected !== null) return;
     setSelected(idx);
