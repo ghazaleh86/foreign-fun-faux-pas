@@ -154,13 +154,13 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const currentStageStart = stage * STAGE_SIZE;
   const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
 
-  // Explicitly trigger stageCompleted after the LAST question in a stage is ANSWERED
+  // Shuffle options and reset timer only when phrase changes
   useEffect(() => {
     if (phrase) {
       setOptionOrder(getShuffledOptions(phrase));
-      resetTimer();
+      resetTimer(); // Only reset timer when showing a new phrase
     }
-  }, [phrase, resetTimer]);
+  }, [phrase]); // <--- Only depend on phrase
 
   function handleSelect(idx: number) {
     if (selected !== null) return;
