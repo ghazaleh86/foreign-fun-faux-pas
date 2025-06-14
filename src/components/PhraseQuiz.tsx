@@ -19,6 +19,17 @@ type Phrase = {
 
 type State = "loading" | "quiz" | "finished";
 
+const ELEVENLABS_VOICES = [
+  { name: "Aria", id: "9BWtsMINqrJLrRacOk9x" },
+  { name: "Roger", id: "CwhRBWXzGAHq8TQ4Fs17" },
+  { name: "Sarah", id: "EXAVITQu4vr4xnSDxMaL" },
+  { name: "Laura", id: "FGY2WhTYpPnrIDTdsKH5" },
+  { name: "Charlie", id: "IKne3meq5aSn9XLyUdCD" },
+  { name: "George", id: "JBFqnCBsd6RMkjVDRZzb" },
+  { name: "Callum", id: "N2lVS1w4EtoT3dr4eOWO" },
+  { name: "Liam", id: "TX3LPaxmHKxFdv7VOQHJ" }
+];
+
 const getShuffledOptions = (phrase: Phrase) => {
   // Shuffle correct and incorrect meanings
   const options = [
@@ -84,25 +95,28 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }
   }, [phrases, current, state]);
 
-  // Play TTS when a new phrase is shown (replace browser TTS with ElevenLabs)
+  // Used to track the current step for voice cycling
+  const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
+
+  // Play TTS when a new phrase is shown, using alternated voices
   useEffect(() => {
     if (!phrase || state !== "quiz") return;
     const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const voiceId = getCurrentVoice(current);
 
-    // Try ElevenLabs; fallback to browser TTS
-    playWithElevenLabsTTS({ text: ttsText })
+    playWithElevenLabsTTS({ text: ttsText, voiceId })
       .catch(() => {
         if ("speechSynthesis" in window) {
           const u = new window.SpeechSynthesisUtterance(ttsText);
           u.lang = guessSpeechLang(phrase.language);
           u.rate = 0.98;
           ttsRef.current = u;
-          window.speechSynthesis.cancel(); // Stop any previous
+          window.speechSynthesis.cancel();
           window.speechSynthesis.speak(u);
         }
       });
     // eslint-disable-next-line
-  }, [phrase, state]);
+  }, [phrase, state, current]);
 
   if (state === "loading") {
     return (
@@ -243,7 +257,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               size="sm"
               onClick={() => {
                 const ttsText = phrase.pronunciation || phrase.phrase_text;
-                playWithElevenLabsTTS({ text: ttsText }).catch(() => {
+                const voiceId = getCurrentVoice(current);
+                playWithElevenLabsTTS({ text: ttsText, voiceId }).catch(() => {
                   if ("speechSynthesis" in window) {
                     window.speechSynthesis.cancel();
                     const u = new window.SpeechSynthesisUtterance(ttsText);
@@ -254,7 +269,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                 });
               }}
             >
-              🔈 Play Again
+              🔈 Play Again (Voice: {ELEVENLABS_VOICES[current % ELEVENLABS_VOICES.length].name})
             </Button>
           </div>
         }
