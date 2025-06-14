@@ -65,22 +65,6 @@ function computeSpeedBonus(timeTaken: number): number {
   return 1;
 }
 
-function updateStageScores(stageIdx: number, value: number) {
-  setStageScores((prev) => {
-    const next = [...prev];
-    next[stageIdx] = (next[stageIdx] ?? 0) + value;
-    return next;
-  });
-}
-
-function updateOpponentScores(stageIdx: number, value: number) {
-  setOpponentScores((prev) => {
-    const next = [...prev];
-    next[stageIdx] = (next[stageIdx] ?? 0) + value;
-    return next;
-  });
-}
-
 const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) => {
   // Quiz/load state and data
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -120,6 +104,23 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     getCurrentVoice(current),
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
+
+  // Helper functions need to be INSIDE the component to access state hooks
+  function updateStageScores(stageIdx: number, value: number) {
+    setStageScores((prev) => {
+      const next = [...prev];
+      next[stageIdx] = (next[stageIdx] ?? 0) + value;
+      return next;
+    });
+  }
+
+  function updateOpponentScores(stageIdx: number, value: number) {
+    setOpponentScores((prev) => {
+      const next = [...prev];
+      next[stageIdx] = (next[stageIdx] ?? 0) + value;
+      return next;
+    });
+  }
 
   // Fetch phrases on mount
   useEffect(() => {
