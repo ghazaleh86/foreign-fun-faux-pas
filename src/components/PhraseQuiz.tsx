@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { CircleCheck, CircleX } from "lucide-react";
+import { playWithElevenLabsTTS } from "@/lib/elevenlabsTtsClient";
 
 type Phrase = {
   id: string;
@@ -84,18 +84,23 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }
   }, [phrases, current, state]);
 
-  // Play TTS when a new phrase is shown
+  // Play TTS when a new phrase is shown (replace browser TTS with ElevenLabs)
   useEffect(() => {
     if (!phrase || state !== "quiz") return;
     const ttsText = phrase.pronunciation || phrase.phrase_text;
-    if ("speechSynthesis" in window) {
-      const u = new window.SpeechSynthesisUtterance(ttsText);
-      u.lang = guessSpeechLang(phrase.language);
-      u.rate = 0.98;
-      ttsRef.current = u;
-      window.speechSynthesis.cancel(); // Stop any previous
-      window.speechSynthesis.speak(u);
-    }
+
+    // Try ElevenLabs; fallback to browser TTS
+    playWithElevenLabsTTS({ text: ttsText })
+      .catch(() => {
+        if ("speechSynthesis" in window) {
+          const u = new window.SpeechSynthesisUtterance(ttsText);
+          u.lang = guessSpeechLang(phrase.language);
+          u.rate = 0.98;
+          ttsRef.current = u;
+          window.speechSynthesis.cancel(); // Stop any previous
+          window.speechSynthesis.speak(u);
+        }
+      });
     // eslint-disable-next-line
   }, [phrase, state]);
 
@@ -237,13 +242,16 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               variant="secondary"
               size="sm"
               onClick={() => {
-                if ("speechSynthesis" in window && phrase) {
-                  window.speechSynthesis.cancel();
-                  const u = new window.SpeechSynthesisUtterance(phrase.pronunciation || phrase.phrase_text);
-                  u.lang = guessSpeechLang(phrase.language);
-                  u.rate = 0.98;
-                  window.speechSynthesis.speak(u);
-                }
+                const ttsText = phrase.pronunciation || phrase.phrase_text;
+                playWithElevenLabsTTS({ text: ttsText }).catch(() => {
+                  if ("speechSynthesis" in window) {
+                    window.speechSynthesis.cancel();
+                    const u = new window.SpeechSynthesisUtterance(ttsText);
+                    u.lang = guessSpeechLang(phrase.language);
+                    u.rate = 0.98;
+                    window.speechSynthesis.speak(u);
+                  }
+                });
               }}
             >
               🔈 Play Again
