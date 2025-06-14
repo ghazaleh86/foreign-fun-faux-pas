@@ -50,7 +50,7 @@ type PhraseQuizProps = {
 };
 
 // Helper to handle localStorage for played phrase IDs
-const LOCAL_STORAGE_KEY = "playedPhraseIds_v1";
+const LOCAL_STORAGE_KEY = "playedPhraseIds_v2"; // Version bump to prevent auto-resets
 
 // Safely get/set localStorage
 function getPlayedPhraseIds(): string[] {
@@ -89,27 +89,20 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         playedIds = getPlayedPhraseIds();
       } catch { playedIds = []; }
 
-      // Fetch most recent 30 phrases to keep quiz fresh
       const { data, error } = await supabase
         .from("phrases")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(30);
+        .limit(50); // Increase limit
 
       if (!data || error) {
         setPhrases([]);
         setState("quiz");
         setFeedback("Error fetching phrases. Please try again.");
       } else {
-        // Remove phrases the user already played
+        // Remove all previously played phrases
         const unseen = data.filter((p: Phrase) => !playedIds.includes(p.id));
-        if (unseen.length === 0) {
-          // If all have been played, reset played IDs and use all phrases again
-          setPlayedPhraseIds([]);
-          setPhrases(data as Phrase[]);
-        } else {
-          setPhrases(unseen as Phrase[]);
-        }
+        setPhrases(unseen as Phrase[]);
         setState("quiz");
       }
     };
@@ -159,12 +152,16 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   }
 
   if (state === "quiz" && phrases.length === 0) {
+    // Show "all used" message
     return (
       <Card className="max-w-xl w-full">
         <CardContent className="p-6">
-          <div className="text-center my-10">
-            <p className="mb-2">No phrases found.</p>
-            <Button onClick={() => window.location.reload()}>Restart Quiz</Button>
+          <div className="text-center my-10 text-pink-700 font-bold">
+            <p className="mb-2">
+              You have played all available phrases!
+              <br />
+              To repeat, please clear your browser data (localStorage).
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -175,7 +172,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     const total = phrases.length;
     const percent = Math.round((score / total) * 100);
 
-    // Record newly played phrase IDs in localStorage
+    // At "finished", update localStorage with just-played IDs
     useEffect(() => {
       if (total > 0 && phrases[0]?.id) {
         const playedIds = getPlayedPhraseIds();
@@ -201,6 +198,11 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           <div className="mb-1">Your Score: {percent}%</div>
           <div className="mt-4 text-lg font-bold text-teal-700 flex items-center justify-center gap-2">
             <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Next time, I'll bring my A-game!”
+          </div>
+          <div className="mt-4 text-pink-700 font-semibold text-base">
+            {total === 0
+              ? "You've played every phrase available! Please come back when new content is added, or clear your browser history to replay."
+              : null}
           </div>
         </CardContent>
         <CardFooter>
