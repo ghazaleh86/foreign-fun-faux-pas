@@ -76,6 +76,9 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const [opponentScores, setOpponentScores] = useState<number[]>([]);
   const [showStagePreview, setShowStagePreview] = useState(true);
 
+  // Add state to control if user can proceed after review:
+  const [advanceRequested, setAdvanceRequested] = useState(false);
+
   // Timer via custom hook
   const { timer, getElapsed, reset: resetTimer } = useStageTimer(
     !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted
@@ -127,52 +130,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   const currentStageStart = stage * STAGE_SIZE;
   const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
 
-  // Map current index to stage
-  useEffect(() => {
-    const nextStageIdx = Math.floor(current / STAGE_SIZE);
-    if (nextStageIdx !== stage) setStage(nextStageIdx);
-    if ((current % STAGE_SIZE === 0 && current !== 0) && state === "quiz") {
-      setStageCompleted(true);
-    }
-  }, [current]);
-
-  useEffect(() => {
-    setStageCompleted(false);
-  }, [stage]);
-
-  // Option order (shuffling) per step
-  useEffect(() => {
-    if (phrases.length > 0 && state === "quiz") {
-      setOptionOrder(getShuffledOptions(phrases[current]));
-      setSelected(null);
-      setShowAnswer(false);
-      setFeedback(null);
-      resetTimer();
-    }
-    // eslint-disable-next-line
-  }, [phrases, current, state]);
-
-  function computeSpeedBonus(secondsElapsed: number): number {
-    if (secondsElapsed < 3) return 3;
-    if (secondsElapsed < 7) return 2;
-    return 1;
-  }
-
-  function updateStageScores(idx: number, pts: number) {
-    setStageScores((arr) => {
-      const next = [...arr];
-      next[idx] = (next[idx] || 0) + pts;
-      return next;
-    });
-  }
-  function updateOpponentScores(idx: number, pts: number) {
-    setOpponentScores((arr) => {
-      const next = [...arr];
-      next[idx] = (next[idx] || 0) + pts;
-      return next;
-    });
-  }
-
+  // Explicitly trigger stageCompleted after the LAST question in a stage is ANSWERED
   function handleSelect(idx: number) {
     if (selected !== null) return;
     setSelected(idx);
@@ -190,27 +148,46 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       updateOpponentScores(stage, opponentGotIt);
       setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
     }
+
+    // Detect if this was the last question in the stage
+    const isLastInStage =
+      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+
+    if (isLastInStage || current === phrases.length - 1) {
+      setStageCompleted(true);
+      setAdvanceRequested(false);
+    }
   }
 
   function handleNext() {
-    const nextIdx = current + 1;
-    // Instead of marking stageCompleted here, we just step to next question.
-    setCurrent(nextIdx);
-    // If the next question crosses the stage, we set completed in useEffect below.
+    // Only allow next question if not at end of stage
+    const isLastInStage =
+      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+
+    if (!isLastInStage && current < phrases.length - 1) {
+      setCurrent((c) => c + 1);
+    }
   }
 
   function handleAdvanceStage() {
+    // When user presses continue on StageSummary
+    // Move to next stage, set preview, start at first question in that stage
     setShowStagePreview(true);
     setStage((s) => s + 1);
     setStageCompleted(false);
+    setCurrent((stage + 1) * STAGE_SIZE);
     setSelected(null);
     setShowAnswer(false);
     setFeedback(null);
-    // current will be set by useEffect after stage changes.
   }
 
   function handleStartStage() {
+    // Called when user presses "Start Stage"
     setShowStagePreview(false);
+    setAdvanceRequested(false);
+    setSelected(null);
+    setShowAnswer(false);
+    setFeedback(null);
   }
 
   function randomWrongTaunt(name: string) {
@@ -236,38 +213,26 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // eslint-disable-next-line
   }, [state]);
 
-  // -- Updated effect for stage progression
+  // Reset state when moving to a new stage (preview)
   useEffect(() => {
-    // If the current question is at the end of a stage, trigger stage completion
-    if (
-      state === "quiz" &&
-      !stageCompleted &&
-      (current > 0) &&
-      (current % STAGE_SIZE === 0 || current >= phrases.length)
-    ) {
-      setStageCompleted(true);
-    } else if (
-      state === "quiz" &&
-      stageCompleted &&
-      (current % STAGE_SIZE !== 0 && current < phrases.length)
-    ) {
-      // If user advanced to a new question in the next stage, exit stageCompleted
-      setStageCompleted(false);
+    if (showStagePreview) {
+      setSelected(null);
+      setShowAnswer(false);
+      setFeedback(null);
     }
-    // eslint-disable-next-line
-  }, [current, state, stage, phrases.length]);
+  }, [showStagePreview]);
 
-  // -- Show StageSummary when stageCompleted and not finished
-  if (stageCompleted && state === "quiz" && current <= phrases.length) {
-    // Stage score: previous stage if just completed, else last available.
-    const thisStage = stage;
+  // Always show StageSummary if stageCompleted (after last question of stage)
+  if (stageCompleted && state === "quiz") {
+    // Determine which stage just finished
+    const justCompletedStage = stage;
     return (
       <StageSummary
-        stage={thisStage}
-        stageScore={stageScores[thisStage] || 0}
+        stage={justCompletedStage}
+        stageScore={stageScores[justCompletedStage] || 0}
         opponentName={opponentName}
         opponentEmoji={opponentEmoji}
-        opponentScore={opponentScores[thisStage] || 0}
+        opponentScore={opponentScores[justCompletedStage] || 0}
         onAdvanceStage={handleAdvanceStage}
       />
     );
@@ -312,19 +277,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
         opponentName={opponentName}
         opponentEmoji={opponentEmoji}
         onPlayAgain={() => window.location.reload()}
-      />
-    );
-  }
-
-  if (stageCompleted && state === "quiz" && current < phrases.length) {
-    return (
-      <StageSummary
-        stage={stage}
-        stageScore={stageScores[stage] || 0}
-        opponentName={opponentName}
-        opponentEmoji={opponentEmoji}
-        opponentScore={opponentScores[stage] || 0}
-        onAdvanceStage={handleAdvanceStage}
       />
     );
   }
@@ -447,7 +399,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
             variant="default"
             className="animate-bounce"
             disabled={
-              (current + 1) >= phrases.length
+              // Disable if this is the last in the stage, to enforce showing StageSummary
+              (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart)
             }
           >
             {current + 1 < currentStageEnd ? "Next" : "Finish Stage"}
