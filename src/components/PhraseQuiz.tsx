@@ -298,6 +298,9 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     return taunts[Math.floor(Math.random() * taunts.length)];
   }
 
+  // Calculate percentage for GameSummary
+  const percent = phrases.length > 0 ? Math.round((score / phrases.length) * 100) : 0;
+
   // Store played phrase IDs at finish
   useEffect(() => {
     if (state !== "finished") return;
