@@ -32,55 +32,54 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   opponentScore,
   onAdvanceStage,
 }) => (
-  <Card className={`max-w-xl w-full py-10 px-8 bg-gradient-to-br ${getFunColor(stage)} relative shadow-2xl`}>
-    {/* Decorative mascot at top */}
-    <CardHeader className="flex flex-col items-center gap-4">
-      <MascotAvatar size={90} className="mb-2 animate-pop" />
-      <div className="text-5xl font-extrabold flex items-center gap-2 mb-1">
-        <span className="drop-shadow glow">{opponentEmoji}</span>
-        <span className="text-black">STAGE {stage + 1} Complete!</span>
+  <Card className={`max-w-xl w-full py-8 px-6 bg-gradient-to-br ${getFunColor(stage)} relative shadow-2xl h-[500px] flex flex-col justify-between`}>
+    {/* Simplified header with smaller mascot */}
+    <CardHeader className="flex flex-col items-center gap-3 pb-4">
+      <div className="bg-yellow-300 rounded-full flex items-center justify-center shadow-lg" style={{ width: 60, height: 60 }}>
+        <MascotAvatar size={48} className="" />
+      </div>
+      <div className="text-3xl font-extrabold flex items-center gap-2 text-black text-center">
+        <span className="text-2xl">{opponentEmoji}</span>
+        <span>STAGE {stage + 1} Complete!</span>
       </div>
     </CardHeader>
-    {/* Score comparison */}
-    <CardContent className="flex flex-col items-center mt-4">
-      <div className="w-full flex items-center justify-center gap-8 mb-6">
+
+    {/* Compact score comparison */}
+    <CardContent className="flex flex-col items-center justify-center flex-1">
+      <div className="w-full flex items-center justify-center gap-6 mb-6">
         {/* User Score */}
-        <div className="flex flex-col items-center px-8 py-4 bg-white/80 rounded-2xl shadow-lg border-4 border-yellow-300 font-bold">
-          <span className="font-extrabold text-3xl text-yellow-600 flex items-center gap-2">
-            <Zap className="text-yellow-500" />
+        <div className="flex flex-col items-center px-6 py-3 bg-white/80 rounded-2xl shadow-md border-2 border-yellow-300 font-bold">
+          <span className="font-extrabold text-2xl text-yellow-600 flex items-center gap-1">
+            <Zap className="text-yellow-500 w-4 h-4" />
             {stageScore}
           </span>
-          <span className="text-base mt-1 text-yellow-700 font-bold">Your Stage</span>
+          <span className="text-sm text-yellow-700 font-bold">Your Stage</span>
         </div>
-        <div className="flex items-center text-2xl font-black px-3 py-1">
-          <span className="text-zinc-600">vs</span>
-        </div>
+        <div className="flex items-center text-xl font-black px-2 text-gray-600">vs</div>
         {/* Opponent Score */}
-        <div className="flex flex-col items-center px-8 py-4 bg-white/80 rounded-2xl shadow-lg border-4 border-fuchsia-300 font-bold">
-          <span className="font-extrabold text-3xl text-pink-600 flex items-center gap-2">
-            <Star className="text-pink-500" />
+        <div className="flex flex-col items-center px-6 py-3 bg-white/80 rounded-2xl shadow-md border-2 border-pink-300 font-bold">
+          <span className="font-extrabold text-2xl text-pink-600 flex items-center gap-1">
+            <Star className="text-pink-500 w-4 h-4" />
             {opponentScore}
           </span>
-          <span className="text-base mt-1 text-pink-700 font-bold">
-            {opponentName}
-          </span>
+          <span className="text-sm text-pink-700 font-bold">{opponentName}</span>
         </div>
       </div>
-      <div className="text-2xl font-extrabold text-black animate-pop flex items-center gap-2 mb-7">
+
+      {/* Simplified congratulations message */}
+      <div className="text-lg font-extrabold text-black text-center mb-6">
         🎉 Awesome — you finished this stage!
       </div>
+      
+      {/* Button */}
       <Button
         onClick={onAdvanceStage}
-        className="text-lg font-black px-10 py-5 bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-fuchsia-400 shadow-xl rounded-full border-none transition-all animate-bounce"
+        className="text-lg font-black px-10 py-4 bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-fuchsia-400 shadow-lg rounded-full border-none transition-all"
         size="lg"
       >
         Next Stage
       </Button>
     </CardContent>
-    {/* Confetti dots (decorative) */}
-    <div className="absolute top-6 right-10 w-5 h-5 rounded-full bg-pink-300 animate-bounce [animation-delay:0.3s]" />
-    <div className="absolute bottom-8 left-10 w-5 h-5 rounded-full bg-yellow-200 animate-pulse" />
-    <div className="absolute bottom-5 right-12 w-4 h-4 rounded-full bg-lime-300 animate-bounce [animation-delay:0.15s]" />
   </Card>
 );
 
