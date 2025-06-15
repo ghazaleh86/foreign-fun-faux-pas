@@ -427,28 +427,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           currentStreak={profile?.current_streak ?? 0}
         />
         <div className="flex-1 w-full flex flex-col items-center justify-center">
-          {/* Now each game state is wrapped inside this game area */}
-          {state === "loading" && (
-            <div className="flex flex-col items-center w-full">
-              <div className="animate-pulse h-8 w-40 bg-muted rounded mb-6" />
-              <div className="animate-pulse h-16 w-80 bg-muted rounded" />
-            </div>
-          )}
-
-          {state === "quiz" && phrases.length === 0 && (
-            <Card className="max-w-xl w-full">
-              <CardContent className="p-6">
-                <div className="text-center my-10 text-pink-700 font-bold">
-                  <p className="mb-2">
-                    You have played all available phrases!
-                    <br />
-                    To repeat, please clear your browser data (localStorage).
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Stage summary, always show as main content with header above */}
           {stageCompleted && state === "quiz" && (
             <StageSummary
@@ -458,21 +436,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               opponentEmoji={opponentEmoji}
               opponentScore={opponentScores[stage] || 0}
               onAdvanceStage={handleAdvanceStage}
-            />
-          )}
-
-          {/* Game summary on finish */}
-          {state === "finished" && (
-            <GameSummary
-              score={score}
-              total={phrases.length}
-              percent={percent}
-              totalStages={totalStages}
-              stageScores={stageScores}
-              opponentScores={opponentScores}
-              opponentName={opponentName}
-              opponentEmoji={opponentEmoji}
-              onPlayAgain={() => window.location.reload()}
             />
           )}
 
