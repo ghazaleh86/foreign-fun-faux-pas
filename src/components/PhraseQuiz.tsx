@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Card, CardHeader, CardTitle, CardContent, CardFooter
 } from "@/components/ui/card";
@@ -418,130 +418,199 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
 
   // Main quiz UI per stage
   return (
-    <>
-      <GameStatusHeader
-        hearts={profile?.hearts ?? 3}
-        maxHearts={profile?.max_hearts ?? 3}
-        xp={profile?.xp ?? 0}
-        currentStreak={profile?.current_streak ?? 0}
-      />
-      <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
-        <CardHeader>
-          <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
-            <div className="flex items-center justify-center gap-2 w-full">
-              <span className="text-2xl">{opponentEmoji}</span>
-              <span>
-                Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
-              </span>
+    <div className="w-full flex justify-center items-start min-h-[80vh] pt-6">
+      <div className="w-full max-w-xl flex flex-col gap-4">
+        <GameStatusHeader
+          hearts={profile?.hearts ?? 3}
+          maxHearts={profile?.max_hearts ?? 3}
+          xp={profile?.xp ?? 0}
+          currentStreak={profile?.current_streak ?? 0}
+        />
+        <div className="flex-1 w-full flex flex-col items-center justify-center">
+          {/* Now each game state is wrapped inside this game area */}
+          {state === "loading" && (
+            <div className="flex flex-col items-center w-full">
+              <div className="animate-pulse h-8 w-40 bg-muted rounded mb-6" />
+              <div className="animate-pulse h-16 w-80 bg-muted rounded" />
             </div>
-            {/* Optionally, add subtext here if needed */}
-          </CardTitle>
-          {/* Audio controls */}
-          {phrase &&
-            <div className="flex flex-col items-center justify-center mt-1">
-              <div className="flex gap-1 mb-2 scale-90">
-                <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
-                <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
-                <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
-              </div>
-              <div className="text-lg font-semibold tracking-wide mb-0 flex items-center gap-2">
-                <span>
-                  {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
-                </span>
-                <span className="text-2xl" title={phrase.language}>
-                  {languageToFlag(phrase.language)}
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Language: <span className="font-bold">{phrase.language}</span>
-              </div>
-              <Button
-                className="mt-2 px-5"
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  const ttsText = phrase.pronunciation || phrase.phrase_text;
-                  import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-                    playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
-                      if ("speechSynthesis" in window) {
-                        window.speechSynthesis.cancel();
-                        const u = new window.SpeechSynthesisUtterance(ttsText);
-                        u.lang = phrase.language || "en";
-                        u.rate = 0.98;
-                        window.speechSynthesis.speak(u);
-                      }
-                    })
-                  );
-                }}
-              >
-                🔈 Play Again
-              </Button>
-            </div>
-          }
-        </CardHeader>
-        <CardContent>
-          <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
-              style={{
-                width:
-                  (
-                    ((stageScores[stage] || 0) /
-                      ((Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3)) *
-                    100
-                  ).toFixed(1) + "%"
-              }}
+          )}
+
+          {state === "quiz" && phrases.length === 0 && (
+            <Card className="max-w-xl w-full">
+              <CardContent className="p-6">
+                <div className="text-center my-10 text-pink-700 font-bold">
+                  <p className="mb-2">
+                    You have played all available phrases!
+                    <br />
+                    To repeat, please clear your browser data (localStorage).
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stage summary, always show as main content with header above */}
+          {stageCompleted && state === "quiz" && (
+            <StageSummary
+              stage={stage}
+              stageScore={stageScores[stage] || 0}
+              opponentName={opponentName}
+              opponentEmoji={opponentEmoji}
+              opponentScore={opponentScores[stage] || 0}
+              onAdvanceStage={handleAdvanceStage}
             />
-          </div>
-          <div className="mb-2 text-sm font-bold text-fuchsia-700">
-            Time: {timer}s
-          </div>
-          <MultipleChoiceOptions
-            options={optionOrder}
-            selected={selected}
-            showAnswer={showAnswer}
-            onSelect={handleSelect}
-          />
-          {feedback && (
-            <div
-              className={cn(
-                "text-center mt-5 text-lg font-semibold transition-all",
-                selected !== null && optionOrder[selected].isCorrect
-                  ? "text-green-700 animate-pop"
-                  : "text-pink-700 animate-shake-fast"
-              )}
-            >
-              {feedback}
-            </div>
           )}
-          {showAnswer && phrase?.notes && (
-            <div className="text-xs text-muted-foreground mt-2 text-center">
-              <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
-            </div>
+
+          {/* Game summary on finish */}
+          {state === "finished" && (
+            <GameSummary
+              score={score}
+              total={phrases.length}
+              percent={percent}
+              totalStages={totalStages}
+              stageScores={stageScores}
+              opponentScores={opponentScores}
+              opponentName={opponentName}
+              opponentEmoji={opponentEmoji}
+              onPlayAgain={() => window.location.reload()}
+            />
           )}
-        </CardContent>
-        <CardFooter className="flex justify-between items-center">
-          <div>
-            Stage {stage + 1} Score:{" "}
-            <span className="font-bold">{stageScores[stage] || 0}</span>
-          </div>
-          {/* Only show Next button if not the last in stage */}
-          {showAnswer &&
-            (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
-              <Button
-                onClick={handleNext}
-                variant="default"
-                className="animate-bounce"
-              >
-                Next
-              </Button>
-            )
-          }
-          {/* Optionally, could show a disabled "Finish Stage" button or nothing at all,
-              but letting StageSummary auto-appear is cleanest UX */}
-        </CardFooter>
-      </Card>
-    </>
+
+          {/* Stage preview */}
+          {showStagePreview && state === "quiz" && current < phrases.length && (
+            <StagePreview
+              stage={stage}
+              stageScore={stageScores[stage - 1] ?? 0}
+              opponentName={opponentName}
+              opponentEmoji={opponentEmoji}
+              opponentScore={opponentScores[stage - 1] ?? 0}
+              onStartStage={handleStartStage}
+            />
+          )}
+
+          {/* Main quiz UI per stage */}
+          {state === "quiz" &&
+            !stageCompleted &&
+            !showStagePreview &&
+            phrases.length > 0 &&
+            current < phrases.length && (
+              <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
+                <CardHeader>
+                  <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
+                    <div className="flex items-center justify-center gap-2 w-full">
+                      <span className="text-2xl">{opponentEmoji}</span>
+                      <span>
+                        Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
+                      </span>
+                    </div>
+                  </CardTitle>
+                  {/* Audio controls */}
+                  {phrase &&
+                    <div className="flex flex-col items-center justify-center mt-1">
+                      <div className="flex gap-1 mb-2 scale-90">
+                        <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
+                        <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
+                        <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
+                      </div>
+                      <div className="text-lg font-semibold tracking-wide mb-0 flex items-center gap-2">
+                        <span>
+                          {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
+                        </span>
+                        <span className="text-2xl" title={phrase.language}>
+                          {languageToFlag(phrase.language)}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Language: <span className="font-bold">{phrase.language}</span>
+                      </div>
+                      <Button
+                        className="mt-2 px-5"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          const ttsText = phrase.pronunciation || phrase.phrase_text;
+                          import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
+                            playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
+                              if ("speechSynthesis" in window) {
+                                window.speechSynthesis.cancel();
+                                const u = new window.SpeechSynthesisUtterance(ttsText);
+                                u.lang = phrase.language || "en";
+                                u.rate = 0.98;
+                                window.speechSynthesis.speak(u);
+                              }
+                            })
+                          );
+                        }}
+                      >
+                        🔈 Play Again
+                      </Button>
+                    </div>
+                  }
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
+                    <div
+                      className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
+                      style={{
+                        width:
+                          (
+                            ((stageScores[stage] || 0) /
+                              ((Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3)) *
+                            100
+                          ).toFixed(1) + "%"
+                      }}
+                    />
+                  </div>
+                  <div className="mb-2 text-sm font-bold text-fuchsia-700">
+                    Time: {timer}s
+                  </div>
+                  <MultipleChoiceOptions
+                    options={optionOrder}
+                    selected={selected}
+                    showAnswer={showAnswer}
+                    onSelect={handleSelect}
+                  />
+                  {feedback && (
+                    <div
+                      className={cn(
+                        "text-center mt-5 text-lg font-semibold transition-all",
+                        selected !== null && optionOrder[selected].isCorrect
+                          ? "text-green-700 animate-pop"
+                          : "text-pink-700 animate-shake-fast"
+                      )}
+                    >
+                      {feedback}
+                    </div>
+                  )}
+                  {showAnswer && phrase?.notes && (
+                    <div className="text-xs text-muted-foreground mt-2 text-center">
+                      <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                  <div>
+                    Stage {stage + 1} Score:{" "}
+                    <span className="font-bold">{stageScores[stage] || 0}</span>
+                  </div>
+                  {/* Only show Next button if not the last in stage */}
+                  {showAnswer &&
+                    (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
+                      <Button
+                        onClick={handleNext}
+                        variant="default"
+                        className="animate-bounce"
+                      >
+                        Next
+                      </Button>
+                    )
+                  }
+                </CardFooter>
+              </Card>
+            )}
+        </div>
+      </div>
+    </div>
   );
 };
 

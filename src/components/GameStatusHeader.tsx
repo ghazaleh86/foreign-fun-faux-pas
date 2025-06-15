@@ -18,7 +18,7 @@ const GameStatusHeader: React.FC<HeaderProps> = ({
   currentStreak,
 }) => {
   return (
-    <div className="flex items-center justify-between px-3 py-3 max-w-xl mx-auto mb-4">
+    <div className="flex items-center justify-between px-3 py-3 max-w-xl mx-auto">
       {/* Hearts */}
       <div className="flex items-center gap-1">
         {Array.from({ length: maxHearts }).map((_, i) => (
@@ -47,3 +47,4 @@ const GameStatusHeader: React.FC<HeaderProps> = ({
 };
 
 export default GameStatusHeader;
+

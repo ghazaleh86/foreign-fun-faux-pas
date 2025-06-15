@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
@@ -38,10 +39,12 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 flex flex-col items-start justify-center px-4">
+      {/* Main quiz area is now always centered, and header won't overlap */}
       <PhraseQuiz opponentName={opponent.name} opponentEmoji={opponent.emoji} />
     </div>
   );
 };
 
 export default Index;
+
