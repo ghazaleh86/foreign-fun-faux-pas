@@ -13,6 +13,8 @@ import StagePreview from "./StagePreview";
 import MultipleChoiceOptions, { Option } from "./MultipleChoiceOptions";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
 import { languageToFlag } from "@/utils/languageToFlag";
+import GameStatusHeader from "./GameStatusHeader";
+import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 
 type Phrase = {
   id: string;
@@ -28,6 +30,7 @@ type Phrase = {
 type State = "loading" | "quiz" | "finished";
 
 const STAGE_SIZE = 10;
+const ROUND_SIZE = 5;
 
 const ELEVENLABS_VOICES = [
   { name: "Aria", id: "9BWtsMINqrJLrRacOk9x" },
@@ -86,6 +89,21 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Add state to control if user can proceed after review:
   const [advanceRequested, setAdvanceRequested] = useState(false);
 
+  // --- Player Progress (hearts, xp, streaks) ---
+  const {
+    profile,
+    loading: profileLoading,
+    addXP,
+    loseHeart,
+    resetHearts,
+    advanceStreak,
+    refresh: refreshProfile,
+  } = usePlayerProfile();
+
+  // Set up per-round state
+  const [roundQuestions, setRoundQuestions] = useState<Phrase[]>([]);
+  const [roundCorrect, setRoundCorrect] = useState(0);
+
   // Timer via custom hook
   const { timer, getElapsed, reset: resetTimer } = useStageTimer(
     !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted
@@ -121,6 +139,16 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       return next;
     });
   }
+
+  // Prepare a new round (5 unplayed questions)
+  useEffect(() => {
+    if (phrases.length === 0) return;
+    // Pick next ROUND_SIZE questions not played yet in this session
+    const roundStart = current;
+    setRoundQuestions(phrases.slice(roundStart, roundStart + ROUND_SIZE));
+    setRoundCorrect(0);
+    if (profile) resetHearts(); // refill on new round
+  }, [current, phrases, profile]);
 
   // Fetch phrases on mount
   useEffect(() => {
@@ -162,6 +190,13 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }
   }, [phrase]); // <--- Only depend on phrase
 
+  // Compute bonus XP
+  function getSpeedBonusXP(timeTaken: number) {
+    if (timeTaken <= 4) return 5;
+    if (timeTaken <= 8) return 2;
+    return 0;
+  }
+
   function handleSelect(idx: number) {
     if (selected !== null) return;
     setSelected(idx);
@@ -170,14 +205,28 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     let timeTaken = getElapsed();
 
     if (optionOrder[idx].isCorrect) {
+      // +10 XP, plus speed bonus
+      const bonusXP = getSpeedBonusXP(timeTaken);
+      addXP(10 + bonusXP);
+      setRoundCorrect((c) => c + 1);
       const bonus = computeSpeedBonus(timeTaken);
       setScore((s) => s + bonus);
       updateStageScores(stage, bonus);
-      setFeedback(`🎉 Correct! (+${bonus}pt${bonus > 1 ? "s" : ""}) Time: ${timeTaken}s`);
+      setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
     } else {
+      loseHeart();
       const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
       updateOpponentScores(stage, opponentGotIt);
       setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
+    }
+
+    // If game over (no more hearts), auto end round
+    if (profile && profile.hearts === 1 && !optionOrder[idx].isCorrect) {
+      setShowAnswer(false);
+      setTimeout(() => {
+        setStageCompleted(true);
+      }, 700); // Short delay to show last answer
+      return;
     }
 
     // Detect if this was the last question in the stage
@@ -205,15 +254,28 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   }
 
   function handleAdvanceStage() {
-    // When user presses continue on StageSummary
-    // Move to next stage, set preview, start at first question in that stage
-    setShowStagePreview(true);
-    setStage((s) => s + 1);
-    setStageCompleted(false);
-    setCurrent((stage + 1) * STAGE_SIZE);
-    setSelected(null);
-    setShowAnswer(false);
-    setFeedback(null);
+    // Assess if user passed (3+ correct)
+    if (roundCorrect >= 3) {
+      advanceStreak();
+      setShowStagePreview(true);
+      setStage((s) => s + 1);
+      setStageCompleted(false);
+      setCurrent((stage + 1) * ROUND_SIZE);
+      setSelected(null);
+      setShowAnswer(false);
+      setFeedback(null);
+      refreshProfile();
+    } else {
+      // Did not pass: refill hearts, restart round, reset corrects (using same questions)
+      resetHearts();
+      setStageCompleted(false);
+      setSelected(null);
+      setShowAnswer(false);
+      setFeedback("You need at least 3 correct to pass. Try again!");
+      setCurrent(stage * ROUND_SIZE);
+      setRoundCorrect(0);
+      refreshProfile();
+    }
   }
 
   function handleStartStage() {
@@ -262,14 +324,22 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     // Determine which stage just finished
     const justCompletedStage = stage;
     return (
-      <StageSummary
-        stage={justCompletedStage}
-        stageScore={stageScores[justCompletedStage] || 0}
-        opponentName={opponentName}
-        opponentEmoji={opponentEmoji}
-        opponentScore={opponentScores[justCompletedStage] || 0}
-        onAdvanceStage={handleAdvanceStage}
-      />
+      <>
+        <GameStatusHeader
+          hearts={profile?.hearts ?? 3}
+          maxHearts={profile?.max_hearts ?? 3}
+          xp={profile?.xp ?? 0}
+          currentStreak={profile?.current_streak ?? 0}
+        />
+        <StageSummary
+          stage={justCompletedStage}
+          stageScore={stageScores[justCompletedStage] || 0}
+          opponentName={opponentName}
+          opponentEmoji={opponentEmoji}
+          opponentScore={opponentScores[justCompletedStage] || 0}
+          onAdvanceStage={handleAdvanceStage}
+        />
+      </>
     );
   }
 
@@ -302,152 +372,176 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
 
   if (state === "finished") {
     return (
-      <GameSummary
-        score={score}
-        total={phrases.length}
-        percent={percent}
-        totalStages={totalStages}
-        stageScores={stageScores}
-        opponentScores={opponentScores}
-        opponentName={opponentName}
-        opponentEmoji={opponentEmoji}
-        onPlayAgain={() => window.location.reload()}
-      />
+      <>
+        <GameStatusHeader
+          hearts={profile?.hearts ?? 3}
+          maxHearts={profile?.max_hearts ?? 3}
+          xp={profile?.xp ?? 0}
+          currentStreak={profile?.current_streak ?? 0}
+        />
+        <GameSummary
+          score={score}
+          total={phrases.length}
+          percent={percent}
+          totalStages={totalStages}
+          stageScores={stageScores}
+          opponentScores={opponentScores}
+          opponentName={opponentName}
+          opponentEmoji={opponentEmoji}
+          onPlayAgain={() => window.location.reload()}
+        />
+      </>
     );
   }
 
   if (showStagePreview && state === "quiz" && current < phrases.length) {
     const prevStageIdx = stage - 1;
     return (
-      <StagePreview
-        stage={stage}
-        stageScore={stageScores[prevStageIdx] ?? 0}
-        opponentName={opponentName}
-        opponentEmoji={opponentEmoji}
-        opponentScore={opponentScores[prevStageIdx] ?? 0}
-        onStartStage={handleStartStage}
-      />
+      <>
+        <GameStatusHeader
+          hearts={profile?.hearts ?? 3}
+          maxHearts={profile?.max_hearts ?? 3}
+          xp={profile?.xp ?? 0}
+          currentStreak={profile?.current_streak ?? 0}
+        />
+        <StagePreview
+          stage={stage}
+          stageScore={stageScores[prevStageIdx] ?? 0}
+          opponentName={opponentName}
+          opponentEmoji={opponentEmoji}
+          opponentScore={opponentScores[prevStageIdx] ?? 0}
+          onStartStage={handleStartStage}
+        />
+      </>
     );
   }
 
   // Main quiz UI per stage
   return (
-    <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
-      <CardHeader>
-        <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
-          <div className="flex items-center justify-center gap-2 w-full">
-            <span className="text-2xl">{opponentEmoji}</span>
-            <span>
-              Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
-            </span>
-          </div>
-          {/* Optionally, add subtext here if needed */}
-        </CardTitle>
-        {/* Audio controls */}
-        {phrase &&
-          <div className="flex flex-col items-center justify-center mt-1">
-            <div className="flex gap-1 mb-2 scale-90">
-              <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
-              <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
-              <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
-            </div>
-            <div className="text-lg font-semibold tracking-wide mb-0 flex items-center gap-2">
+    <>
+      <GameStatusHeader
+        hearts={profile?.hearts ?? 3}
+        maxHearts={profile?.max_hearts ?? 3}
+        xp={profile?.xp ?? 0}
+        currentStreak={profile?.current_streak ?? 0}
+      />
+      <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
+        <CardHeader>
+          <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
+            <div className="flex items-center justify-center gap-2 w-full">
+              <span className="text-2xl">{opponentEmoji}</span>
               <span>
-                {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
-              </span>
-              <span className="text-2xl" title={phrase.language}>
-                {languageToFlag(phrase.language)}
+                Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
               </span>
             </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Language: <span className="font-bold">{phrase.language}</span>
+            {/* Optionally, add subtext here if needed */}
+          </CardTitle>
+          {/* Audio controls */}
+          {phrase &&
+            <div className="flex flex-col items-center justify-center mt-1">
+              <div className="flex gap-1 mb-2 scale-90">
+                <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
+                <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
+                <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
+              </div>
+              <div className="text-lg font-semibold tracking-wide mb-0 flex items-center gap-2">
+                <span>
+                  {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
+                </span>
+                <span className="text-2xl" title={phrase.language}>
+                  {languageToFlag(phrase.language)}
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                Language: <span className="font-bold">{phrase.language}</span>
+              </div>
+              <Button
+                className="mt-2 px-5"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  const ttsText = phrase.pronunciation || phrase.phrase_text;
+                  import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
+                    playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
+                      if ("speechSynthesis" in window) {
+                        window.speechSynthesis.cancel();
+                        const u = new window.SpeechSynthesisUtterance(ttsText);
+                        u.lang = phrase.language || "en";
+                        u.rate = 0.98;
+                        window.speechSynthesis.speak(u);
+                      }
+                    })
+                  );
+                }}
+              >
+                🔈 Play Again
+              </Button>
             </div>
-            <Button
-              className="mt-2 px-5"
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                const ttsText = phrase.pronunciation || phrase.phrase_text;
-                import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-                  playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
-                    if ("speechSynthesis" in window) {
-                      window.speechSynthesis.cancel();
-                      const u = new window.SpeechSynthesisUtterance(ttsText);
-                      u.lang = phrase.language || "en";
-                      u.rate = 0.98;
-                      window.speechSynthesis.speak(u);
-                    }
-                  })
-                );
+          }
+        </CardHeader>
+        <CardContent>
+          <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
+            <div
+              className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
+              style={{
+                width:
+                  (
+                    ((stageScores[stage] || 0) /
+                      ((Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3)) *
+                    100
+                  ).toFixed(1) + "%"
               }}
-            >
-              🔈 Play Again
-            </Button>
+            />
           </div>
-        }
-      </CardHeader>
-      <CardContent>
-        <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
-          <div
-            className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
-            style={{
-              width:
-                (
-                  ((stageScores[stage] || 0) /
-                    ((Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3)) *
-                  100
-                ).toFixed(1) + "%"
-            }}
+          <div className="mb-2 text-sm font-bold text-fuchsia-700">
+            Time: {timer}s
+          </div>
+          <MultipleChoiceOptions
+            options={optionOrder}
+            selected={selected}
+            showAnswer={showAnswer}
+            onSelect={handleSelect}
           />
-        </div>
-        <div className="mb-2 text-sm font-bold text-fuchsia-700">
-          Time: {timer}s
-        </div>
-        <MultipleChoiceOptions
-          options={optionOrder}
-          selected={selected}
-          showAnswer={showAnswer}
-          onSelect={handleSelect}
-        />
-        {feedback && (
-          <div
-            className={cn(
-              "text-center mt-5 text-lg font-semibold transition-all",
-              selected !== null && optionOrder[selected].isCorrect
-                ? "text-green-700 animate-pop"
-                : "text-pink-700 animate-shake-fast"
-            )}
-          >
-            {feedback}
-          </div>
-        )}
-        {showAnswer && phrase?.notes && (
-          <div className="text-xs text-muted-foreground mt-2 text-center">
-            <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-between items-center">
-        <div>
-          Stage {stage + 1} Score:{" "}
-          <span className="font-bold">{stageScores[stage] || 0}</span>
-        </div>
-        {/* Only show Next button if not the last in stage */}
-        {showAnswer &&
-          (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
-            <Button
-              onClick={handleNext}
-              variant="default"
-              className="animate-bounce"
+          {feedback && (
+            <div
+              className={cn(
+                "text-center mt-5 text-lg font-semibold transition-all",
+                selected !== null && optionOrder[selected].isCorrect
+                  ? "text-green-700 animate-pop"
+                  : "text-pink-700 animate-shake-fast"
+              )}
             >
-              Next
-            </Button>
-          )
-        }
-        {/* Optionally, could show a disabled "Finish Stage" button or nothing at all,
-            but letting StageSummary auto-appear is cleanest UX */}
-      </CardFooter>
-    </Card>
+              {feedback}
+            </div>
+          )}
+          {showAnswer && phrase?.notes && (
+            <div className="text-xs text-muted-foreground mt-2 text-center">
+              <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-between items-center">
+          <div>
+            Stage {stage + 1} Score:{" "}
+            <span className="font-bold">{stageScores[stage] || 0}</span>
+          </div>
+          {/* Only show Next button if not the last in stage */}
+          {showAnswer &&
+            (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
+              <Button
+                onClick={handleNext}
+                variant="default"
+                className="animate-bounce"
+              >
+                Next
+              </Button>
+            )
+          }
+          {/* Optionally, could show a disabled "Finish Stage" button or nothing at all,
+              but letting StageSummary auto-appear is cleanest UX */}
+        </CardFooter>
+      </Card>
+    </>
   );
 };
 

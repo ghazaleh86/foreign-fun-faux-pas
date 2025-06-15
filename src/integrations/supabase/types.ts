@@ -45,6 +45,45 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          current_streak: number
+          hearts: number
+          id: string
+          last_heart_regen_at: string | null
+          last_played: string | null
+          longest_streak: number
+          max_hearts: number
+          username: string | null
+          xp: number
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number
+          hearts?: number
+          id: string
+          last_heart_regen_at?: string | null
+          last_played?: string | null
+          longest_streak?: number
+          max_hearts?: number
+          username?: string | null
+          xp?: number
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number
+          hearts?: number
+          id?: string
+          last_heart_regen_at?: string | null
+          last_played?: string | null
+          longest_streak?: number
+          max_hearts?: number
+          username?: string | null
+          xp?: number
+        }
+        Relationships: []
+      }
       user_scores: {
         Row: {
           correct_count: number
