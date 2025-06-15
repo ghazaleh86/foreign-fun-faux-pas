@@ -319,104 +319,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     }
   }, [showStagePreview]);
 
-  // Always show StageSummary if stageCompleted (after last question of stage)
-  if (stageCompleted && state === "quiz") {
-    // Determine which stage just finished
-    const justCompletedStage = stage;
-    return (
-      <>
-        <GameStatusHeader
-          hearts={profile?.hearts ?? 3}
-          maxHearts={profile?.max_hearts ?? 3}
-          xp={profile?.xp ?? 0}
-          currentStreak={profile?.current_streak ?? 0}
-        />
-        <StageSummary
-          stage={justCompletedStage}
-          stageScore={stageScores[justCompletedStage] || 0}
-          opponentName={opponentName}
-          opponentEmoji={opponentEmoji}
-          opponentScore={opponentScores[justCompletedStage] || 0}
-          onAdvanceStage={handleAdvanceStage}
-        />
-      </>
-    );
-  }
-
-  if (state === "loading") {
-    return (
-      <div className="flex flex-col items-center">
-        <div className="animate-pulse h-8 w-40 bg-muted rounded mb-6" />
-        <div className="animate-pulse h-16 w-80 bg-muted rounded" />
-      </div>
-    );
-  }
-
-  if (state === "quiz" && phrases.length === 0) {
-    return (
-      <Card className="max-w-xl w-full">
-        <CardContent className="p-6">
-          <div className="text-center my-10 text-pink-700 font-bold">
-            <p className="mb-2">
-              You have played all available phrases!
-              <br />
-              To repeat, please clear your browser data (localStorage).
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const percent = phrases.length ? Math.round((score / phrases.length) * 100) : 0;
-
-  if (state === "finished") {
-    return (
-      <>
-        <GameStatusHeader
-          hearts={profile?.hearts ?? 3}
-          maxHearts={profile?.max_hearts ?? 3}
-          xp={profile?.xp ?? 0}
-          currentStreak={profile?.current_streak ?? 0}
-        />
-        <GameSummary
-          score={score}
-          total={phrases.length}
-          percent={percent}
-          totalStages={totalStages}
-          stageScores={stageScores}
-          opponentScores={opponentScores}
-          opponentName={opponentName}
-          opponentEmoji={opponentEmoji}
-          onPlayAgain={() => window.location.reload()}
-        />
-      </>
-    );
-  }
-
-  if (showStagePreview && state === "quiz" && current < phrases.length) {
-    const prevStageIdx = stage - 1;
-    return (
-      <>
-        <GameStatusHeader
-          hearts={profile?.hearts ?? 3}
-          maxHearts={profile?.max_hearts ?? 3}
-          xp={profile?.xp ?? 0}
-          currentStreak={profile?.current_streak ?? 0}
-        />
-        <StagePreview
-          stage={stage}
-          stageScore={stageScores[prevStageIdx] ?? 0}
-          opponentName={opponentName}
-          opponentEmoji={opponentEmoji}
-          opponentScore={opponentScores[prevStageIdx] ?? 0}
-          onStartStage={handleStartStage}
-        />
-      </>
-    );
-  }
-
-  // Main quiz UI per stage
+  // Main layout: consistent container for all game states
   return (
     <div className="w-full flex justify-center items-start min-h-[80vh] pt-6">
       <div className="w-full max-w-xl flex flex-col gap-4">
@@ -427,7 +330,30 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
           currentStreak={profile?.current_streak ?? 0}
         />
         <div className="flex-1 w-full flex flex-col items-center justify-center">
-          {/* Stage summary, always show as main content with header above */}
+          {/* Loading State */}
+          {state === "loading" && (
+            <div className="flex flex-col items-center w-full">
+              <div className="animate-pulse h-8 w-40 bg-muted rounded mb-6" />
+              <div className="animate-pulse h-16 w-80 bg-muted rounded" />
+            </div>
+          )}
+
+          {/* All phrases played state */}
+          {state === "quiz" && phrases.length === 0 && (
+            <Card className="max-w-xl w-full">
+              <CardContent className="p-6">
+                <div className="text-center my-10 text-pink-700 font-bold">
+                  <p className="mb-2">
+                    You have played all available phrases!
+                    <br />
+                    To repeat, please clear your browser data (localStorage).
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stage Summary */}
           {stageCompleted && state === "quiz" && (
             <StageSummary
               stage={stage}
@@ -436,6 +362,21 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
               opponentEmoji={opponentEmoji}
               opponentScore={opponentScores[stage] || 0}
               onAdvanceStage={handleAdvanceStage}
+            />
+          )}
+
+          {/* Game summary on finish */}
+          {state === "finished" && (
+            <GameSummary
+              score={score}
+              total={phrases.length}
+              percent={percent}
+              totalStages={totalStages}
+              stageScores={stageScores}
+              opponentScores={opponentScores}
+              opponentName={opponentName}
+              opponentEmoji={opponentEmoji}
+              onPlayAgain={() => window.location.reload()}
             />
           )}
 
