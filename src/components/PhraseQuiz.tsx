@@ -15,6 +15,7 @@ import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds"
 import { languageToFlag } from "@/utils/languageToFlag";
 import GameStatusHeader from "./GameStatusHeader";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
+import { Volume2 } from "lucide-react";
 
 type Phrase = {
   id: string;
@@ -431,9 +432,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                         Language: <span className="font-bold">{phrase.language}</span>
                       </div>
                       <Button
-                        className="mt-2 px-5"
-                        variant="secondary"
-                        size="sm"
+                        className="mt-4 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                        size="lg"
                         onClick={() => {
                           const ttsText = phrase.pronunciation || phrase.phrase_text;
                           import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
@@ -449,7 +449,8 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                           );
                         }}
                       >
-                        🔈 Play Again
+                        <Volume2 className="w-5 h-5 mr-2" />
+                        Play Audio
                       </Button>
                     </div>
                   }
