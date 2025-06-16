@@ -1,75 +1,29 @@
+
 import React, { useState, useEffect } from "react";
-import {
-  Card, CardHeader, CardTitle, CardContent, CardFooter
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
 import StageSummary from "./StageSummary";
 import GameSummary from "./GameSummary";
 import StagePreview from "./StagePreview";
-import MultipleChoiceOptions, { Option } from "./MultipleChoiceOptions";
+import QuizCard from "./QuizCard";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
-import { languageToFlag } from "@/utils/languageToFlag";
 import GameStatusHeader from "./GameStatusHeader";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
-import { Volume2 } from "lucide-react";
+import { Phrase, State, QuizProps } from "@/types/quiz";
+import { 
+  STAGE_SIZE, 
+  ROUND_SIZE, 
+  getShuffledOptions, 
+  computeSpeedBonus, 
+  getSpeedBonusXP, 
+  getCurrentVoice, 
+  randomWrongTaunt 
+} from "@/utils/quizHelpers";
+import { Option } from "./MultipleChoiceOptions";
 
-type Phrase = {
-  id: string;
-  phrase_text: string;
-  language: string;
-  pronunciation: string | null;
-  correct_meaning: string;
-  incorrect1: string;
-  incorrect2: string;
-  notes: string | null;
-};
-
-type State = "loading" | "quiz" | "finished";
-
-const STAGE_SIZE = 10;
-const ROUND_SIZE = 5;
-
-const ELEVENLABS_VOICES = [
-  { name: "Aria", id: "9BWtsMINqrJLrRacOk9x" },
-  { name: "Roger", id: "CwhRBWXzGAHq8TQ4Fs17" },
-  { name: "Sarah", id: "EXAVITQu4vr4xnSDxMaL" },
-  { name: "Laura", id: "FGY2WhTYpPnrIDTdsKH5" },
-  { name: "Charlie", id: "IKne3meq5aSn9XLyUdCD" },
-  { name: "George", id: "JBFqnCBsd6RMkjVDRZzb" },
-  { name: "Callum", id: "N2lVS1w4EtoT3dr4eOWO" },
-  { name: "Liam", id: "TX3LPaxmHKxFdv7VOQHJ" }
-];
-
-const getShuffledOptions = (phrase: Phrase): Option[] => {
-  const options: Option[] = [
-    { label: phrase.correct_meaning, isCorrect: true },
-    { label: phrase.incorrect1, isCorrect: false },
-    { label: phrase.incorrect2, isCorrect: false },
-  ];
-  for (let i = options.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [options[i], options[j]] = [options[j], options[i]];
-  }
-  return options;
-};
-
-type PhraseQuizProps = {
-  opponentName: string;
-  opponentEmoji: string;
-};
-
-// --- ADDED HELPERS ---
-function computeSpeedBonus(timeTaken: number): number {
-  if (timeTaken <= 4) return 3;
-  if (timeTaken <= 8) return 2;
-  return 1;
-}
-
-const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) => {
+const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   // Quiz/load state and data
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [state, setState] = useState<State>("loading");
@@ -111,9 +65,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   );
 
   const phrase = phrases[current];
-
-  // Voice logic
-  const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
 
   // Audio auto-play with duplicate guard
   useAudioPlayback(
@@ -202,13 +153,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       resetTimer(); // Only reset timer when showing a new phrase
     }
   }, [phrase]); // <--- Only depend on phrase
-
-  // Compute bonus XP
-  function getSpeedBonusXP(timeTaken: number) {
-    if (timeTaken <= 4) return 5;
-    if (timeTaken <= 8) return 2;
-    return 0;
-  }
 
   function handleSelect(idx: number) {
     if (selected !== null) return;
@@ -307,15 +251,19 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     setFeedback(null);
   }
 
-  function randomWrongTaunt(name: string) {
-    const taunts = [
-      `Better luck next time!`,
-      `Oof! ${name} is still in the game!`,
-      `Still one step behind ${name}!`,
-      `Maybe try a random guess?`,
-      `You can do it! Just not on this question.`,
-      ];
-    return taunts[Math.floor(Math.random() * taunts.length)];
+  function handlePlayAudio() {
+    const ttsText = phrase.pronunciation || phrase.phrase_text;
+    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
+      playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+          const u = new window.SpeechSynthesisUtterance(ttsText);
+          u.lang = phrase.language || "en";
+          u.rate = 0.98;
+          window.speechSynthesis.speak(u);
+        }
+      })
+    );
   }
 
   // Calculate percentage for GameSummary
@@ -409,117 +357,26 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
             !showStagePreview &&
             phrases.length > 0 &&
             current < phrases.length && (
-              <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
-                <CardHeader>
-                  <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      <span className="text-2xl">{opponentEmoji}</span>
-                      <span>
-                        Stage {stage + 1} of {totalStages} – Phrase {current - (stage * STAGE_SIZE) + 1} of {Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))}
-                      </span>
-                    </div>
-                  </CardTitle>
-                  {/* Audio controls */}
-                  {phrase &&
-                    <div className="flex flex-col items-center justify-center mt-1">
-                      <div className="flex gap-1 mb-2 scale-90">
-                        <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
-                        <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
-                        <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
-                      </div>
-                      <div className="text-lg font-semibold tracking-wide mb-0">
-                        <span>
-                          {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
-                        </span>
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                        <span className="text-xl" title={phrase.language}>
-                          {languageToFlag(phrase.language)}
-                        </span>
-                        <span className="font-medium">{phrase.language}</span>
-                      </div>
-                      <button
-                        className="mt-4 px-6 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium text-base rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                        onClick={() => {
-                          const ttsText = phrase.pronunciation || phrase.phrase_text;
-                          import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-                            playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
-                              if ("speechSynthesis" in window) {
-                                window.speechSynthesis.cancel();
-                                const u = new window.SpeechSynthesisUtterance(ttsText);
-                                u.lang = phrase.language || "en";
-                                u.rate = 0.98;
-                                window.speechSynthesis.speak(u);
-                              }
-                            })
-                          );
-                        }}
-                      >
-                        <Volume2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                  }
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
-                    <div
-                      className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
-                      style={{
-                        width:
-                          (
-                            ((stageScores[stage] || 0) /
-                              ((Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3)) *
-                            100
-                          ).toFixed(1) + "%"
-                      }}
-                    />
-                  </div>
-                  <div className="mb-2 text-sm font-bold text-fuchsia-700">
-                    Time: {timer}s
-                  </div>
-                  <MultipleChoiceOptions
-                    options={optionOrder}
-                    selected={selected}
-                    showAnswer={showAnswer}
-                    onSelect={handleSelect}
-                  />
-                  {feedback && (
-                    <div
-                      className={cn(
-                        "text-center mt-5 text-lg font-semibold transition-all",
-                        selected !== null && optionOrder[selected].isCorrect
-                          ? "text-green-700 animate-pop"
-                          : "text-pink-700 animate-shake-fast"
-                      )}
-                    >
-                      {feedback}
-                    </div>
-                  )}
-                  {showAnswer && phrase?.notes && (
-                    <div className="text-xs text-muted-foreground mt-2 text-center">
-                      <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
-                    </div>
-                  )}
-                </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                  <div>
-                    Stage {stage + 1} Score:{" "}
-                    <span className="font-bold">{stageScores[stage] || 0}</span>
-                  </div>
-                  {/* Only show Next button if not the last in stage */}
-                  {showAnswer &&
-                    (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart) && (
-                      <Button
-                        onClick={handleNext}
-                        variant="default"
-                        className="animate-bounce"
-                      >
-                        Next
-                      </Button>
-                    )
-                  }
-                </CardFooter>
-              </Card>
+              <QuizCard
+                phrase={phrase}
+                stage={stage}
+                totalStages={totalStages}
+                current={current}
+                stageSize={STAGE_SIZE}
+                phrasesLength={phrases.length}
+                opponentEmoji={opponentEmoji}
+                timer={timer}
+                stageScore={stageScores[stage] || 0}
+                maxStageScore={(Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3}
+                optionOrder={optionOrder}
+                selected={selected}
+                showAnswer={showAnswer}
+                feedback={feedback}
+                showNextButton={showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart)}
+                onSelect={handleSelect}
+                onNext={handleNext}
+                onPlayAudio={handlePlayAudio}
+              />
             )}
         </div>
       </div>
