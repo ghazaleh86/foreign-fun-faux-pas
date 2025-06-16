@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card, CardHeader, CardTitle, CardContent, CardFooter
@@ -151,27 +152,39 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
     if (profile) resetHearts(); // refill on new round
   }, [current, phrases, profile]);
 
-  // Fetch phrases on mount
+  // Fetch phrases on mount with rotation logic
   useEffect(() => {
     const fetchPhrases = async () => {
       setState("loading");
       let playedIds: string[] = [];
       try {
         playedIds = getPlayedPhraseIds();
-      } catch { playedIds = []; }
+      } catch { 
+        playedIds = []; 
+      }
+
       const { data, error } = await supabase
         .from("phrases")
         .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
+        .order("created_at", { ascending: false });
 
       if (!data || error) {
         setPhrases([]);
         setState("quiz");
         setFeedback("Error fetching phrases. Please try again.");
       } else {
-        const unseen = data.filter((p: Phrase) => !playedIds.includes(p.id));
-        setPhrases(unseen as Phrase[]);
+        // Filter out phrases that have been played before
+        const unplayedPhrases = data.filter((p: Phrase) => !playedIds.includes(p.id));
+        
+        if (unplayedPhrases.length === 0) {
+          // All phrases have been played - clear the played list and start fresh
+          setPlayedPhraseIds([]);
+          setPhrases(data as Phrase[]);
+          console.log("All phrases played! Starting fresh with full database.");
+        } else {
+          setPhrases(unplayedPhrases as Phrase[]);
+          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total.`);
+        }
         setState("quiz");
       }
     };
@@ -219,6 +232,13 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
       const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
       updateOpponentScores(stage, opponentGotIt);
       setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
+    }
+
+    // Mark this phrase as played immediately
+    if (phrase) {
+      const playedIds = getPlayedPhraseIds();
+      const updatedPlayedIds = Array.from(new Set([...playedIds, phrase.id]));
+      setPlayedPhraseIds(updatedPlayedIds);
     }
 
     // If game over (no more hearts), auto end round
@@ -302,18 +322,6 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
   // Calculate percentage for GameSummary
   const percent = phrases.length > 0 ? Math.round((score / phrases.length) * 100) : 0;
 
-  // Store played phrase IDs at finish
-  useEffect(() => {
-    if (state !== "finished") return;
-    if (phrases.length > 0 && phrases[0]?.id) {
-      const playedIds = getPlayedPhraseIds();
-      const currentIds = phrases.map(p => p.id);
-      const merged = Array.from(new Set([...playedIds, ...currentIds]));
-      setPlayedPhraseIds(merged);
-    }
-  // eslint-disable-next-line
-  }, [state]);
-
   // Reset state when moving to a new stage (preview)
   useEffect(() => {
     if (showStagePreview) {
@@ -350,7 +358,7 @@ const PhraseQuiz: React.FC<PhraseQuizProps> = ({ opponentName, opponentEmoji }) 
                   <p className="mb-2">
                     You have played all available phrases!
                     <br />
-                    To repeat, please clear your browser data (localStorage).
+                    The rotation system will automatically reset and show you phrases again.
                   </p>
                 </div>
               </CardContent>
