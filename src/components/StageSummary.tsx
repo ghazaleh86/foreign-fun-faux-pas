@@ -14,16 +14,6 @@ type StageSummaryProps = {
   onAdvanceStage: () => void;
 };
 
-const funColors = [
-  "from-green-200 via-lime-100 to-yellow-200",
-  "from-fuchsia-200 via-pink-100 to-yellow-100",
-  "from-cyan-100 via-blue-100 to-green-100",
-];
-
-function getFunColor(stage: number) {
-  return funColors[stage % funColors.length];
-}
-
 const StageSummary: React.FC<StageSummaryProps> = ({
   stage,
   stageScore,
@@ -33,65 +23,65 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   onAdvanceStage,
 }) => (
   <div className="w-full max-w-xl mx-auto px-4">
-    <Card className={`w-full bg-gradient-to-br ${getFunColor(stage)} shadow-2xl border-0 overflow-hidden`}>
+    <Card className="w-full bg-white shadow-xl border border-gray-100">
       {/* Header Section */}
-      <CardHeader className="text-center pt-12 pb-8 px-8">
-        {/* Mascot with premium styling */}
+      <CardHeader className="text-center pt-12 pb-8 px-8 bg-gray-50 border-b border-gray-100">
+        {/* Mascot */}
         <div className="mb-8">
-          <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-xl mx-auto w-20 h-20 flex items-center justify-center">
-            <MascotAvatar size={56} className="ring-0" />
+          <div className="bg-white rounded-full p-3 shadow-lg mx-auto w-24 h-24 flex items-center justify-center border border-gray-200">
+            <MascotAvatar size={60} className="ring-0" />
           </div>
         </div>
         
-        {/* Title with better typography */}
-        <div className="space-y-2">
-          <div className="text-6xl">{opponentEmoji}</div>
-          <CardTitle className="text-3xl font-black text-gray-800 tracking-tight leading-tight">
+        {/* Title */}
+        <div className="space-y-3">
+          <div className="text-5xl mb-2">{opponentEmoji}</div>
+          <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">
             STAGE {stage + 1}
-            <br />
-            <span className="text-2xl font-bold text-gray-600">Complete!</span>
           </CardTitle>
+          <div className="text-xl font-medium text-gray-600">Complete!</div>
         </div>
       </CardHeader>
 
       {/* Content Section */}
-      <CardContent className="px-8 pb-12">
-        {/* Score Comparison with premium cards */}
-        <div className="flex items-center justify-center gap-8 mb-10">
+      <CardContent className="px-8 py-12 bg-white">
+        {/* Score Comparison */}
+        <div className="flex items-center justify-center gap-6 mb-12">
           {/* User Score */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/50 min-w-[120px] text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Zap className="text-yellow-500 w-5 h-5" />
-              <span className="text-3xl font-black text-yellow-600">{stageScore}</span>
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 min-w-[140px] text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Zap className="text-amber-500 w-6 h-6" />
+              <span className="text-4xl font-bold text-amber-600">{stageScore}</span>
             </div>
-            <div className="text-sm font-semibold text-yellow-700">Your Stage</div>
+            <div className="text-sm font-semibold text-gray-700">Your Stage</div>
           </div>
           
           {/* VS Divider */}
-          <div className="text-2xl font-black text-gray-500 px-4">VS</div>
+          <div className="text-2xl font-bold text-gray-400 px-4">VS</div>
           
           {/* Opponent Score */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/50 min-w-[120px] text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="text-pink-500 w-5 h-5" />
-              <span className="text-3xl font-black text-pink-600">{opponentScore}</span>
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 min-w-[140px] text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Star className="text-pink-500 w-6 h-6" />
+              <span className="text-4xl font-bold text-pink-600">{opponentScore}</span>
             </div>
-            <div className="text-sm font-semibold text-pink-700">{opponentName}</div>
+            <div className="text-sm font-semibold text-gray-700">{opponentName}</div>
           </div>
         </div>
 
         {/* Congratulations Message */}
-        <div className="text-center mb-10">
-          <p className="text-xl font-bold text-gray-800 leading-relaxed">
-            🎉 Awesome — you finished this stage!
+        <div className="text-center mb-12">
+          <p className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2">
+            <span className="text-2xl">🎉</span>
+            Awesome — you finished this stage!
           </p>
         </div>
         
-        {/* Premium Button */}
+        {/* Modern Button */}
         <div className="text-center">
           <Button
             onClick={onAdvanceStage}
-            className="text-lg font-bold px-12 py-4 bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-pink-500 shadow-xl rounded-full border-0 transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            className="text-lg font-semibold px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white shadow-lg rounded-xl border-0 transition-all duration-300 hover:shadow-xl"
             size="lg"
           >
             Next Stage
