@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ const Index = () => {
 
   if (!started) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-12 min-h-[80vh] relative overflow-hidden">
+      <div className="flex flex-col items-center justify-center px-4 py-12 min-h-screen relative overflow-hidden">
         {/* Floating background elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 left-10 w-3 h-3 bg-pink-300 rounded-full opacity-60 animate-bounce" style={{ animationDelay: "0s", animationDuration: "3s" }}></div>
@@ -57,27 +56,30 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Animated Title with typewriter effect */}
+        {/* Simplified Title without gradient */}
         <div className={`text-center mb-6 transition-all duration-1000 ease-out ${
           animationStep >= 2 
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-4"
         }`}>
-          <h1 className="text-6xl font-black mb-2 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "0ms" }}>R</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "50ms" }}>e</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "100ms" }}>a</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "150ms" }}>d</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "200ms" }}>y</span>
+          <h1 className="text-6xl font-black mb-4 text-gray-800 drop-shadow-lg">
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "0ms" }}>G</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "50ms" }}>u</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "100ms" }}>e</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "150ms" }}>s</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "200ms" }}>s</span>
             <span className={`inline-block mx-3 transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "250ms" }}>t</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "300ms" }}>o</span>
-            <span className={`inline-block mx-3 transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "350ms" }}>P</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "400ms" }}>l</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "450ms" }}>a</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "500ms" }}>y</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "550ms" }}>?</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "300ms" }}>h</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "350ms" }}>a</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "400ms" }}>t</span>
+            <span className={`inline-block mx-3 transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "450ms" }}>P</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "500ms" }}>h</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "550ms" }}>r</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "600ms" }}>a</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "650ms" }}>s</span>
+            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "700ms" }}>e</span>
           </h1>
-          <div className="w-32 h-1 bg-gradient-to-r from-pink-400 to-purple-400 mx-auto rounded-full"></div>
+          <div className="w-32 h-1 bg-pink-400 mx-auto rounded-full"></div>
         </div>
 
         {/* Updated subtitle to reference Chippy */}
