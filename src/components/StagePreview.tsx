@@ -10,6 +10,7 @@ type StagePreviewProps = {
   opponentEmoji: string;
   opponentScore: number;
   onStartStage: () => void;
+  profile: any; // Player profile with hearts, xp, streak
 };
 
 const pastelGradients = [
@@ -31,6 +32,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
   opponentEmoji,
   opponentScore,
   onStartStage,
+  profile,
 }) => {
   const isFirstStage = stage === 0;
   return (

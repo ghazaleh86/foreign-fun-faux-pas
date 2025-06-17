@@ -12,6 +12,7 @@ type StageSummaryProps = {
   opponentEmoji: string;
   opponentScore: number;
   onAdvanceStage: () => void;
+  profile: any; // Player profile with hearts, xp, streak
 };
 
 const StageSummary: React.FC<StageSummaryProps> = ({
@@ -21,6 +22,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   opponentEmoji,
   opponentScore,
   onAdvanceStage,
+  profile,
 }) => (
   <div className="w-full max-w-xl mx-auto px-4">
     <Card className="w-full bg-white shadow-xl border border-gray-100">

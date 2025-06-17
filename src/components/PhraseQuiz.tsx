@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -286,16 +287,25 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     }
   }, [showStagePreview]);
 
+  // Determine if we should show GameStatusHeader (only during transition screens)
+  const shouldShowGameStatusHeader = state === "loading" || 
+                                   state === "finished" || 
+                                   stageCompleted || 
+                                   showStagePreview ||
+                                   phrases.length === 0;
+
   // Main layout: consistent container for all game states
   return (
     <div className="w-full flex justify-center items-start min-h-[80vh] pt-6">
       <div className="w-full max-w-xl flex flex-col gap-4">
-        <GameStatusHeader
-          hearts={profile?.hearts ?? 3}
-          maxHearts={profile?.max_hearts ?? 3}
-          xp={profile?.xp ?? 0}
-          currentStreak={profile?.current_streak ?? 0}
-        />
+        {shouldShowGameStatusHeader && (
+          <GameStatusHeader
+            hearts={profile?.hearts ?? 3}
+            maxHearts={profile?.max_hearts ?? 3}
+            xp={profile?.xp ?? 0}
+            currentStreak={profile?.current_streak ?? 0}
+          />
+        )}
         <div className="flex-1 w-full flex flex-col items-center justify-center">
           {/* Loading State */}
           {state === "loading" && (
@@ -329,6 +339,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
               opponentEmoji={opponentEmoji}
               opponentScore={opponentScores[stage] || 0}
               onAdvanceStage={handleAdvanceStage}
+              profile={profile}
             />
           )}
 
@@ -356,6 +367,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
               opponentEmoji={opponentEmoji}
               opponentScore={opponentScores[stage - 1] ?? 0}
               onStartStage={handleStartStage}
+              profile={profile}
             />
           )}
 
