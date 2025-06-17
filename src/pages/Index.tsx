@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
@@ -56,28 +57,14 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Simplified Title without gradient */}
+        {/* Clean, readable title */}
         <div className={`text-center mb-6 transition-all duration-1000 ease-out ${
           animationStep >= 2 
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-4"
         }`}>
           <h1 className="text-6xl font-black mb-4 text-gray-800 drop-shadow-lg">
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "0ms" }}>G</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "50ms" }}>u</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "100ms" }}>e</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "150ms" }}>s</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "200ms" }}>s</span>
-            <span className={`inline-block mx-3 transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "250ms" }}>t</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "300ms" }}>h</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "350ms" }}>a</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "400ms" }}>t</span>
-            <span className={`inline-block mx-3 transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "450ms" }}>P</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "500ms" }}>h</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "550ms" }}>r</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "600ms" }}>a</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "650ms" }}>s</span>
-            <span className={`inline-block transition-all duration-500 ${animationStep >= 2 ? "animate-fade-in" : ""}`} style={{ animationDelay: "700ms" }}>e</span>
+            Guess that Phrase
           </h1>
           <div className="w-32 h-1 bg-pink-400 mx-auto rounded-full"></div>
         </div>
@@ -117,7 +104,7 @@ const Index = () => {
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-pink-400 via-purple-400 to-yellow-400 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity animate-pulse"></div>
             <Button
-              className="relative px-16 py-6 text-2xl font-black rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 hover:from-pink-600 hover:via-purple-600 hover:to-yellow-500 shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl border-0 text-white transform hover:-translate-y-1"
+              variant="gradient"
               onClick={() => setStarted(true)}
               size="lg"
             >
