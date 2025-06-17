@@ -64,66 +64,68 @@ const QuizCard: React.FC<QuizCardProps> = ({
         opponentEmoji={opponentEmoji}
         onPlayAudio={onPlayAudio}
       />
-      <CardContent className="space-y-3">
-        {/* Compact Progress and Timer Section */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex-1">
+      <CardContent>
+        <div className="space-y-4">
+          {/* Progress and Timer Section */}
+          <div className="space-y-3">
             <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-          </div>
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200">
-            ⏱️ {timer}s
-          </span>
-        </div>
-
-        {/* Compact Feedback Section */}
-        {feedback && (
-          <div className="space-y-2">
-            {/* Main Feedback Message - More Compact */}
-            <div
-              className={cn(
-                "p-3 rounded-lg border text-center transition-all duration-300",
-                isCorrect
-                  ? "bg-green-50 border-green-200 text-green-800"
-                  : "bg-blue-50 border-blue-200 text-blue-800"
-              )}
-            >
-              <div className="text-lg font-semibold mb-1">
-                {isCorrect ? "🎉 Correct!" : "💭 Not quite!"}
-              </div>
-              <div className="text-sm">
-                {feedback}
-              </div>
+            <div className="text-right">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200">
+                ⏱️ {timer}s
+              </span>
             </div>
+          </div>
 
-            {/* Compact Phrase Notes */}
-            {showAnswer && phrase?.notes && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-                <div className="text-center">
-                  <div className="text-xs font-medium text-yellow-800 mb-1">
-                    💡 Did you know?
-                  </div>
-                  <div className="text-xs text-yellow-700">
-                    {phrase.notes}
-                  </div>
+          {/* Feedback Section - Only show when there's feedback */}
+          {feedback && (
+            <div className="space-y-4">
+              {/* Main Feedback Message */}
+              <div
+                className={cn(
+                  "p-6 rounded-xl border-2 text-center transition-all duration-300",
+                  isCorrect
+                    ? "bg-green-50 border-green-200 text-green-800 animate-pop"
+                    : "bg-red-50 border-red-200 text-red-800 animate-shake-fast"
+                )}
+              >
+                <div className="text-2xl font-bold mb-2">
+                  {isCorrect ? "🎉 Correct!" : "❌ Wrong!"}
+                </div>
+                <div className="text-lg font-medium">
+                  {feedback}
                 </div>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Multiple Choice Options */}
-        <div>
-          {!feedback && (
-            <div className="text-center text-gray-600 text-sm font-medium mb-3">
-              Choose the correct meaning:
+              {/* Phrase Notes - Only show when answer is revealed and notes exist */}
+              {showAnswer && phrase?.notes && (
+                <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-yellow-800 mb-2">
+                      💡 Did you know?
+                    </div>
+                    <div className="text-sm text-yellow-700 font-medium">
+                      {phrase.notes}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
-          <MultipleChoiceOptions
-            options={optionOrder}
-            selected={selected}
-            showAnswer={showAnswer}
-            onSelect={onSelect}
-          />
+
+          {/* Multiple Choice Options */}
+          <div className="space-y-3">
+            {!feedback && (
+              <div className="text-center text-gray-600 font-medium mb-4">
+                Choose the correct meaning:
+              </div>
+            )}
+            <MultipleChoiceOptions
+              options={optionOrder}
+              selected={selected}
+              showAnswer={showAnswer}
+              onSelect={onSelect}
+            />
+          </div>
         </div>
       </CardContent>
       <QuizFooter
