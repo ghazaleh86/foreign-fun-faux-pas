@@ -43,20 +43,21 @@ export function getSpeedBonusXP(timeTaken: number) {
 
 export const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
 
+// Updated taunts to be from Chippy specifically
 export function randomWrongTaunt(name: string) {
   const taunts = [
-    `Incorrect answer`,
-    `That's not right - ${name} got this one`,
-    `Not quite correct`,
-    `Incorrect - ${name} scored on this one`,
-    `That's not the right answer`,
-    `${name} got this one right, but you didn't`,
-    `Incorrect choice`,
-    `Not the right answer - ${name} takes the point`,
-    `That's incorrect`,
-    `${name} knows this one better than you`,
-    `Wrong answer`,
-    `Incorrect - better luck next time`,
+    `Incorrect answer - Chippy got this one! 🐿️`,
+    `That's not right - Chippy is ahead now!`,
+    `Not quite correct - Chippy squeaks with joy!`,
+    `Incorrect - Chippy scurries ahead with a point!`,
+    `That's not the right answer - Chippy's tail twitches with excitement!`,
+    `Chippy got this one right, but you didn't! 🌰`,
+    `Incorrect choice - Chippy gathers another acorn!`,
+    `Not the right answer - Chippy takes the point!`,
+    `That's incorrect - Chippy chittering happily!`,
+    `Chippy knows this one better than you! 🐿️`,
+    `Wrong answer - Chippy's cheeks are full of success!`,
+    `Incorrect - Chippy says "Better luck next time!" 🌰`,
   ];
   return taunts[Math.floor(Math.random() * taunts.length)];
 }

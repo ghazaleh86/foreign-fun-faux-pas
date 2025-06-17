@@ -5,17 +5,12 @@ import { Button } from "@/components/ui/button";
 import FakeOpponentBadge from "@/components/FakeOpponentBadge";
 import MascotAvatar from "../components/MascotAvatar";
 
-const OPPONENTS = [
-  { name: "Pretentious Pete", emoji: "🎩" },
-  { name: "GrandmaGPT", emoji: "👵" },
-  { name: "Quizbot 3000", emoji: "🤖" },
-  { name: "Shady Sheila", emoji: "🕶️" },
-];
-
 const Index = () => {
   const [started, setStarted] = useState(false);
-  const [opponent, setOpponent] = useState(OPPONENTS[Math.floor(Math.random() * OPPONENTS.length)]);
   const [animationStep, setAnimationStep] = useState(0);
+
+  // Chippy is now the consistent opponent
+  const opponent = { name: "Chippy", emoji: "🐿️" };
 
   useEffect(() => {
     if (!started) {
@@ -85,7 +80,7 @@ const Index = () => {
           <div className="w-32 h-1 bg-gradient-to-r from-pink-400 to-purple-400 mx-auto rounded-full"></div>
         </div>
 
-        {/* Subtitle with slide up animation */}
+        {/* Updated subtitle to reference Chippy */}
         <div className={`text-center mb-10 transition-all duration-1000 ease-out ${
           animationStep >= 3 
             ? "opacity-100 transform translate-y-0" 
@@ -93,11 +88,11 @@ const Index = () => {
         }`}>
           <p className="text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
             Listen to a phrase, pick the right (or hilarious) meaning,<br />
-            <span className="text-pink-600 font-semibold">and beat your AI opponent!</span>
+            <span className="text-pink-600 font-semibold">and challenge Chippy the chipmunk! 🐿️</span>
           </p>
         </div>
 
-        {/* Opponent badge with bounce entrance */}
+        {/* Opponent badge with bounce entrance - now always showing Chippy */}
         <div className={`transition-all duration-1000 ease-out ${
           animationStep >= 4 
             ? "opacity-100 transform translate-y-0 scale-100" 
@@ -125,7 +120,7 @@ const Index = () => {
               size="lg"
             >
               <span className="flex items-center gap-3">
-                🎮 Start Playing
+                🎮 Challenge Chippy
                 <span className="text-3xl animate-bounce">🚀</span>
               </span>
             </Button>
