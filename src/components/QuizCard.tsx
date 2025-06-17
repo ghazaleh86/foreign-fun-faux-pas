@@ -74,8 +74,8 @@ const QuizCard: React.FC<QuizCardProps> = ({
           <div className="mb-4 flex justify-center">
             <Button
               onClick={onNext}
-              variant="gradient"
-              size="sm"
+              variant="primary-cta"
+              size="default"
             >
               Next
             </Button>

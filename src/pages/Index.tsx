@@ -101,19 +101,16 @@ const Index = () => {
             ? "opacity-100 transform translate-y-0 scale-100" 
             : "opacity-0 transform translate-y-8 scale-90"
         }`}>
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-400 via-purple-400 to-yellow-400 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity animate-pulse"></div>
-            <Button
-              variant="gradient"
-              onClick={() => setStarted(true)}
-              size="lg"
-            >
-              <span className="flex items-center gap-3">
-                🎮 Challenge Chippy
-                <span className="text-3xl animate-bounce">🚀</span>
-              </span>
-            </Button>
-          </div>
+          <Button
+            variant="primary-cta"
+            onClick={() => setStarted(true)}
+            size="xl"
+          >
+            <span className="flex items-center gap-3">
+              🎮 Challenge Chippy
+              <span className="text-3xl animate-bounce">🚀</span>
+            </span>
+          </Button>
         </div>
 
         {/* Bottom decorative wave */}

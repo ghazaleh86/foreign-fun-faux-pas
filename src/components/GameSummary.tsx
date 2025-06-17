@@ -51,7 +51,7 @@ const GameSummary: React.FC<GameSummaryProps> = ({
         </table>
       </div>
       <div className="mt-4 text-lg font-bold text-teal-700 flex items-center justify-center gap-2">
-        <span className="text-2xl">{opponentEmoji}</span> {opponentName}: “Great game!”
+        <span className="text-2xl">{opponentEmoji}</span> {opponentName}: "Great game!"
       </div>
       <div className="mt-4 text-pink-700 font-semibold text-base">
         {total === 0
@@ -60,7 +60,12 @@ const GameSummary: React.FC<GameSummaryProps> = ({
       </div>
     </CardContent>
     <CardFooter>
-      <Button className="w-full" onClick={onPlayAgain}>
+      <Button 
+        className="w-full" 
+        onClick={onPlayAgain}
+        variant="primary-cta"
+        size="lg"
+      >
         Play Again
       </Button>
     </CardFooter>

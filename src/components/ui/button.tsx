@@ -11,6 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        "primary-cta": "relative px-8 py-3 text-lg font-black rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 hover:from-pink-600 hover:via-purple-600 hover:to-yellow-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 text-white transform hover:-translate-y-0.5 before:absolute before:inset-0 before:bg-gradient-to-r before:from-pink-400 before:via-purple-400 before:to-yellow-400 before:rounded-2xl before:blur-lg before:opacity-75 before:-z-10 before:transition-opacity hover:before:opacity-100 before:animate-pulse",
         gradient: "px-8 py-3 text-lg font-black rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 hover:from-pink-600 hover:via-purple-600 hover:to-yellow-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 text-white transform hover:-translate-y-0.5",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
@@ -25,6 +26,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
+        xl: "h-14 rounded-2xl px-12 text-xl",
         icon: "h-10 w-10",
       },
     },

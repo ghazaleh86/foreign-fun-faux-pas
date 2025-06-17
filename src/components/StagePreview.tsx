@@ -1,6 +1,6 @@
-
 import React from "react";
 import { Star, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import MascotAvatar from "./MascotAvatar";
 
 type StagePreviewProps = {
@@ -86,17 +86,13 @@ const StagePreview: React.FC<StagePreviewProps> = ({
         </div>
         
         {/* Button */}
-        <button
-          className="
-            text-lg px-12 py-4 rounded-full font-extrabold 
-            bg-gradient-to-r from-yellow-400 via-pink-400 to-yellow-300 
-            shadow-lg text-white hover:scale-105 transition-all
-            border-none animate-bounce focus:outline-none focus:ring-4 focus:ring-pink-300
-          "
+        <Button
+          variant="primary-cta"
+          size="lg"
           onClick={onStartStage}
         >
           Start Stage!
-        </button>
+        </Button>
       </div>
     </div>
   );

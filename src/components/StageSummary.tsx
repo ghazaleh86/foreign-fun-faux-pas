@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -141,7 +140,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
           <div className="text-center">
             <Button
               onClick={onAdvanceStage}
-              className="text-lg font-bold px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-xl rounded-2xl border-0 transition-all duration-300 hover:shadow-2xl hover:scale-105 group"
+              variant="primary-cta"
               size="lg"
             >
               <span>Continue Journey</span>
