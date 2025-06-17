@@ -8,6 +8,7 @@ import QuizHeader from "./QuizHeader";
 import QuizProgress from "./QuizProgress";
 import QuizFooter from "./QuizFooter";
 import MultipleChoiceOptions from "./MultipleChoiceOptions";
+import { Button } from "@/components/ui/button";
 
 type QuizCardProps = {
   phrase: Phrase;
@@ -68,6 +69,19 @@ const QuizCard: React.FC<QuizCardProps> = ({
           Time: {timer}s
         </div>
 
+        {/* Next button positioned below audio, before feedback */}
+        {showNextButton && (
+          <div className="mb-4 flex justify-center">
+            <Button
+              onClick={onNext}
+              variant="default"
+              className="animate-bounce"
+            >
+              Next
+            </Button>
+          </div>
+        )}
+
         {/* Dedicated Feedback Section */}
         {feedback && (
           <div className="mb-6 p-4 rounded-lg border-2 border-dashed">
@@ -101,7 +115,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
       <QuizFooter
         stage={stage}
         stageScore={stageScore}
-        showNextButton={showNextButton}
+        showNextButton={false}
         onNext={onNext}
       />
     </Card>
