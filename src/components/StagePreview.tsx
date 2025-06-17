@@ -48,7 +48,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
         {/* Compact Stage Header */}
         <div className="text-4xl font-black tracking-tight flex items-center gap-3 text-black font-sans animate-fade-in"
             style={{ letterSpacing: "-0.03em" }}>
-          <span className="drop-shadow glow text-3xl">{opponentEmoji}</span>
+          <span className="text-3xl">{opponentEmoji}</span>
           <span>
             <span className="text-2xl block font-medium tracking-tight text-black/80 leading-none mb-1">
               STAGE
@@ -90,7 +90,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
           className="
             text-lg px-12 py-4 rounded-full font-extrabold 
             bg-gradient-to-r from-yellow-400 via-pink-400 to-yellow-300 
-            shadow-lg text-white drop-shadow-lg hover:scale-105 transition-all
+            shadow-lg text-white hover:scale-105 transition-all
             border-none animate-bounce focus:outline-none focus:ring-4 focus:ring-pink-300
           "
           onClick={onStartStage}
