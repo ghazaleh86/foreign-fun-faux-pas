@@ -45,11 +45,11 @@ export const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLA
 
 export function randomWrongTaunt(name: string) {
   const taunts = [
-    `Not quite, but you're learning! Keep going! 💪`,
-    `Oops! That happens to everyone. ${name} got lucky this time! 😊`,
-    `Close one! Don't worry, you'll nail the next one! 🎯`,
-    `Hey, even pros make mistakes! You've got this! 🌟`,
-    `No worries! Every wrong answer gets you closer to the right one! ✨`,
+    `Almost there! Keep going! 💪`,
+    `That happens to everyone. ${name} got lucky this time! 😊`,
+    `Close one! You'll nail the next one! 🎯`,
+    `Hey, even pros miss sometimes! You've got this! 🌟`,
+    `Every attempt gets you closer to mastery! ✨`,
     `That's okay! ${name} might be ahead now, but you're building your skills! 🚀`,
     `Learning moment! You're doing great, keep it up! 💫`,
   ];
