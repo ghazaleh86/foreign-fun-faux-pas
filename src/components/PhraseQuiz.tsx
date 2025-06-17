@@ -122,7 +122,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       loseHeart();
       const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
       updateOpponentScores(stage, opponentGotIt);
-      setFeedback("❌ Wrong! " + randomWrongTaunt(opponentName));
+      setFeedback(randomWrongTaunt(opponentName));
     }
 
     // Mark this phrase as played immediately
