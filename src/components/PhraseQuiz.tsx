@@ -1,18 +1,14 @@
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
 import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
-import StageSummary from "./StageSummary";
-import GameSummary from "./GameSummary";
-import StagePreview from "./StagePreview";
-import QuizCard from "./QuizCard";
-import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
-import GameStatusHeader from "./GameStatusHeader";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
-import { Phrase, State, QuizProps } from "@/types/quiz";
+import { useQuizState } from "@/hooks/useQuizState";
+import { useStageManagement } from "@/hooks/useStageManagement";
+import GameStatusHeader from "./GameStatusHeader";
+import GameStateRenderer from "./GameStateRenderer";
+import { QuizProps } from "@/types/quiz";
 import { 
   STAGE_SIZE, 
   ROUND_SIZE, 
@@ -25,27 +21,28 @@ import {
 import { Option } from "./MultipleChoiceOptions";
 
 const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
-  // Quiz/load state and data
-  const [phrases, setPhrases] = useState<Phrase[]>([]);
-  const [state, setState] = useState<State>("loading");
-  const [current, setCurrent] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [optionOrder, setOptionOrder] = useState<Option[]>([]);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  // Stage/progress logic
-  const [stage, setStage] = useState(0);
-  const [stageScores, setStageScores] = useState<number[]>([]);
-  const [stageCompleted, setStageCompleted] = useState(false);
-  const [opponentScores, setOpponentScores] = useState<number[]>([]);
-  const [showStagePreview, setShowStagePreview] = useState(true);
-
-  // Add state to control if user can proceed after review:
   const [advanceRequested, setAdvanceRequested] = useState(false);
 
-  // --- Player Progress (hearts, xp, streaks) ---
+  // Custom hooks
+  const {
+    phrases,
+    state,
+    setState,
+    current,
+    setCurrent,
+    score,
+    setScore,
+    selected,
+    setSelected,
+    showAnswer,
+    setShowAnswer,
+    feedback,
+    setFeedback,
+    markPhraseAsPlayed,
+    resetQuestionState,
+  } = useQuizState();
+
   const {
     profile,
     loading: profileLoading,
@@ -56,11 +53,25 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     refresh: refreshProfile,
   } = usePlayerProfile();
 
-  // Set up per-round state
-  const [roundQuestions, setRoundQuestions] = useState<Phrase[]>([]);
-  const [roundCorrect, setRoundCorrect] = useState(0);
+  const {
+    stage,
+    setStage,
+    stageScores,
+    stageCompleted,
+    setStageCompleted,
+    opponentScores,
+    showStagePreview,
+    setShowStagePreview,
+    roundQuestions,
+    roundCorrect,
+    setRoundCorrect,
+    totalStages,
+    currentStageStart,
+    currentStageEnd,
+    updateStageScores,
+    updateOpponentScores,
+  } = useStageManagement(phrases, profile);
 
-  // Learned phrases hook
   const { markPhraseAsLearned } = useLearnedPhrases();
 
   // Timer via custom hook
@@ -79,84 +90,13 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
-  // Helper functions need to be INSIDE the component to access state hooks
-  function updateStageScores(stageIdx: number, value: number) {
-    setStageScores((prev) => {
-      const next = [...prev];
-      next[stageIdx] = (next[stageIdx] ?? 0) + value;
-      return next;
-    });
-  }
-
-  function updateOpponentScores(stageIdx: number, value: number) {
-    setOpponentScores((prev) => {
-      const next = [...prev];
-      next[stageIdx] = (next[stageIdx] ?? 0) + value;
-      return next;
-    });
-  }
-
-  // Prepare a new round (5 unplayed questions)
-  useEffect(() => {
-    if (phrases.length === 0) return;
-    // Pick next ROUND_SIZE questions not played yet in this session
-    const roundStart = current;
-    setRoundQuestions(phrases.slice(roundStart, roundStart + ROUND_SIZE));
-    setRoundCorrect(0);
-    if (profile) resetHearts(); // refill on new round
-  }, [current, phrases, profile]);
-
-  // Fetch phrases on mount with rotation logic
-  useEffect(() => {
-    const fetchPhrases = async () => {
-      setState("loading");
-      let playedIds: string[] = [];
-      try {
-        playedIds = getPlayedPhraseIds();
-      } catch { 
-        playedIds = []; 
-      }
-
-      const { data, error } = await supabase
-        .from("phrases")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (!data || error) {
-        setPhrases([]);
-        setState("quiz");
-        setFeedback("Error fetching phrases. Please try again.");
-      } else {
-        // Filter out phrases that have been played before
-        const unplayedPhrases = data.filter((p: Phrase) => !playedIds.includes(p.id));
-        
-        if (unplayedPhrases.length === 0) {
-          // All phrases have been played - clear the played list and start fresh
-          setPlayedPhraseIds([]);
-          setPhrases(data as Phrase[]);
-          console.log("All phrases played! Starting fresh with full database.");
-        } else {
-          setPhrases(unplayedPhrases as Phrase[]);
-          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total.`);
-        }
-        setState("quiz");
-      }
-    };
-    fetchPhrases();
-  }, []);
-
-  // Staging logic
-  const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
-  const currentStageStart = stage * STAGE_SIZE;
-  const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
-
   // Shuffle options and reset timer only when phrase changes
   useEffect(() => {
     if (phrase) {
       setOptionOrder(getShuffledOptions(phrase));
       resetTimer(); // Only reset timer when showing a new phrase
     }
-  }, [phrase]); // <--- Only depend on phrase
+  }, [phrase]);
 
   function handleSelect(idx: number) {
     if (selected !== null) return;
@@ -188,9 +128,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
 
     // Mark this phrase as played immediately
     if (phrase) {
-      const playedIds = getPlayedPhraseIds();
-      const updatedPlayedIds = Array.from(new Set([...playedIds, phrase.id]));
-      setPlayedPhraseIds(updatedPlayedIds);
+      markPhraseAsPlayed(phrase.id);
     }
 
     // If game over (no more hearts), auto end round
@@ -219,10 +157,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
 
     if (!isLastInStage && current < phrases.length - 1) {
       setCurrent((c) => c + 1);
-      // Reset state for fresh step
-      setSelected(null);
-      setShowAnswer(false);
-      setFeedback(null);
+      resetQuestionState();
     }
   }
 
@@ -234,16 +169,13 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       setStage((s) => s + 1);
       setStageCompleted(false);
       setCurrent((stage + 1) * ROUND_SIZE);
-      setSelected(null);
-      setShowAnswer(false);
-      setFeedback(null);
+      resetQuestionState();
       refreshProfile();
     } else {
       // Did not pass: refill hearts, restart round, reset corrects (using same questions)
       resetHearts();
       setStageCompleted(false);
-      setSelected(null);
-      setShowAnswer(false);
+      resetQuestionState();
       setFeedback("You need at least 3 correct to pass. Try again!");
       setCurrent(stage * ROUND_SIZE);
       setRoundCorrect(0);
@@ -255,9 +187,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     // Called when user presses "Start Stage"
     setShowStagePreview(false);
     setAdvanceRequested(false);
-    setSelected(null);
-    setShowAnswer(false);
-    setFeedback(null);
+    resetQuestionState();
   }
 
   function handlePlayAudio() {
@@ -275,15 +205,10 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     );
   }
 
-  // Calculate percentage for GameSummary
-  const percent = phrases.length > 0 ? Math.round((score / phrases.length) * 100) : 0;
-
   // Reset state when moving to a new stage (preview)
   useEffect(() => {
     if (showStagePreview) {
-      setSelected(null);
-      setShowAnswer(false);
-      setFeedback(null);
+      resetQuestionState();
     }
   }, [showStagePreview]);
 
@@ -293,6 +218,9 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
                                    stageCompleted || 
                                    showStagePreview ||
                                    phrases.length === 0;
+
+  const maxStageScore = (Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3;
+  const showNextButton = showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart);
 
   // Main layout: consistent container for all game states
   return (
@@ -307,97 +235,37 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
           />
         )}
         <div className="flex-1 w-full flex flex-col items-center justify-center">
-          {/* Loading State */}
-          {state === "loading" && (
-            <div className="flex flex-col items-center w-full">
-              <div className="animate-pulse h-8 w-40 bg-muted rounded mb-6" />
-              <div className="animate-pulse h-16 w-80 bg-muted rounded" />
-            </div>
-          )}
-
-          {/* All phrases played state */}
-          {state === "quiz" && phrases.length === 0 && (
-            <Card className="max-w-xl w-full">
-              <CardContent className="p-6">
-                <div className="text-center my-10 text-pink-700 font-bold">
-                  <p className="mb-2">
-                    You have played all available phrases!
-                    <br />
-                    The rotation system will automatically reset and show you phrases again.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Stage Summary */}
-          {stageCompleted && state === "quiz" && (
-            <StageSummary
-              stage={stage}
-              stageScore={stageScores[stage] || 0}
-              opponentName={opponentName}
-              opponentEmoji={opponentEmoji}
-              opponentScore={opponentScores[stage] || 0}
-              onAdvanceStage={handleAdvanceStage}
-              profile={profile}
-            />
-          )}
-
-          {/* Game summary on finish */}
-          {state === "finished" && (
-            <GameSummary
-              score={score}
-              total={phrases.length}
-              percent={percent}
-              totalStages={totalStages}
-              stageScores={stageScores}
-              opponentScores={opponentScores}
-              opponentName={opponentName}
-              opponentEmoji={opponentEmoji}
-              onPlayAgain={() => window.location.reload()}
-            />
-          )}
-
-          {/* Stage preview */}
-          {showStagePreview && state === "quiz" && current < phrases.length && (
-            <StagePreview
-              stage={stage}
-              stageScore={stageScores[stage - 1] ?? 0}
-              opponentName={opponentName}
-              opponentEmoji={opponentEmoji}
-              opponentScore={opponentScores[stage - 1] ?? 0}
-              onStartStage={handleStartStage}
-              profile={profile}
-            />
-          )}
-
-          {/* Main quiz UI per stage */}
-          {state === "quiz" &&
-            !stageCompleted &&
-            !showStagePreview &&
-            phrases.length > 0 &&
-            current < phrases.length && (
-              <QuizCard
-                phrase={phrase}
-                stage={stage}
-                totalStages={totalStages}
-                current={current}
-                stageSize={STAGE_SIZE}
-                phrasesLength={phrases.length}
-                opponentEmoji={opponentEmoji}
-                timer={timer}
-                stageScore={stageScores[stage] || 0}
-                maxStageScore={(Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3}
-                optionOrder={optionOrder}
-                selected={selected}
-                showAnswer={showAnswer}
-                feedback={feedback}
-                showNextButton={showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart)}
-                onSelect={handleSelect}
-                onNext={handleNext}
-                onPlayAudio={handlePlayAudio}
-              />
-            )}
+          <GameStateRenderer
+            state={state}
+            phrases={phrases}
+            stageCompleted={stageCompleted}
+            showStagePreview={showStagePreview}
+            current={current}
+            stage={stage}
+            stageScores={stageScores}
+            opponentScores={opponentScores}
+            opponentName={opponentName}
+            opponentEmoji={opponentEmoji}
+            onAdvanceStage={handleAdvanceStage}
+            onStartStage={handleStartStage}
+            profile={profile}
+            score={score}
+            totalStages={totalStages}
+            onPlayAgain={() => window.location.reload()}
+            phrase={phrase}
+            timer={timer}
+            stageSize={STAGE_SIZE}
+            maxStageScore={maxStageScore}
+            optionOrder={optionOrder}
+            selected={selected}
+            showAnswer={showAnswer}
+            feedback={feedback}
+            showNextButton={showNextButton}
+            onSelect={handleSelect}
+            onNext={handleNext}
+            onPlayAudio={handlePlayAudio}
+            currentStageStart={currentStageStart}
+          />
         </div>
       </div>
     </div>
