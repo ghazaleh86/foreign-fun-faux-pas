@@ -64,32 +64,39 @@ const QuizCard: React.FC<QuizCardProps> = ({
       />
       <CardContent>
         <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-        <div className="mb-2 text-sm font-bold text-fuchsia-700">
+        <div className="mb-4 text-sm font-bold text-fuchsia-700">
           Time: {timer}s
         </div>
+
+        {/* Dedicated Feedback Section */}
+        {feedback && (
+          <div className="mb-6 p-4 rounded-lg border-2 border-dashed">
+            <div
+              className={cn(
+                "text-center text-xl font-bold transition-all",
+                selected !== null && optionOrder[selected].isCorrect
+                  ? "text-green-700 bg-green-50/60 border-green-200 animate-pop"
+                  : "text-pink-700 bg-pink-50/60 border-pink-200 animate-shake-fast"
+              )}
+            >
+              {feedback}
+            </div>
+            {showAnswer && phrase?.notes && (
+              <div className="text-sm text-muted-foreground mt-3 text-center">
+                <span className="inline-block rounded-full px-3 py-2 bg-yellow-100/80 font-mono border border-yellow-200">
+                  {phrase.notes}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         <MultipleChoiceOptions
           options={optionOrder}
           selected={selected}
           showAnswer={showAnswer}
           onSelect={onSelect}
         />
-        {feedback && (
-          <div
-            className={cn(
-              "text-center mt-5 text-lg font-semibold transition-all",
-              selected !== null && optionOrder[selected].isCorrect
-                ? "text-green-700 animate-pop"
-                : "text-pink-700 animate-shake-fast"
-            )}
-          >
-            {feedback}
-          </div>
-        )}
-        {showAnswer && phrase?.notes && (
-          <div className="text-xs text-muted-foreground mt-2 text-center">
-            <span className="inline-block rounded-full px-3 py-1 bg-yellow-100/60 font-mono">{phrase.notes}</span>
-          </div>
-        )}
       </CardContent>
       <QuizFooter
         stage={stage}
