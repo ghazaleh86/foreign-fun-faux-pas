@@ -75,7 +75,8 @@ const QuizCard: React.FC<QuizCardProps> = ({
             <Button
               onClick={onNext}
               variant="primary-cta"
-              size="default"
+              size="lg"
+              className="px-12"
             >
               Next
             </Button>
