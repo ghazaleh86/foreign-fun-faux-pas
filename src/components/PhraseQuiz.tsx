@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
@@ -115,9 +114,9 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       updateStageScores(stage, bonus);
       setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
       
-      // Mark phrase as learned when answered correctly
+      // Mark phrase as learned when answered correctly - pass full phrase object
       if (phrase) {
-        markPhraseAsLearned(phrase.id);
+        markPhraseAsLearned(phrase);
       }
     } else {
       loseHeart();
