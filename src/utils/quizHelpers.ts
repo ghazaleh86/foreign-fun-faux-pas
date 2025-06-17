@@ -45,13 +45,18 @@ export const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLA
 
 export function randomWrongTaunt(name: string) {
   const taunts = [
-    `Keep exploring! You're on the right track! 💪`,
-    `${name} knows that one, but you're learning fast! 😊`,
-    `So close! The next one is yours! 🎯`,
-    `Nice try! Every guess teaches you something new! 🌟`,
-    `You're getting warmer! Keep going! ✨`,
-    `${name} got that one, but you're building great skills! 🚀`,
-    `Great effort! You're doing amazing! 💫`,
+    `Well, that happened 📝`,
+    `Interesting choice. ${name} disagrees 🤔`,
+    `Not quite, but points for creativity 📊`,
+    `Close enough for government work... but not for this quiz 📋`,
+    `That's one way to look at it 🤷`,
+    `${name} is quietly judging your answer 👀`,
+    `Technically speaking, that's not it 📐`,
+    `Your confidence was impressive though 📈`,
+    `Bold strategy. Didn't work, but bold 🎯`,
+    `${name} raises an eyebrow at that choice 🤨`,
+    `Results may vary. In this case, they did 📉`,
+    `Not the answer we were looking for, but we appreciate the effort 🎪`,
   ];
   return taunts[Math.floor(Math.random() * taunts.length)];
 }
