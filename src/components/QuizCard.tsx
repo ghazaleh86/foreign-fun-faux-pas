@@ -50,8 +50,6 @@ const QuizCard: React.FC<QuizCardProps> = ({
   onNext,
   onPlayAudio,
 }) => {
-  const isCorrect = selected !== null && optionOrder[selected]?.isCorrect;
-
   return (
     <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
       <QuizHeader
@@ -65,68 +63,40 @@ const QuizCard: React.FC<QuizCardProps> = ({
         onPlayAudio={onPlayAudio}
       />
       <CardContent>
-        <div className="space-y-4">
-          {/* Progress and Timer Section */}
-          <div className="space-y-3">
-            <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-            <div className="text-right">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200">
-                ⏱️ {timer}s
-              </span>
-            </div>
-          </div>
+        <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
+        <div className="mb-4 text-sm font-bold text-fuchsia-700">
+          Time: {timer}s
+        </div>
 
-          {/* Feedback Section - Only show when there's feedback */}
-          {feedback && (
-            <div className="space-y-4">
-              {/* Main Feedback Message */}
-              <div
-                className={cn(
-                  "p-6 rounded-xl border-2 text-center transition-all duration-300",
-                  isCorrect
-                    ? "bg-green-50 border-green-200 text-green-800 animate-pop"
-                    : "bg-red-50 border-red-200 text-red-800 animate-shake-fast"
-                )}
-              >
-                <div className="text-2xl font-bold mb-2">
-                  {isCorrect ? "🎉 Correct!" : "❌ Wrong!"}
-                </div>
-                <div className="text-lg font-medium">
-                  {feedback}
-                </div>
-              </div>
-
-              {/* Phrase Notes - Only show when answer is revealed and notes exist */}
-              {showAnswer && phrase?.notes && (
-                <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-yellow-800 mb-2">
-                      💡 Did you know?
-                    </div>
-                    <div className="text-sm text-yellow-700 font-medium">
-                      {phrase.notes}
-                    </div>
-                  </div>
-                </div>
+        {/* Dedicated Feedback Section */}
+        {feedback && (
+          <div className="mb-6 p-4 rounded-lg border-2 border-dashed">
+            <div
+              className={cn(
+                "text-center text-xl font-bold transition-all",
+                selected !== null && optionOrder[selected].isCorrect
+                  ? "text-green-700 bg-green-50/60 border-green-200 animate-pop"
+                  : "text-pink-700 bg-pink-50/60 border-pink-200 animate-shake-fast"
               )}
+            >
+              {feedback}
             </div>
-          )}
-
-          {/* Multiple Choice Options */}
-          <div className="space-y-3">
-            {!feedback && (
-              <div className="text-center text-gray-600 font-medium mb-4">
-                Choose the correct meaning:
+            {showAnswer && phrase?.notes && (
+              <div className="text-sm text-muted-foreground mt-3 text-center">
+                <span className="inline-block rounded-full px-3 py-2 bg-yellow-100/80 font-mono border border-yellow-200">
+                  {phrase.notes}
+                </span>
               </div>
             )}
-            <MultipleChoiceOptions
-              options={optionOrder}
-              selected={selected}
-              showAnswer={showAnswer}
-              onSelect={onSelect}
-            />
           </div>
-        </div>
+        )}
+
+        <MultipleChoiceOptions
+          options={optionOrder}
+          selected={selected}
+          showAnswer={showAnswer}
+          onSelect={onSelect}
+        />
       </CardContent>
       <QuizFooter
         stage={stage}
