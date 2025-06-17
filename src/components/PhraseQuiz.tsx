@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
+import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
 import StageSummary from "./StageSummary";
 import GameSummary from "./GameSummary";
 import StagePreview from "./StagePreview";
@@ -58,6 +58,9 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   // Set up per-round state
   const [roundQuestions, setRoundQuestions] = useState<Phrase[]>([]);
   const [roundCorrect, setRoundCorrect] = useState(0);
+
+  // Learned phrases hook
+  const { markPhraseAsLearned } = useLearnedPhrases();
 
   // Timer via custom hook
   const { timer, getElapsed, reset: resetTimer } = useStageTimer(
@@ -170,6 +173,11 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       setScore((s) => s + bonus);
       updateStageScores(stage, bonus);
       setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
+      
+      // Mark phrase as learned when answered correctly
+      if (phrase) {
+        markPhraseAsLearned(phrase.id);
+      }
     } else {
       loseHeart();
       const opponentGotIt = Math.random() < 0.7 ? 1 : 0;

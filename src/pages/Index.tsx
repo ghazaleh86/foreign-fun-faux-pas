@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 import FakeOpponentBadge from "@/components/FakeOpponentBadge";
 import MascotAvatar from "../components/MascotAvatar";
 
@@ -27,13 +29,25 @@ const Index = () => {
           Listen to a phrase, pick the right (or hilarious) meaning, and beat your AI opponent!
         </div>
         <FakeOpponentBadge name={opponent.name} emoji={opponent.emoji} />
-        <Button
-          className="mt-12 px-16 py-6 text-xl rounded-xl bg-gradient-to-r from-pink-400 to-yellow-300 hover:scale-105 hover:from-pink-500 hover:to-yellow-400 shadow-lg transition-all animate-bounce"
-          onClick={() => setStarted(true)}
-          size="lg"
-        >
-          Play
-        </Button>
+        <div className="flex flex-col gap-4 mt-12">
+          <Button
+            className="px-16 py-6 text-xl rounded-xl bg-gradient-to-r from-pink-400 to-yellow-300 hover:scale-105 hover:from-pink-500 hover:to-yellow-400 shadow-lg transition-all animate-bounce"
+            onClick={() => setStarted(true)}
+            size="lg"
+          >
+            Play
+          </Button>
+          <Link to="/learned">
+            <Button
+              variant="outline"
+              className="px-12 py-4 text-lg rounded-xl border-2 border-pink-300 hover:bg-pink-50 shadow-md transition-all"
+              size="lg"
+            >
+              <BookOpen className="w-5 h-5 mr-2" />
+              My Learned Phrases
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }

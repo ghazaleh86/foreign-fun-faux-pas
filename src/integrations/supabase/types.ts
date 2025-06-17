@@ -9,6 +9,35 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      learned_phrases: {
+        Row: {
+          id: string
+          learned_at: string
+          phrase_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          learned_at?: string
+          phrase_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          learned_at?: string
+          phrase_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learned_phrases_phrase_id_fkey"
+            columns: ["phrase_id"]
+            isOneToOne: false
+            referencedRelation: "phrases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       phrases: {
         Row: {
           correct_meaning: string
