@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppHeader from "./components/AppHeader";
 import Index from "./pages/Index";
 import LearnedPhrases from "./pages/LearnedPhrases";
 import NotFound from "./pages/NotFound";
@@ -16,12 +17,15 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/learned" element={<LearnedPhrases />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90">
+          <AppHeader />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/learned" element={<LearnedPhrases />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

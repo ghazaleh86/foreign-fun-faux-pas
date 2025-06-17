@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,7 +91,7 @@ const LearnedPhrases = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 flex items-center justify-center px-4">
+      <div className="flex items-center justify-center px-4 py-12">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
             <p className="text-lg text-muted-foreground">Please log in to view your learned phrases.</p>
@@ -103,16 +102,11 @@ const LearnedPhrases = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 px-4 py-6">
+    <div className="px-4 py-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-6">
-          <Link to="/">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Game
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold text-pink-600">My Learned Phrases</h1>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-pink-600 mb-2">My Learned Phrases</h1>
+          <p className="text-muted-foreground">Review and practice the phrases you've mastered</p>
         </div>
 
         <div className="mb-6 flex gap-4 items-center">
