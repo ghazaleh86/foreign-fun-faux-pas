@@ -5,15 +5,16 @@ import { Option } from "@/components/MultipleChoiceOptions";
 export const STAGE_SIZE = 10;
 export const ROUND_SIZE = 5;
 
+// Updated with more natural-sounding voices
 export const ELEVENLABS_VOICES = [
-  { name: "Aria", id: "9BWtsMINqrJLrRacOk9x" },
-  { name: "Roger", id: "CwhRBWXzGAHq8TQ4Fs17" },
-  { name: "Sarah", id: "EXAVITQu4vr4xnSDxMaL" },
-  { name: "Laura", id: "FGY2WhTYpPnrIDTdsKH5" },
-  { name: "Charlie", id: "IKne3meq5aSn9XLyUdCD" },
-  { name: "George", id: "JBFqnCBsd6RMkjVDRZzb" },
-  { name: "Callum", id: "N2lVS1w4EtoT3dr4eOWO" },
-  { name: "Liam", id: "TX3LPaxmHKxFdv7VOQHJ" }
+  { name: "Rachel", id: "pNInz6obpgDQGcFmaJgB" }, // Very natural female voice
+  { name: "Drew", id: "29vD33N1CtxCmqQRPOHJ" }, // Natural male voice
+  { name: "Clyde", id: "2EiwWnXFnvU5JabPnv8n" }, // Warm male voice
+  { name: "Domi", id: "AZnzlk1XvdvUeBnXmlld" }, // Confident female voice
+  { name: "Dave", id: "CYw3kZ02Hs0563khs1Fj" }, // Conversational male voice
+  { name: "Fin", id: "D38z5RcWu1voky8WS1ja" }, // Friendly male voice
+  { name: "Sarah", id: "EXAVITQu4vr4xnSDxMaL" }, // Clear female voice
+  { name: "Antoni", id: "ErXwobaYiN019PkySvjV" }, // Warm male voice
 ];
 
 export const getShuffledOptions = (phrase: Phrase): Option[] => {
@@ -42,6 +43,22 @@ export function getSpeedBonusXP(timeTaken: number) {
 }
 
 export const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
+
+// Voice-specific settings for optimal naturalness
+export const getVoiceSettings = (voiceId: string) => {
+  const voiceConfigs = {
+    "pNInz6obpgDQGcFmaJgB": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Rachel
+    "29vD33N1CtxCmqQRPOHJ": { stability: 0.6, similarityBoost: 0.7, style: 0.3 }, // Drew
+    "2EiwWnXFnvU5JabPnv8n": { stability: 0.4, similarityBoost: 0.9, style: 0.1 }, // Clyde
+    "AZnzlk1XvdvUeBnXmlld": { stability: 0.7, similarityBoost: 0.6, style: 0.4 }, // Domi
+    "CYw3kZ02Hs0563khs1Fj": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Dave
+    "D38z5RcWu1voky8WS1ja": { stability: 0.6, similarityBoost: 0.7, style: 0.3 }, // Fin
+    "EXAVITQu4vr4xnSDxMaL": { stability: 0.5, similarityBoost: 0.8, style: 0.1 }, // Sarah
+    "ErXwobaYiN019PkySvjV": { stability: 0.4, similarityBoost: 0.9, style: 0.2 }, // Antoni
+  };
+  
+  return voiceConfigs[voiceId] || { stability: 0.5, similarityBoost: 0.8, style: 0.2 };
+};
 
 // Updated taunts to be from Chippy specifically
 export function randomWrongTaunt(name: string) {

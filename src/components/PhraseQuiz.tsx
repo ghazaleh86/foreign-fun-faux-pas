@@ -15,7 +15,8 @@ import {
   computeSpeedBonus, 
   getSpeedBonusXP, 
   getCurrentVoice, 
-  randomWrongTaunt 
+  randomWrongTaunt, 
+  getVoiceSettings
 } from "@/utils/quizHelpers";
 import { Option } from "./MultipleChoiceOptions";
 
@@ -191,13 +192,35 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
 
   function handlePlayAudio() {
     const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const voiceSettings = getVoiceSettings(getCurrentVoice(current));
+    
     import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-      playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
+      playWithElevenLabsTTS({ 
+        text: ttsText, 
+        voiceId: getCurrentVoice(current),
+        ...voiceSettings,
+        useSpeakerBoost: true
+      }).catch(() => {
+        // Enhanced fallback
         if ("speechSynthesis" in window) {
           window.speechSynthesis.cancel();
           const u = new window.SpeechSynthesisUtterance(ttsText);
           u.lang = phrase.language || "en";
-          u.rate = 0.98;
+          u.rate = 0.9; // Slightly slower
+          u.pitch = 1.0; // Natural pitch
+          u.volume = 0.9;
+          
+          // Try to use a more natural voice
+          const voices = window.speechSynthesis.getVoices();
+          const naturalVoices = voices.filter(voice => 
+            voice.lang.startsWith(phrase.language || "en") && 
+            (voice.name.includes('Neural') || voice.name.includes('Premium'))
+          );
+          
+          if (naturalVoices.length > 0) {
+            u.voice = naturalVoices[0];
+          }
+          
           window.speechSynthesis.speak(u);
         }
       })

@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -41,17 +42,26 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    let { text, voiceId } = body;
+    let { 
+      text, 
+      voiceId, 
+      stability = 0.5, 
+      similarityBoost = 0.8, 
+      style = 0.2, 
+      useSpeakerBoost = true 
+    } = body;
+    
     if (typeof text !== "string" || text.trim().length === 0 || text.length > 120) {
       return new Response(JSON.stringify({ error: "Invalid text length." }), { status: 400, headers: corsHeaders });
     }
+    
     // [Additional: Log all TTS usage server-side (no PII!)]
     console.log(`[TTS] Voice: ${voiceId} | Text length: ${text.length} | Client: ${clientId}`);
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
 
-    const DEFAULT_VOICE_ID = "9BWtsMINqrJLrRacOk9x"; // Aria
-    const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2"; // Most natural
+    const DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"; // Rachel - more natural default
+    const ELEVENLABS_MODEL_ID = "eleven_turbo_v2_5"; // Better quality and speed
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || DEFAULT_VOICE_ID}`,
@@ -65,6 +75,12 @@ serve(async (req) => {
         body: JSON.stringify({
           text: text,
           model_id: ELEVENLABS_MODEL_ID,
+          voice_settings: {
+            stability: Math.max(0, Math.min(1, stability)),
+            similarity_boost: Math.max(0, Math.min(1, similarityBoost)),
+            style: Math.max(0, Math.min(1, style)),
+            use_speaker_boost: useSpeakerBoost
+          }
         }),
       }
     );
@@ -80,6 +96,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": "audio/mpeg",
+        "Cache-Control": "public, max-age=3600" // Cache for 1 hour
       },
     });
   } catch (err) {
