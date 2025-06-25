@@ -3,7 +3,6 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import StageSummary from "./StageSummary";
 import GameSummary from "./GameSummary";
-import StagePreview from "./StagePreview";
 import QuizCard from "./QuizCard";
 import { State, Phrase } from "@/types/quiz";
 import { Option } from "./MultipleChoiceOptions";
@@ -132,23 +131,10 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
     );
   }
 
-  // Stage preview
-  if (showStagePreview && state === "quiz" && current < phrases.length) {
-    return (
-      <StagePreview
-        stage={stage}
-        stageScore={stageScores[stage - 1] ?? 0}
-        opponentName={opponentName}
-        opponentEmoji={opponentEmoji}
-        opponentScore={opponentScores[stage - 1] ?? 0}
-        onStartStage={onStartStage}
-        profile={profile}
-      />
-    );
-  }
+  // Skip stage preview entirely - go straight to quiz
 
   // Main quiz UI per stage
-  if (state === "quiz" && !stageCompleted && !showStagePreview && phrases.length > 0 && current < phrases.length) {
+  if (state === "quiz" && !stageCompleted && phrases.length > 0 && current < phrases.length) {
     return (
       <QuizCard
         phrase={phrase}

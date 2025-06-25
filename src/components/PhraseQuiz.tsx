@@ -6,7 +6,6 @@ import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 import { useQuizState } from "@/hooks/useQuizState";
 import { useStageManagement } from "@/hooks/useStageManagement";
-import GameStatusHeader from "./GameStatusHeader";
 import GameStateRenderer from "./GameStateRenderer";
 import { QuizProps } from "@/types/quiz";
 import { 
@@ -94,7 +93,8 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       setStage(savedState.stage);
       setRoundCorrect(savedState.roundCorrect);
       setStageCompleted(savedState.stageCompleted);
-      setShowStagePreview(savedState.showStagePreview);
+      // Skip showing stage preview - go straight to quiz
+      setShowStagePreview(false);
       console.log("Game state restored:", savedState);
     }
   }, [phrases.length, sessionId]);
@@ -119,7 +119,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   }, [phrases, current, score, stage, stageScores, opponentScores, roundCorrect, stageCompleted, showStagePreview, sessionId, state]);
 
   // Audio auto-play with duplicate guard
-  useAudioPlayback(
+  useAudioPlaybook(
     [current, state, showStagePreview, showAnswer, stageCompleted],
     phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
     phrase?.language || "en",
@@ -202,7 +202,8 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     // Assess if user passed (3+ correct)
     if (roundCorrect >= 3) {
       advanceStreak();
-      setShowStagePreview(true);
+      // Skip stage preview, go directly to next stage
+      setShowStagePreview(false);
       setStage((s) => s + 1);
       setStageCompleted(false);
       setCurrent((stage + 1) * ROUND_SIZE);
@@ -278,12 +279,6 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     }
   }, [state]);
 
-  // Determine if we should show GameStatusHeader (only during transition screens, but not stage summary)
-  const shouldShowGameStatusHeader = state === "loading" || 
-                                   state === "finished" || 
-                                   showStagePreview ||
-                                   phrases.length === 0;
-
   const maxStageScore = (Math.min(STAGE_SIZE, phrases.length - (stage * STAGE_SIZE))) * 3;
   const showNextButton = showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart);
 
@@ -291,14 +286,6 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   return (
     <div className="w-full flex justify-center items-start min-h-[80vh] pt-6">
       <div className="w-full max-w-xl flex flex-col gap-4">
-        {shouldShowGameStatusHeader && (
-          <GameStatusHeader
-            hearts={profile?.hearts ?? 3}
-            maxHearts={profile?.max_hearts ?? 3}
-            xp={profile?.xp ?? 0}
-            currentStreak={profile?.current_streak ?? 0}
-          />
-        )}
         <div className="flex-1 w-full flex flex-col items-center justify-center">
           <GameStateRenderer
             state={state}
