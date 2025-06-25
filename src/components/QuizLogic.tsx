@@ -116,7 +116,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   const { markPhraseAsLearned } = useLearnedPhrases();
 
-  // Timer via custom hook - memoize the timer condition
+  // Timer via custom hook - memoize the timer condition to prevent re-renders
   const timerShouldRun = useMemo(() => 
     !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted,
     [showAnswer, state, showStagePreview, stageCompleted]
@@ -124,7 +124,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   const { timer, getElapsed, reset: resetTimer } = useStageTimer(timerShouldRun);
 
-  // Memoize audio playback dependencies
+  // Memoize audio playback dependencies to prevent re-renders
   const audioPlaybackDeps = useMemo(() => 
     [current, state, showStagePreview, showAnswer, stageCompleted],
     [current, state, showStagePreview, showAnswer, stageCompleted]
@@ -139,13 +139,21 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
-  // Shuffle options and reset timer only when phrase changes
+  // Shuffle options only when phrase changes - remove resetTimer from dependencies
   useEffect(() => {
     if (phrase) {
+      console.log("Setting new options for phrase:", phrase.id);
       setOptionOrder(getShuffledOptions(phrase));
-      resetTimer(); // Only reset timer when showing a new phrase
     }
-  }, [phrase, resetTimer]);
+  }, [phrase?.id]); // Only depend on phrase.id to prevent unnecessary re-renders
+
+  // Reset timer separately when showing new phrase
+  useEffect(() => {
+    if (phrase && !showAnswer) {
+      console.log("Resetting timer for new phrase");
+      resetTimer();
+    }
+  }, [phrase?.id, showAnswer, resetTimer]);
 
   // Memoize handlers to prevent unnecessary re-renders
   const handleSelect = useCallback((idx: number) => {
