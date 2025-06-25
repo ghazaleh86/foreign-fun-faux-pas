@@ -234,10 +234,9 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     }
   }, [showStagePreview]);
 
-  // Determine if we should show GameStatusHeader (only during transition screens)
+  // Determine if we should show GameStatusHeader (only during transition screens, but not stage summary)
   const shouldShowGameStatusHeader = state === "loading" || 
                                    state === "finished" || 
-                                   stageCompleted || 
                                    showStagePreview ||
                                    phrases.length === 0;
 
