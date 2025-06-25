@@ -119,7 +119,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   }, [phrases, current, score, stage, stageScores, opponentScores, roundCorrect, stageCompleted, showStagePreview, sessionId, state]);
 
   // Audio auto-play with duplicate guard
-  useAudioPlaybook(
+  useAudioPlayback(
     [current, state, showStagePreview, showAnswer, stageCompleted],
     phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
     phrase?.language || "en",
