@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { STAGE_SIZE, ROUND_SIZE } from "@/utils/quizHelpers";
 
 export function useStageManagement(phrases: any[], profile: any) {
@@ -11,21 +11,19 @@ export function useStageManagement(phrases: any[], profile: any) {
   const [roundQuestions, setRoundQuestions] = useState<any[]>([]);
   const [roundCorrect, setRoundCorrect] = useState(0);
 
-  // Prepare a new round (5 unplayed questions)
+  // Memoize computed values to prevent unnecessary re-renders
+  const totalStages = useMemo(() => Math.ceil(phrases.length / STAGE_SIZE), [phrases.length]);
+  const currentStageStart = useMemo(() => stage * STAGE_SIZE, [stage]);
+  const currentStageEnd = useMemo(() => Math.min(currentStageStart + STAGE_SIZE, phrases.length), [currentStageStart, phrases.length]);
+
+  // Prepare a new round (5 unplayed questions) - only depend on stage and phrases.length
   useEffect(() => {
     if (phrases.length === 0) return;
     // Pick next ROUND_SIZE questions not played yet in this session
     const roundStart = stage * ROUND_SIZE;
     setRoundQuestions(phrases.slice(roundStart, roundStart + ROUND_SIZE));
     setRoundCorrect(0);
-    if (profile) {
-      // Reset hearts functionality would be called here
-    }
-  }, [stage, phrases, profile]);
-
-  const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
-  const currentStageStart = stage * STAGE_SIZE;
-  const currentStageEnd = Math.min(currentStageStart + STAGE_SIZE, phrases.length);
+  }, [stage, phrases.length]); // Removed profile and phrases array from dependencies
 
   function updateStageScores(stageIdx: number, value: number) {
     setStageScores((prev) => {

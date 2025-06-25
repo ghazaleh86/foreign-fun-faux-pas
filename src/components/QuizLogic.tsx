@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
 import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
@@ -83,7 +83,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   const [optionOrder, setOptionOrder] = useState<Option[]>([]);
   const [advanceRequested, setAdvanceRequested] = useState(false);
 
-  const phrase = phrases[current];
+  // Memoize the current phrase to prevent unnecessary re-renders
+  const phrase = useMemo(() => phrases[current], [phrases, current]);
 
   const {
     profile,
@@ -115,14 +116,23 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   const { markPhraseAsLearned } = useLearnedPhrases();
 
-  // Timer via custom hook
-  const { timer, getElapsed, reset: resetTimer } = useStageTimer(
-    !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted
+  // Timer via custom hook - memoize the timer condition
+  const timerShouldRun = useMemo(() => 
+    !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted,
+    [showAnswer, state, showStagePreview, stageCompleted]
+  );
+
+  const { timer, getElapsed, reset: resetTimer } = useStageTimer(timerShouldRun);
+
+  // Memoize audio playback dependencies
+  const audioPlaybackDeps = useMemo(() => 
+    [current, state, showStagePreview, showAnswer, stageCompleted],
+    [current, state, showStagePreview, showAnswer, stageCompleted]
   );
 
   // Audio auto-play with duplicate guard
   useAudioPlayback(
-    [current, state, showStagePreview, showAnswer, stageCompleted],
+    audioPlaybackDeps,
     phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
     phrase?.language || "en",
     getCurrentVoice(current),
@@ -137,7 +147,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     }
   }, [phrase, resetTimer]);
 
-  function handleSelect(idx: number) {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleSelect = useCallback((idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
     setShowAnswer(true);
@@ -187,9 +198,9 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
       setStageCompleted(true);
       setAdvanceRequested(false);
     }
-  }
+  }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addXP, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
 
-  function handleNext() {
+  const handleNext = useCallback(() => {
     // Only allow next question if not at end of stage
     const isLastInStage =
       (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
@@ -198,9 +209,9 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
       setCurrent((c) => c + 1);
       resetQuestionState();
     }
-  }
+  }, [current, currentStageStart, phrases.length, setCurrent, resetQuestionState]);
 
-  function handleAdvanceStage() {
+  const handleAdvanceStage = useCallback(() => {
     // Assess if user passed (3+ correct)
     if (roundCorrect >= 3) {
       advanceStreak();
@@ -221,16 +232,16 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
       setRoundCorrect(0);
       refreshProfile();
     }
-  }
+  }, [roundCorrect, advanceStreak, setShowStagePreview, setStage, setStageCompleted, setCurrent, stage, resetQuestionState, refreshProfile, resetHearts, setFeedback, setRoundCorrect]);
 
-  function handleStartStage() {
+  const handleStartStage = useCallback(() => {
     // Called when user presses "Start Stage"
     setShowStagePreview(false);
     setAdvanceRequested(false);
     resetQuestionState();
-  }
+  }, [setShowStagePreview, resetQuestionState]);
 
-  function handlePlayAudio() {
+  const handlePlayAudio = useCallback(() => {
     const ttsText = phrase.pronunciation || phrase.phrase_text;
     const voiceSettings = getVoiceSettings(getCurrentVoice(current));
     
@@ -265,7 +276,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
         }
       })
     );
-  }
+  }, [phrase, current]);
 
   // Reset state when moving to a new stage (preview)
   useEffect(() => {
@@ -274,7 +285,11 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     }
   }, [showStagePreview, resetQuestionState]);
 
-  const showNextButton = showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+  // Memoize showNextButton calculation
+  const showNextButton = useMemo(() => 
+    showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart),
+    [showAnswer, current, currentStageStart, phrases.length]
+  );
 
   return (
     <>
