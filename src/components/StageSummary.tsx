@@ -32,16 +32,15 @@ const StageSummary: React.FC<StageSummaryProps> = ({
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
         <CardContent className="px-6 py-6 text-center relative">
-          {/* Mascot - Made bigger */}
+          {/* Mascot - Made much bigger */}
           <div className="relative z-10 mb-4">
-            <div className="bg-gray-50 rounded-full p-3 shadow-sm mx-auto w-24 h-24 flex items-center justify-center border border-gray-100">
-              <MascotAvatar size={64} className="ring-0" />
+            <div className="bg-gray-50 rounded-full p-4 shadow-sm mx-auto w-32 h-32 flex items-center justify-center border border-gray-100">
+              <MascotAvatar size={96} className="ring-0" />
             </div>
           </div>
 
-          {/* Stage Info - More compact */}
+          {/* Stage Info - More compact, removed emoji */}
           <div className="relative z-10 mb-6">
-            <div className="text-4xl mb-3">{opponentEmoji}</div>
             <h1 className="text-4xl font-black tracking-tight mb-2 text-gray-900">
               STAGE {stage + 1}
             </h1>
