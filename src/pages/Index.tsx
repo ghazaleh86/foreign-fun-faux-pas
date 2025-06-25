@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
-import FakeOpponentBadge from "@/components/FakeOpponentBadge";
 import MascotAvatar from "../components/MascotAvatar";
 
 const Index = () => {
@@ -18,14 +17,12 @@ const Index = () => {
       const timer2 = setTimeout(() => setAnimationStep(2), 600);
       const timer3 = setTimeout(() => setAnimationStep(3), 1000);
       const timer4 = setTimeout(() => setAnimationStep(4), 1400);
-      const timer5 = setTimeout(() => setAnimationStep(5), 1800);
 
       return () => {
         clearTimeout(timer1);
         clearTimeout(timer2);
         clearTimeout(timer3);
         clearTimeout(timer4);
-        clearTimeout(timer5);
       };
     }
   }, [started]);
@@ -81,23 +78,9 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Opponent badge with bounce entrance - now always showing Chippy */}
-        <div className={`transition-all duration-1000 ease-out ${
-          animationStep >= 4 
-            ? "opacity-100 transform translate-y-0 scale-100" 
-            : "opacity-0 transform translate-y-8 scale-75"
-        }`}>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full blur-lg opacity-50 scale-110"></div>
-            <div className="relative">
-              <FakeOpponentBadge name={opponent.name} emoji={opponent.emoji} />
-            </div>
-          </div>
-        </div>
-
         {/* Start button with exciting entrance */}
         <div className={`mt-12 transition-all duration-1000 ease-out ${
-          animationStep >= 5 
+          animationStep >= 4 
             ? "opacity-100 transform translate-y-0 scale-100" 
             : "opacity-0 transform translate-y-8 scale-90"
         }`}>
