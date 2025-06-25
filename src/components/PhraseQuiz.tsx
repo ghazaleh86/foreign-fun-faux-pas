@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from "react";
-import { useAudioPlayback } from "@/hooks/useAudioPlayback";
+import { useAudioPlayback } from "@/hooks/useAudioPlaybook";
 import { useStageTimer } from "@/hooks/useStageTimer";
 import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
@@ -19,10 +20,12 @@ import {
   getVoiceSettings
 } from "@/utils/quizHelpers";
 import { Option } from "./MultipleChoiceOptions";
+import { saveGameState, getGameState, clearGameState } from "@/utils/gameStateManager";
 
 const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   const [optionOrder, setOptionOrder] = useState<Option[]>([]);
   const [advanceRequested, setAdvanceRequested] = useState(false);
+  const [sessionId] = useState(() => Date.now().toString());
 
   // Custom hooks
   const {
@@ -81,6 +84,40 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
 
   const phrase = phrases[current];
 
+  // Restore game state on component mount
+  useEffect(() => {
+    const savedState = getGameState();
+    if (savedState && savedState.sessionId !== sessionId && phrases.length > 0) {
+      // Only restore if it's a different session and we have phrases loaded
+      setCurrent(savedState.current);
+      setScore(savedState.score);
+      setStage(savedState.stage);
+      setRoundCorrect(savedState.roundCorrect);
+      setStageCompleted(savedState.stageCompleted);
+      setShowStagePreview(savedState.showStagePreview);
+      console.log("Game state restored:", savedState);
+    }
+  }, [phrases.length, sessionId]);
+
+  // Save game state whenever key values change
+  useEffect(() => {
+    if (phrases.length > 0 && state === "quiz") {
+      const gameState = {
+        phrases,
+        current,
+        score,
+        stage,
+        stageScores,
+        opponentScores,
+        roundCorrect,
+        stageCompleted,
+        showStagePreview,
+        sessionId
+      };
+      saveGameState(gameState);
+    }
+  }, [phrases, current, score, stage, stageScores, opponentScores, roundCorrect, stageCompleted, showStagePreview, sessionId, state]);
+
   // Audio auto-play with duplicate guard
   useAudioPlayback(
     [current, state, showStagePreview, showAnswer, stageCompleted],
@@ -115,7 +152,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
       updateStageScores(stage, bonus);
       setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
       
-      // Mark phrase as learned when answered correctly - pass full phrase object
+      // Mark phrase as learned immediately when answered correctly
       if (phrase) {
         markPhraseAsLearned(phrase);
       }
@@ -234,6 +271,13 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     }
   }, [showStagePreview]);
 
+  // Clear game state when quiz is finished
+  useEffect(() => {
+    if (state === "finished") {
+      clearGameState();
+    }
+  }, [state]);
+
   // Determine if we should show GameStatusHeader (only during transition screens, but not stage summary)
   const shouldShowGameStatusHeader = state === "loading" || 
                                    state === "finished" || 
@@ -272,7 +316,10 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
             profile={profile}
             score={score}
             totalStages={totalStages}
-            onPlayAgain={() => window.location.reload()}
+            onPlayAgain={() => {
+              clearGameState();
+              window.location.reload();
+            }}
             phrase={phrase}
             timer={timer}
             stageSize={STAGE_SIZE}
