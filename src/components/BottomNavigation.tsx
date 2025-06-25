@@ -4,11 +4,15 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, BookOpen, Home } from "lucide-react";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
+import { getLearnedPhrases } from "@/utils/learnedPhrases";
 
 const BottomNavigation = () => {
   const location = useLocation();
   const { profile } = usePlayerProfile();
   const currentPath = location.pathname;
+  
+  // Get the actual count from localStorage
+  const learnedPhrasesCount = getLearnedPhrases().length;
 
   const navItems = [
     {
@@ -22,7 +26,7 @@ const BottomNavigation = () => {
       label: "My Phrases",  
       icon: BookOpen,
       isActive: currentPath === "/learned",
-      badge: profile?.phrases_learned || 0,
+      badge: learnedPhrasesCount,
     },
   ];
 
