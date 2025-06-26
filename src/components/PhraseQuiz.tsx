@@ -1,10 +1,11 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useQuizState } from "@/hooks/useQuizState";
 import GameStateRenderer from "./GameStateRenderer";
 import GameStateManager from "./GameStateManager";
 import QuizLogic from "./QuizLogic";
 import { QuizProps } from "@/types/quiz";
+import { getGameState } from "@/utils/gameStateManager";
 
 const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   const [sessionId] = useState(() => Date.now().toString());
@@ -28,11 +29,27 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     resetQuestionState,
   } = useQuizState();
 
-  // Stage management state - initialize with default values
-  const [stage, setStage] = useState(0);
-  const [stageCompleted, setStageCompleted] = useState(false);
-  const [showStagePreview, setShowStagePreview] = useState(false);
-  const [roundCorrect, setRoundCorrect] = useState(0);
+  // Initialize stage management state - check for saved state first
+  const [stage, setStage] = useState(() => {
+    const savedState = getGameState();
+    return savedState?.stage || 0;
+  });
+  
+  const [stageCompleted, setStageCompleted] = useState(() => {
+    const savedState = getGameState();
+    return savedState?.stageCompleted || false;
+  });
+  
+  const [showStagePreview, setShowStagePreview] = useState(() => {
+    const savedState = getGameState();
+    return savedState?.showStagePreview || false;
+  });
+  
+  const [roundCorrect, setRoundCorrect] = useState(() => {
+    const savedState = getGameState();
+    return savedState?.roundCorrect || 0;
+  });
+  
   const [gameStateRestored, setGameStateRestored] = useState(false);
 
   // Mock stage scores for now - these would come from the stage management hook
@@ -47,6 +64,19 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     // Reset question state when restoring to avoid showing stale UI
     resetQuestionState();
   }, [resetQuestionState]);
+
+  // Log current state for debugging
+  useEffect(() => {
+    console.log("PhraseQuiz current state:", {
+      current,
+      stage,
+      stageCompleted,
+      showStagePreview,
+      roundCorrect,
+      phrasesLength: phrases.length,
+      gameState: state
+    });
+  }, [current, stage, stageCompleted, showStagePreview, roundCorrect, phrases.length, state]);
 
   // Main layout: consistent container for all game states
   return (
