@@ -86,6 +86,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   // Memoize the current phrase to prevent unnecessary re-renders
   const phrase = useMemo(() => phrases[current], [phrases, current]);
 
+  console.log("🎮 QuizLogic: Rendering with current:", current, "phrase:", phrase?.id);
+
   const {
     profile,
     loading: profileLoading,
@@ -139,25 +141,26 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
-  // Shuffle options only when phrase changes - remove resetTimer from dependencies
+  // Shuffle options only when phrase changes - stable phrase ID tracking
   useEffect(() => {
-    if (phrase) {
-      console.log("Setting new options for phrase:", phrase.id);
+    if (phrase?.id) {
+      console.log("🎯 QuizLogic: Setting new options for phrase:", phrase.id);
       setOptionOrder(getShuffledOptions(phrase));
     }
-  }, [phrase?.id]); // Only depend on phrase.id to prevent unnecessary re-renders
+  }, [phrase?.id]);
 
-  // Reset timer separately when showing new phrase
+  // Reset timer when phrase changes - FIXED: Remove resetTimer from dependencies to prevent loop
   useEffect(() => {
-    if (phrase && !showAnswer) {
-      console.log("Resetting timer for new phrase");
+    if (phrase?.id && !showAnswer) {
+      console.log("⏰ QuizLogic: Resetting timer for phrase:", phrase.id);
       resetTimer();
     }
-  }, [phrase?.id, showAnswer, resetTimer]);
+  }, [phrase?.id, showAnswer]); // Removed resetTimer from dependencies
 
   // Memoize handlers to prevent unnecessary re-renders
   const handleSelect = useCallback((idx: number) => {
     if (selected !== null) return;
+    console.log("🎯 QuizLogic: Answer selected:", idx);
     setSelected(idx);
     setShowAnswer(true);
 
@@ -214,6 +217,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
       (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
 
     if (!isLastInStage && current < phrases.length - 1) {
+      console.log("➡️ QuizLogic: Moving to next question");
       setCurrent((c) => c + 1);
       resetQuestionState();
     }

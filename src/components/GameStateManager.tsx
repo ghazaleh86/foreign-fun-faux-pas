@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { saveGameState, getGameState, clearGameState } from "@/utils/gameStateManager";
 import { Phrase, State } from "@/types/quiz";
 
@@ -44,18 +44,21 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
   setShowStagePreview,
   onGameStateRestored,
 }) => {
-  // Restore game state immediately when phrases are loaded
+  const hasRestored = useRef(false);
+
+  // Restore game state immediately when phrases are loaded - only once
   useEffect(() => {
     console.log("🔍 GameStateManager: Restore effect triggered", {
       phrasesLength: phrases.length,
       state,
       current,
       stage,
-      score
+      score,
+      hasRestored: hasRestored.current
     });
     
-    if (phrases.length === 0 || state !== "quiz") {
-      console.log("❌ GameStateManager: Not restoring - phrases empty or not in quiz state");
+    if (hasRestored.current || phrases.length === 0 || state !== "quiz") {
+      console.log("❌ GameStateManager: Skipping restoration - already done or conditions not met");
       return;
     }
     
@@ -85,28 +88,30 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
           roundCorrect: savedState.roundCorrect
         });
         
-        // Use setTimeout to ensure this runs after other state initializations
-        setTimeout(() => {
-          console.log("⏰ GameStateManager: Applying restored state via setTimeout");
-          setCurrent(savedState.current);
-          setScore(savedState.score);
-          setStage(savedState.stage);
-          setRoundCorrect(savedState.roundCorrect);
-          setStageCompleted(savedState.stageCompleted);
-          setShowStagePreview(savedState.showStagePreview);
-          
-          console.log("📢 GameStateManager: Notifying parent component of restoration");
-          // Notify parent component
-          onGameStateRestored(savedState);
-        }, 0);
+        // Mark as restored first to prevent multiple restorations
+        hasRestored.current = true;
+        
+        // Restore state immediately
+        setCurrent(savedState.current);
+        setScore(savedState.score);
+        setStage(savedState.stage);
+        setRoundCorrect(savedState.roundCorrect);
+        setStageCompleted(savedState.stageCompleted);
+        setShowStagePreview(savedState.showStagePreview);
+        
+        console.log("📢 GameStateManager: Notifying parent component of restoration");
+        // Notify parent component
+        onGameStateRestored(savedState);
       } else {
         console.log("⚠️ GameStateManager: Invalid saved state, clearing:", savedState);
         clearGameState();
+        hasRestored.current = true;
       }
     } else {
       console.log("📝 GameStateManager: No saved state found, starting fresh");
+      hasRestored.current = true;
     }
-  }, [phrases.length, state]); // Trigger when phrases load and state is quiz
+  }, [phrases.length, state]); // Only trigger when phrases load and state is quiz
 
   // Save game state whenever values change
   useEffect(() => {
@@ -118,10 +123,12 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
       stage,
       roundCorrect,
       stageCompleted,
-      showStagePreview
+      showStagePreview,
+      hasRestored: hasRestored.current
     });
     
-    if (phrases.length > 0 && state === "quiz") {
+    // Only save if we've completed initial restoration and conditions are met
+    if (hasRestored.current && phrases.length > 0 && state === "quiz") {
       const gameState = {
         phrases,
         current,
@@ -147,6 +154,7 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
     if (state === "finished") {
       console.log("🏁 GameStateManager: Clearing game state - quiz finished");
       clearGameState();
+      hasRestored.current = false; // Reset for next game
     }
   }, [state]);
 
