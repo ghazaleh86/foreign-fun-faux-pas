@@ -10,6 +10,8 @@ import { getGameState } from "@/utils/gameStateManager";
 const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   const [sessionId] = useState(() => Date.now().toString());
 
+  console.log("🎮 PhraseQuiz: Component initializing");
+
   // Custom hooks
   const {
     phrases,
@@ -32,21 +34,25 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   // Initialize stage management state - check for saved state first
   const [stage, setStage] = useState(() => {
     const savedState = getGameState();
+    console.log("🎯 PhraseQuiz: Initializing stage from saved state:", savedState?.stage || 0);
     return savedState?.stage || 0;
   });
   
   const [stageCompleted, setStageCompleted] = useState(() => {
     const savedState = getGameState();
+    console.log("✅ PhraseQuiz: Initializing stageCompleted from saved state:", savedState?.stageCompleted || false);
     return savedState?.stageCompleted || false;
   });
   
   const [showStagePreview, setShowStagePreview] = useState(() => {
     const savedState = getGameState();
+    console.log("👀 PhraseQuiz: Initializing showStagePreview from saved state:", savedState?.showStagePreview || false);
     return savedState?.showStagePreview || false;
   });
   
   const [roundCorrect, setRoundCorrect] = useState(() => {
     const savedState = getGameState();
+    console.log("🎯 PhraseQuiz: Initializing roundCorrect from saved state:", savedState?.roundCorrect || 0);
     return savedState?.roundCorrect || 0;
   });
   
@@ -58,25 +64,36 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
 
   // Handle game state restoration
   const handleGameStateRestored = useCallback((restoredState: any) => {
-    console.log("Game state restored in PhraseQuiz:", restoredState);
+    console.log("🔄 PhraseQuiz: Game state restored callback triggered:", restoredState);
     setGameStateRestored(true);
     
     // Reset question state when restoring to avoid showing stale UI
+    console.log("🧹 PhraseQuiz: Resetting question state after restoration");
     resetQuestionState();
   }, [resetQuestionState]);
 
   // Log current state for debugging
   useEffect(() => {
-    console.log("PhraseQuiz current state:", {
+    console.log("📊 PhraseQuiz: Current state update:", {
       current,
       stage,
       stageCompleted,
       showStagePreview,
       roundCorrect,
       phrasesLength: phrases.length,
-      gameState: state
+      gameState: state,
+      gameStateRestored
     });
-  }, [current, stage, stageCompleted, showStagePreview, roundCorrect, phrases.length, state]);
+  }, [current, stage, stageCompleted, showStagePreview, roundCorrect, phrases.length, state, gameStateRestored]);
+
+  // Log when phrases change
+  useEffect(() => {
+    console.log("📝 PhraseQuiz: Phrases changed:", {
+      phrasesLength: phrases.length,
+      firstPhraseId: phrases[0]?.id,
+      state
+    });
+  }, [phrases, state]);
 
   // Main layout: consistent container for all game states
   return (
