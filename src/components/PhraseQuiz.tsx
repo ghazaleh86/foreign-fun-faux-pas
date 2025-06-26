@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useQuizState } from "@/hooks/useQuizState";
 import GameStateRenderer from "./GameStateRenderer";
 import GameStateManager from "./GameStateManager";
@@ -28,15 +28,25 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     resetQuestionState,
   } = useQuizState();
 
-  // Stage management state
+  // Stage management state - initialize with default values
   const [stage, setStage] = useState(0);
   const [stageCompleted, setStageCompleted] = useState(false);
   const [showStagePreview, setShowStagePreview] = useState(false);
   const [roundCorrect, setRoundCorrect] = useState(0);
+  const [gameStateRestored, setGameStateRestored] = useState(false);
 
   // Mock stage scores for now - these would come from the stage management hook
   const stageScores: number[] = [];
   const opponentScores: number[] = [];
+
+  // Handle game state restoration
+  const handleGameStateRestored = useCallback((restoredState: any) => {
+    console.log("Game state restored in PhraseQuiz:", restoredState);
+    setGameStateRestored(true);
+    
+    // Reset question state when restoring to avoid showing stale UI
+    resetQuestionState();
+  }, [resetQuestionState]);
 
   // Main layout: consistent container for all game states
   return (
@@ -61,6 +71,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
             setRoundCorrect={setRoundCorrect}
             setStageCompleted={setStageCompleted}
             setShowStagePreview={setShowStagePreview}
+            onGameStateRestored={handleGameStateRestored}
           />
           
           <QuizLogic

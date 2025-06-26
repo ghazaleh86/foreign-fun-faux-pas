@@ -21,6 +21,7 @@ interface GameStateManagerProps {
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setStageCompleted: (value: boolean) => void;
   setShowStagePreview: (value: boolean) => void;
+  onGameStateRestored: (restoredState: any) => void;
 }
 
 const GameStateManager: React.FC<GameStateManagerProps> = ({
@@ -41,22 +42,32 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
   setRoundCorrect,
   setStageCompleted,
   setShowStagePreview,
+  onGameStateRestored,
 }) => {
-  // Restore game state on component mount
+  // Restore game state on component mount - only once when phrases are loaded
   useEffect(() => {
     const savedState = getGameState();
-    if (savedState && savedState.sessionId !== sessionId && phrases.length > 0) {
-      // Only restore if it's a different session and we have phrases loaded
-      setCurrent(savedState.current);
-      setScore(savedState.score);
-      setStage(savedState.stage);
-      setRoundCorrect(savedState.roundCorrect);
-      setStageCompleted(savedState.stageCompleted);
-      // Skip showing stage preview - go straight to quiz
-      setShowStagePreview(false);
-      console.log("Game state restored:", savedState);
+    if (savedState && phrases.length > 0 && state === "quiz") {
+      // Only restore if we have a valid saved state and it's within bounds
+      if (savedState.current < phrases.length && savedState.stage >= 0) {
+        console.log("Restoring game state:", savedState);
+        
+        // Restore all state values
+        setCurrent(savedState.current);
+        setScore(savedState.score);
+        setStage(savedState.stage);
+        setRoundCorrect(savedState.roundCorrect);
+        setStageCompleted(savedState.stageCompleted);
+        setShowStagePreview(savedState.showStagePreview);
+        
+        // Notify parent component about restoration
+        onGameStateRestored(savedState);
+      } else {
+        // Clear invalid saved state
+        clearGameState();
+      }
     }
-  }, [phrases.length, sessionId, setCurrent, setScore, setStage, setRoundCorrect, setStageCompleted, setShowStagePreview]);
+  }, [phrases.length, state]); // Only depend on phrases being loaded and state being quiz
 
   // Save game state whenever key values change
   useEffect(() => {
