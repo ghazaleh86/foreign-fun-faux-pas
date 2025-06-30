@@ -1,4 +1,3 @@
-
 import { useCallback } from "react";
 import { 
   computeSpeedBonus, 
@@ -43,6 +42,11 @@ interface UseQuizHandlersProps {
   setStage: (value: number | ((prev: number) => number)) => void;
   refreshProfile: () => void;
   resetHearts: () => void;
+}
+
+// Check if we're on a mobile device
+function isMobileDevice(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 export function useQuizHandlers({
@@ -176,35 +180,33 @@ export function useQuizHandlers({
     const ttsText = phrase.pronunciation || phrase.phrase_text;
     const voiceSettings = getVoiceSettings(getCurrentVoice(current));
     
-    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
+    // For mobile devices, try to resume audio context first
+    if (isMobileDevice()) {
+      try {
+        const resumeAudioContext = async () => {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+          }
+        };
+        resumeAudioContext().catch(() => {
+          console.log('Could not resume audio context');
+        });
+      } catch (error) {
+        console.log('AudioContext not available');
+      }
+    }
+    
+    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS, playWithBrowserTTS }) =>
       playWithElevenLabsTTS({ 
         text: ttsText, 
         voiceId: getCurrentVoice(current),
         ...voiceSettings,
         useSpeakerBoost: true
       }).catch(() => {
-        // Enhanced fallback
-        if ("speechSynthesis" in window) {
-          window.speechSynthesis.cancel();
-          const u = new window.SpeechSynthesisUtterance(ttsText);
-          u.lang = phrase.language || "en";
-          u.rate = 0.9; // Slightly slower
-          u.pitch = 1.0; // Natural pitch
-          u.volume = 0.9;
-          
-          // Try to use a more natural voice
-          const voices = window.speechSynthesis.getVoices();
-          const naturalVoices = voices.filter(voice => 
-            voice.lang.startsWith(phrase.language || "en") && 
-            (voice.name.includes('Neural') || voice.name.includes('Premium'))
-          );
-          
-          if (naturalVoices.length > 0) {
-            u.voice = naturalVoices[0];
-          }
-          
-          window.speechSynthesis.speak(u);
-        }
+        // Enhanced mobile-friendly fallback
+        console.log('Falling back to browser TTS for mobile');
+        playWithBrowserTTS(ttsText, phrase.language || "en");
       })
     );
   }, [phrase, current]);

@@ -21,6 +21,11 @@ function preprocessTextForTTS(text: string): string {
     .trim();
 }
 
+// Check if we're on a mobile device
+function isMobileDevice(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 export async function playWithElevenLabsTTS({ 
   text, 
   voiceId = "pNInz6obpgDQGcFmaJgB", // Rachel - more natural default
@@ -61,11 +66,42 @@ export async function playWithElevenLabsTTS({
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
     
-    // Optimize audio playback
-    audio.volume = 0.9;
-    audio.playbackRate = 0.95; // Slightly slower for better clarity
+    // Mobile-optimized audio settings
+    audio.volume = 1.0; // Full volume for mobile
+    audio.preload = 'auto';
     
-    audio.play();
+    // Handle mobile-specific audio events
+    audio.addEventListener('canplaythrough', () => {
+      console.log('Audio ready to play');
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error('Audio playback error:', e);
+      throw new Error('Audio playback failed');
+    });
+    
+    // For mobile devices, we need to handle audio context properly
+    if (isMobileDevice()) {
+      // Create audio context if it doesn't exist (helps with mobile audio)
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+      } catch (audioContextError) {
+        console.log('AudioContext not available, using basic audio');
+      }
+    }
+    
+    // Play with proper error handling for mobile
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.error('Audio play failed:', error);
+        throw error;
+      });
+    }
+    
     return audio;
   } catch (err) {
     console.error("[TTS] ElevenLabs Error:", err);
@@ -73,30 +109,54 @@ export async function playWithElevenLabsTTS({
   }
 }
 
-// Enhanced fallback with better browser TTS settings
+// Enhanced fallback with better mobile support
 export function playWithBrowserTTS(text: string, language: string = "en") {
   if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text));
-    
-    // Enhanced browser TTS settings
-    utterance.lang = language;
-    utterance.rate = 0.9; // Slightly slower
-    utterance.pitch = 1.0; // Natural pitch
-    utterance.volume = 0.9;
-    
-    // Try to use a more natural voice if available
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoices = voices.filter(voice => 
-      voice.lang.startsWith(language) && 
-      (voice.name.includes('Neural') || voice.name.includes('Premium') || voice.voiceURI.includes('premium'))
-    );
-    
-    if (preferredVoices.length > 0) {
-      utterance.voice = preferredVoices[0];
-    }
-    
-    window.speechSynthesis.speak(utterance);
-    return utterance;
+    // Ensure speech synthesis is ready
+    const ensureVoicesLoaded = () => {
+      return new Promise<void>((resolve) => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          resolve();
+        } else {
+          window.speechSynthesis.addEventListener('voiceschanged', () => {
+            resolve();
+          }, { once: true });
+        }
+      });
+    };
+
+    ensureVoicesLoaded().then(() => {
+      window.speechSynthesis.cancel();
+      const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text));
+      
+      // Enhanced mobile-friendly settings
+      utterance.lang = language;
+      utterance.rate = 0.85; // Slightly slower for mobile clarity
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0; // Full volume for mobile
+      
+      // Enhanced voice selection for mobile
+      const voices = window.speechSynthesis.getVoices();
+      const mobileOptimizedVoices = voices.filter(voice => {
+        const voiceLang = voice.lang.toLowerCase();
+        const targetLang = language.toLowerCase();
+        return (voiceLang.includes(targetLang) || voiceLang.includes(targetLang.split('-')[0])) &&
+               (voice.localService || voice.name.includes('Google') || voice.name.includes('Microsoft'));
+      });
+      
+      if (mobileOptimizedVoices.length > 0) {
+        utterance.voice = mobileOptimizedVoices[0];
+      }
+      
+      // Mobile-specific event handlers
+      utterance.onstart = () => console.log('Mobile TTS started');
+      utterance.onend = () => console.log('Mobile TTS ended');
+      utterance.onerror = (event) => {
+        console.error('Mobile TTS error:', event.error);
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    });
   }
 }

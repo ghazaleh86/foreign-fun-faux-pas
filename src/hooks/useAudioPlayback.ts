@@ -21,27 +21,62 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
       ...voiceSettings,
       useSpeakerBoost: true
     }).catch(() => {
-      // Enhanced fallback with better browser TTS
+      // Enhanced mobile-friendly fallback
       if ("speechSynthesis" in window) {
+        // Cancel any ongoing speech
         window.speechSynthesis.cancel();
-        const utterance = new window.SpeechSynthesisUtterance(text);
-        utterance.lang = guessSpeechLang(language);
-        utterance.rate = 0.9; // Slightly slower for clarity
-        utterance.pitch = 1.0; // Natural pitch
-        utterance.volume = 0.9;
         
-        // Try to use a more natural voice
-        const voices = window.speechSynthesis.getVoices();
-        const naturalVoices = voices.filter(voice => 
-          voice.lang.startsWith(language) && 
-          (voice.name.includes('Neural') || voice.name.includes('Premium'))
-        );
-        
-        if (naturalVoices.length > 0) {
-          utterance.voice = naturalVoices[0];
-        }
-        
-        window.speechSynthesis.speak(utterance);
+        // Small delay to ensure cancellation completes
+        setTimeout(() => {
+          const utterance = new window.SpeechSynthesisUtterance(text);
+          utterance.lang = guessSpeechLang(language);
+          utterance.rate = 0.9;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0; // Full volume for mobile
+          
+          // Enhanced voice selection for mobile
+          const voices = window.speechSynthesis.getVoices();
+          let selectedVoice = null;
+          
+          // Try to find a good voice for the language
+          const preferredVoices = voices.filter(voice => {
+            const voiceLang = voice.lang.toLowerCase();
+            const targetLang = (language || "en").toLowerCase();
+            return voiceLang.includes(targetLang) || voiceLang.includes(targetLang.split('-')[0]);
+          });
+          
+          if (preferredVoices.length > 0) {
+            // Prefer premium/enhanced voices if available
+            selectedVoice = preferredVoices.find(voice => 
+              voice.name.includes('Enhanced') || 
+              voice.name.includes('Premium') ||
+              voice.name.includes('Neural')
+            ) || preferredVoices[0];
+          }
+          
+          if (selectedVoice) {
+            utterance.voice = selectedVoice;
+          }
+          
+          // Handle mobile-specific events
+          utterance.onstart = () => {
+            console.log('Speech started on mobile');
+          };
+          
+          utterance.onerror = (event) => {
+            console.log('Speech error on mobile:', event.error);
+            // Retry once with a simpler approach
+            if (event.error === 'network' || event.error === 'synthesis-failed') {
+              setTimeout(() => {
+                const simpleUtterance = new window.SpeechSynthesisUtterance(text);
+                simpleUtterance.lang = language || "en-US";
+                window.speechSynthesis.speak(simpleUtterance);
+              }, 100);
+            }
+          };
+          
+          window.speechSynthesis.speak(utterance);
+        }, 100);
       }
     });
     // eslint-disable-next-line
