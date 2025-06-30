@@ -9,6 +9,7 @@ import QuizProgress from "./QuizProgress";
 import QuizFooter from "./QuizFooter";
 import MultipleChoiceOptions from "./MultipleChoiceOptions";
 import { Button } from "@/components/ui/button";
+import { Volume2 } from "lucide-react";
 
 type QuizCardProps = {
   phrase: Phrase;
@@ -30,6 +31,11 @@ type QuizCardProps = {
   onNext: () => void;
   onPlayAudio: () => void;
 };
+
+// Check if we're on a mobile device
+function isMobileDevice(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 const QuizCard: React.FC<QuizCardProps> = ({
   phrase,
@@ -68,6 +74,21 @@ const QuizCard: React.FC<QuizCardProps> = ({
         <div className="mb-4 text-sm font-bold text-fuchsia-700">
           Time: {timer}s
         </div>
+
+        {/* Mobile-friendly audio button - show prominently on mobile */}
+        {isMobileDevice() && (
+          <div className="mb-4 flex justify-center">
+            <Button
+              onClick={onPlayAudio}
+              variant="outline"
+              size="lg"
+              className="px-6 py-3 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 font-semibold"
+            >
+              <Volume2 className="w-5 h-5 mr-2" />
+              Play Audio
+            </Button>
+          </div>
+        )}
 
         {/* Next button positioned below audio, before feedback */}
         {showNextButton && (
