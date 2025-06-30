@@ -1,19 +1,15 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useStageTimer } from "@/hooks/useStageTimer";
 import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 import { useStageManagement } from "@/hooks/useStageManagement";
+import { useQuizHandlers } from "@/hooks/useQuizHandlers";
+import { useQuizEffects } from "@/hooks/useQuizEffects";
 import { 
   STAGE_SIZE, 
-  ROUND_SIZE, 
-  getShuffledOptions, 
-  computeSpeedBonus, 
-  getSpeedBonusXP, 
   getCurrentVoice, 
-  randomWrongTaunt, 
-  getVoiceSettings
 } from "@/utils/quizHelpers";
 import { Option } from "./MultipleChoiceOptions";
 import { Phrase, State } from "@/types/quiz";
@@ -81,7 +77,6 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   children,
 }) => {
   const [optionOrder, setOptionOrder] = useState<Option[]>([]);
-  const [advanceRequested, setAdvanceRequested] = useState(false);
 
   // Memoize the current phrase to prevent unnecessary re-renders
   const phrase = useMemo(() => phrases[current], [phrases, current]);
@@ -90,7 +85,6 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   const {
     profile,
-    loading: profileLoading,
     addXP,
     loseHeart,
     resetHearts,
@@ -99,19 +93,14 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   } = usePlayerProfile();
 
   const {
-    stage: stageFromHook,
     setStage,
     stageScores,
-    stageCompleted: stageCompletedFromHook,
     opponentScores,
-    showStagePreview: showStagePreviewFromHook,
     setShowStagePreview,
-    roundQuestions,
     roundCorrect,
     setRoundCorrect,
     totalStages,
     currentStageStart,
-    currentStageEnd,
     updateStageScores,
     updateOpponentScores,
   } = useStageManagement(phrases, profile);
@@ -141,161 +130,55 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
-  // Shuffle options only when phrase changes - stable phrase ID tracking
-  useEffect(() => {
-    if (phrase?.id) {
-      console.log("🎯 QuizLogic: Setting new options for phrase:", phrase.id);
-      setOptionOrder(getShuffledOptions(phrase));
-    }
-  }, [phrase?.id]);
+  // Use the quiz handlers hook
+  const {
+    handleSelect,
+    handleNext,
+    handleAdvanceStage,
+    handleStartStage,
+    handlePlayAudio,
+  } = useQuizHandlers({
+    selected,
+    setSelected,
+    setShowAnswer,
+    getElapsed,
+    optionOrder,
+    addXP,
+    setRoundCorrect,
+    setScore,
+    updateStageScores,
+    stage,
+    setFeedback,
+    phrase,
+    markPhraseAsLearned,
+    markPhraseAsPlayed,
+    profile,
+    loseHeart,
+    updateOpponentScores,
+    opponentName,
+    current,
+    currentStageStart,
+    phrases,
+    setStageCompleted,
+    setCurrent,
+    resetQuestionState,
+    roundCorrect,
+    advanceStreak,
+    setShowStagePreview,
+    setStage,
+    refreshProfile,
+    resetHearts,
+  });
 
-  // Reset timer when phrase changes - FIXED: Remove resetTimer from dependencies to prevent loop
-  useEffect(() => {
-    if (phrase?.id && !showAnswer) {
-      console.log("⏰ QuizLogic: Resetting timer for phrase:", phrase.id);
-      resetTimer();
-    }
-  }, [phrase?.id, showAnswer]); // Removed resetTimer from dependencies
-
-  // Memoize handlers to prevent unnecessary re-renders
-  const handleSelect = useCallback((idx: number) => {
-    if (selected !== null) return;
-    console.log("🎯 QuizLogic: Answer selected:", idx);
-    setSelected(idx);
-    setShowAnswer(true);
-
-    let timeTaken = getElapsed();
-
-    if (optionOrder[idx].isCorrect) {
-      // +10 XP, plus speed bonus
-      const bonusXP = getSpeedBonusXP(timeTaken);
-      addXP(10 + bonusXP);
-      setRoundCorrect((c) => c + 1);
-      const bonus = computeSpeedBonus(timeTaken);
-      setScore((s) => s + bonus);
-      updateStageScores(stage, bonus);
-      setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
-      
-      // Mark phrase as learned immediately when answered correctly
-      if (phrase) {
-        markPhraseAsLearned(phrase);
-      }
-    } else {
-      loseHeart();
-      const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
-      updateOpponentScores(stage, opponentGotIt);
-      setFeedback(randomWrongTaunt(opponentName));
-    }
-
-    // Mark this phrase as played immediately
-    if (phrase) {
-      markPhraseAsPlayed(phrase.id);
-    }
-
-    // If game over (no more hearts), auto end round
-    if (profile && profile.hearts === 1 && !optionOrder[idx].isCorrect) {
-      setShowAnswer(false);
-      setTimeout(() => {
-        setStageCompleted(true);
-      }, 700); // Short delay to show last answer
-      return;
-    }
-
-    // Detect if this was the last question in the stage
-    const isLastInStage =
-      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-
-    if (isLastInStage || current === phrases.length - 1) {
-      setStageCompleted(true);
-      setAdvanceRequested(false);
-    }
-  }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addXP, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
-
-  const handleNext = useCallback(() => {
-    // Only allow next question if not at end of stage
-    const isLastInStage =
-      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-
-    if (!isLastInStage && current < phrases.length - 1) {
-      console.log("➡️ QuizLogic: Moving to next question");
-      setCurrent((c) => c + 1);
-      resetQuestionState();
-    }
-  }, [current, currentStageStart, phrases.length, setCurrent, resetQuestionState]);
-
-  const handleAdvanceStage = useCallback(() => {
-    // Assess if user passed (3+ correct)
-    if (roundCorrect >= 3) {
-      advanceStreak();
-      // Skip stage preview, go directly to next stage
-      setShowStagePreview(false);
-      setStage((s) => s + 1);
-      setStageCompleted(false);
-      setCurrent((stage + 1) * ROUND_SIZE);
-      resetQuestionState();
-      refreshProfile();
-    } else {
-      // Did not pass: refill hearts, restart round, reset corrects (using same questions)
-      resetHearts();
-      setStageCompleted(false);
-      resetQuestionState();
-      setFeedback("You need at least 3 correct to pass. Try again!");
-      setCurrent(stage * ROUND_SIZE);
-      setRoundCorrect(0);
-      refreshProfile();
-    }
-  }, [roundCorrect, advanceStreak, setShowStagePreview, setStage, setStageCompleted, setCurrent, stage, resetQuestionState, refreshProfile, resetHearts, setFeedback, setRoundCorrect]);
-
-  const handleStartStage = useCallback(() => {
-    // Called when user presses "Start Stage"
-    setShowStagePreview(false);
-    setAdvanceRequested(false);
-    resetQuestionState();
-  }, [setShowStagePreview, resetQuestionState]);
-
-  const handlePlayAudio = useCallback(() => {
-    const ttsText = phrase.pronunciation || phrase.phrase_text;
-    const voiceSettings = getVoiceSettings(getCurrentVoice(current));
-    
-    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-      playWithElevenLabsTTS({ 
-        text: ttsText, 
-        voiceId: getCurrentVoice(current),
-        ...voiceSettings,
-        useSpeakerBoost: true
-      }).catch(() => {
-        // Enhanced fallback
-        if ("speechSynthesis" in window) {
-          window.speechSynthesis.cancel();
-          const u = new window.SpeechSynthesisUtterance(ttsText);
-          u.lang = phrase.language || "en";
-          u.rate = 0.9; // Slightly slower
-          u.pitch = 1.0; // Natural pitch
-          u.volume = 0.9;
-          
-          // Try to use a more natural voice
-          const voices = window.speechSynthesis.getVoices();
-          const naturalVoices = voices.filter(voice => 
-            voice.lang.startsWith(phrase.language || "en") && 
-            (voice.name.includes('Neural') || voice.name.includes('Premium'))
-          );
-          
-          if (naturalVoices.length > 0) {
-            u.voice = naturalVoices[0];
-          }
-          
-          window.speechSynthesis.speak(u);
-        }
-      })
-    );
-  }, [phrase, current]);
-
-  // Reset state when moving to a new stage (preview)
-  useEffect(() => {
-    if (showStagePreview) {
-      resetQuestionState();
-    }
-  }, [showStagePreview, resetQuestionState]);
+  // Use the quiz effects hook
+  useQuizEffects({
+    phrase,
+    showAnswer,
+    showStagePreview,
+    resetQuestionState,
+    resetTimer,
+    setOptionOrder,
+  });
 
   // Memoize showNextButton calculation
   const showNextButton = useMemo(() => 
