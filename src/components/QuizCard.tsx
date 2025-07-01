@@ -58,7 +58,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
   onPlayAudio,
 }) => {
   return (
-    <Card className="max-w-xl w-full shadow-2xl bg-white/95 border border-headspace-neutral-200 rounded-3xl backdrop-blur-sm">
+    <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
       <QuizHeader
         phrase={phrase}
         stage={stage}
@@ -69,59 +69,59 @@ const QuizCard: React.FC<QuizCardProps> = ({
         opponentEmoji={opponentEmoji}
         onPlayAudio={onPlayAudio}
       />
-      <CardContent className="p-6">
+      <CardContent>
         <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-        <div className="mb-6 text-sm font-medium text-headspace-neutral-600 bg-headspace-blue/10 px-4 py-2 rounded-2xl inline-block">
-          ⏱️ {timer}s remaining
+        <div className="mb-4 text-sm font-bold text-fuchsia-700">
+          Time: {timer}s
         </div>
 
-        {/* Mobile-friendly audio button */}
+        {/* Mobile-friendly audio button - show prominently on mobile */}
         {isMobileDevice() && (
-          <div className="mb-6 flex justify-center">
+          <div className="mb-4 flex justify-center">
             <Button
               onClick={onPlayAudio}
-              variant="gentle"
+              variant="outline"
               size="lg"
-              className="px-8 py-4 bg-headspace-blue/10 hover:bg-headspace-blue/20 border-headspace-blue/20 text-headspace-blue-dark font-medium shadow-lg"
+              className="px-6 py-3 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 font-semibold"
             >
-              <Volume2 className="w-5 h-5 mr-3" />
-              Listen Again
+              <Volume2 className="w-5 h-5 mr-2" />
+              Play Audio
             </Button>
           </div>
         )}
 
         {/* Next button positioned below audio, before feedback */}
         {showNextButton && (
-          <div className="mb-6 flex justify-center">
+          <div className="mb-4 flex justify-center">
             <Button
               onClick={onNext}
               variant="primary-cta"
               size="lg"
-              className="px-12 shadow-xl"
+              className="px-12"
             >
-              Continue →
+              Next
             </Button>
           </div>
         )}
 
-        {/* Mindful Feedback Section */}
+        {/* Dedicated Feedback Section */}
         {feedback && (
-          <div className="mb-8 p-6 rounded-3xl border border-headspace-neutral-200 bg-gradient-to-br from-white to-headspace-neutral-50">
+          <div className="mb-6 p-4 rounded-lg border-2 border-dashed">
             <div
               className={cn(
-                "text-center text-xl font-medium transition-all duration-500",
+                "text-center text-xl font-bold transition-all",
                 selected !== null && optionOrder[selected].isCorrect
-                  ? "text-headspace-green-dark animate-gentle-bounce"
-                  : "text-headspace-orange-dark"
+                  ? "text-green-700 bg-green-50/60 border-green-200 animate-pop"
+                  : "text-amber-700 bg-amber-50/60 border-amber-200"
               )}
             >
               {feedback}
             </div>
             {showAnswer && phrase?.notes && (
-              <div className="text-sm text-headspace-neutral-600 mt-4 text-center">
-                <div className="inline-block rounded-2xl px-4 py-3 bg-headspace-yellow/20 border border-headspace-yellow/30 font-medium">
-                  💡 {phrase.notes}
-                </div>
+              <div className="text-sm text-muted-foreground mt-3 text-center">
+                <span className="inline-block rounded-full px-3 py-2 bg-yellow-100/80 font-mono border border-yellow-200">
+                  {phrase.notes}
+                </span>
               </div>
             )}
           </div>

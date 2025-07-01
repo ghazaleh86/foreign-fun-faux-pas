@@ -17,7 +17,7 @@ const AppContent = () => {
   const isLandingPage = location.pathname === "/";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-headspace-neutral-50 via-white to-headspace-blue/5">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90">
       <div className="pb-20"> {/* Add padding bottom for navigation */}
         <Routes>
           <Route path="/" element={<Index />} />

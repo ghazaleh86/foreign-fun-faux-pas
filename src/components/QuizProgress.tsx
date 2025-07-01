@@ -7,20 +7,14 @@ type QuizProgressProps = {
 };
 
 const QuizProgress: React.FC<QuizProgressProps> = ({ stageScore, maxScore }) => {
-  const progressPercentage = ((stageScore / maxScore) * 100);
-  
   return (
-    <div className="mb-6 w-full">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-headspace-neutral-600">Progress</span>
-        <span className="text-sm font-semibold text-headspace-orange">{stageScore}/{maxScore}</span>
-      </div>
-      <div className="w-full h-3 bg-headspace-neutral-100 rounded-full overflow-hidden shadow-inner">
-        <div
-          className="h-full bg-gradient-to-r from-headspace-orange to-headspace-orange-light transition-all duration-500 ease-out rounded-full shadow-sm"
-          style={{ width: `${progressPercentage.toFixed(1)}%` }}
-        />
-      </div>
+    <div className="mb-3 w-full h-3 bg-pink-100 rounded-lg overflow-hidden shadow-inner">
+      <div
+        className="h-full bg-gradient-to-r from-green-400 to-pink-300 transition-all"
+        style={{
+          width: ((stageScore / maxScore) * 100).toFixed(1) + "%"
+        }}
+      />
     </div>
   );
 };

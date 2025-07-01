@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CircleCheck, CircleX } from "lucide-react";
 
 export type Option = { label: string; isCorrect: boolean };
 
@@ -19,15 +19,15 @@ const MultipleChoiceOptions: React.FC<MultipleChoiceOptionsProps> = ({
   showAnswer,
   onSelect,
 }) => {
-  const optionStyle = (idx: number) => {
-    if (!showAnswer) return "hover:scale-105 hover:shadow-lg border-headspace-neutral-200 bg-white hover:bg-headspace-neutral-50 hover:border-headspace-orange/30";
-    if (options[idx].isCorrect) return "bg-gradient-to-r from-headspace-green/20 to-headspace-green/10 border-headspace-green text-headspace-green-dark scale-105 shadow-lg";
-    if (idx === selected) return "bg-gradient-to-r from-red-50 to-red-25 border-red-300 text-red-700";
-    return "opacity-60 border-headspace-neutral-200";
+  const optionFlash = (idx: number) => {
+    if (!showAnswer) return "";
+    if (options[idx].isCorrect) return "bg-green-200 border-green-500 text-green-800 scale-105";
+    if (idx === selected) return "bg-pink-200 border-pink-500 text-pink-800 animate-wiggle";
+    return "opacity-70";
   };
 
   return (
-    <div className="flex flex-col gap-4 mb-4">
+    <div className="flex flex-col gap-3 mb-2">
       {options.map((option, idx) => (
         <Button
           key={idx}
@@ -35,17 +35,23 @@ const MultipleChoiceOptions: React.FC<MultipleChoiceOptionsProps> = ({
           disabled={showAnswer}
           variant="outline"
           className={cn(
-            "justify-start w-full border-2 text-base font-medium py-6 px-6 rounded-3xl transition-all duration-300",
-            optionStyle(idx)
+            "justify-start w-full border-2 text-lg font-bold py-6 transition-all duration-200",
+            showAnswer
+              ? option.isCorrect
+                ? "animate-bounce-in"
+                : idx === selected
+                ? "animate-shake"
+                : ""
+              : "hover:scale-105 hover:shadow-lg",
+            optionFlash(idx)
           )}
         >
-          <span className="flex-1 text-left">{option.label}</span>
-          {showAnswer && options[idx].isCorrect && (
-            <CheckCircle className="ml-3 w-6 h-6 text-headspace-green" />
-          )}
-          {showAnswer && idx === selected && !options[idx].isCorrect && (
-            <XCircle className="ml-3 w-6 h-6 text-red-500" />
-          )}
+          {option.label}
+          {showAnswer && option.isCorrect ? (
+            <CircleCheck className="ml-3 text-green-500" />
+          ) : showAnswer && idx === selected ? (
+            <CircleX className="ml-3 text-red-400" />
+          ) : null}
         </Button>
       ))}
     </div>

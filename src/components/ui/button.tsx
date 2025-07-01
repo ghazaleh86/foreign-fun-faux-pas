@@ -6,26 +6,28 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-headspace-orange/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-headspace-orange text-white hover:bg-headspace-orange-dark shadow-lg hover:shadow-xl hover:scale-105 transform",
-        "primary-cta": "relative px-8 py-4 text-lg font-semibold rounded-3xl bg-gradient-to-r from-headspace-orange to-headspace-orange-light hover:from-headspace-orange-dark hover:to-headspace-orange shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl text-white transform hover:-translate-y-1 active:scale-95",
-        "secondary-cta": "px-6 py-3 text-base font-medium rounded-2xl bg-headspace-blue text-white hover:bg-headspace-blue-dark shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl transform hover:-translate-y-0.5",
-        gentle: "px-6 py-3 text-base font-medium rounded-2xl bg-headspace-green/10 text-headspace-green-dark hover:bg-headspace-green/20 border border-headspace-green/20 hover:border-headspace-green/30 transition-all duration-200",
-        destructive: "bg-red-500 text-white hover:bg-red-600 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transform",
-        outline: "border-2 border-headspace-neutral-200 bg-white hover:bg-headspace-neutral-50 hover:border-headspace-orange/30 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200",
-        secondary: "bg-headspace-neutral-100 text-headspace-neutral-700 hover:bg-headspace-neutral-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200",
-        ghost: "hover:bg-headspace-neutral-100 hover:text-headspace-neutral-900 rounded-2xl transition-all duration-200",
-        link: "text-headspace-blue underline-offset-4 hover:underline hover:text-headspace-blue-dark transition-colors duration-200",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        "primary-cta": "relative px-8 py-3 text-lg font-black rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 hover:from-pink-600 hover:via-purple-600 hover:to-yellow-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 text-white transform hover:-translate-y-0.5 before:absolute before:inset-0 before:bg-gradient-to-r before:from-pink-400 before:via-purple-400 before:to-yellow-400 before:rounded-2xl before:blur-lg before:opacity-75 before:-z-10 before:transition-opacity hover:before:opacity-100 before:animate-pulse",
+        gradient: "px-8 py-3 text-lg font-black rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 hover:from-pink-600 hover:via-purple-600 hover:to-yellow-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-0 text-white transform hover:-translate-y-0.5",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-11 px-6 py-2",
-        sm: "h-9 rounded-xl px-4 text-sm",
-        lg: "h-12 rounded-2xl px-8 text-base",
-        xl: "h-16 rounded-3xl px-12 text-xl",
-        icon: "h-11 w-11 rounded-2xl",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        xl: "h-14 rounded-2xl px-12 text-xl",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
