@@ -30,27 +30,26 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   return (
     <div className="w-full max-w-lg mx-auto px-4">
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
-        {/* Main Content */}
-        <CardContent className="px-6 py-6 text-center relative">
-          {/* Mascot - Made much bigger */}
-          <div className="relative z-10 mb-4">
-            <div className="bg-gray-50 rounded-full p-4 shadow-sm mx-auto w-32 h-32 flex items-center justify-center border border-gray-100">
-              <MascotAvatar size={96} className="ring-0" />
+        <CardContent className="px-6 py-4 text-center relative">
+          {/* Mascot - Smaller and more compact */}
+          <div className="relative z-10 mb-3">
+            <div className="bg-gray-50 rounded-full p-2 shadow-sm mx-auto w-20 h-20 flex items-center justify-center border border-gray-100">
+              <MascotAvatar size={64} className="ring-0" />
             </div>
           </div>
 
-          {/* Stage Info - More compact, removed emoji */}
-          <div className="relative z-10 mb-6">
-            <h1 className="text-4xl font-black tracking-tight mb-2 text-gray-900">
+          {/* Stage Info - More compact */}
+          <div className="relative z-10 mb-4">
+            <h1 className="text-3xl font-black tracking-tight mb-1 text-gray-900">
               STAGE {stage + 1}
             </h1>
-            <div className="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2 mb-4">
-              <Trophy className="w-5 h-5 text-amber-500" />
+            <div className="text-base font-semibold text-gray-600 flex items-center justify-center gap-2 mb-3">
+              <Trophy className="w-4 h-4 text-amber-500" />
               Complete!
             </div>
 
-            {/* Result Badge - More compact */}
-            <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold text-base shadow-sm mb-6 border-2 ${
+            {/* Result Badge - Smaller */}
+            <div className={`inline-flex items-center gap-2 px-4 py-1 rounded-full font-bold text-sm shadow-sm mb-4 border-2 ${
               playerWon 
                 ? "bg-green-50 text-green-700 border-green-200" 
                 : isTie 
@@ -61,40 +60,36 @@ const StageSummary: React.FC<StageSummaryProps> = ({
             </div>
           </div>
 
-          {/* Battle Results - More compact */}
-          <div className="relative z-10 mb-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Battle Results</h2>
+          {/* Battle Results - Compact */}
+          <div className="relative z-10 mb-4">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">Battle Results</h2>
             
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center gap-4">
               {/* Your Score */}
               <div className="text-center">
-                <div className={`w-20 h-20 rounded-xl flex items-center justify-center shadow-sm border-2 ${
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center shadow-sm border-2 ${
                   playerWon ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"
                 }`}>
-                  <div className="text-center">
-                    <div className={`text-2xl font-black ${playerWon ? "text-green-600" : "text-gray-700"}`}>
-                      {stageScore}
-                    </div>
+                  <div className={`text-xl font-black ${playerWon ? "text-green-600" : "text-gray-700"}`}>
+                    {stageScore}
                   </div>
                 </div>
-                <div className="mt-2 text-sm font-semibold text-gray-600">You</div>
+                <div className="mt-1 text-xs font-semibold text-gray-600">You</div>
               </div>
               
               {/* VS Divider */}
-              <div className="text-2xl font-black text-gray-300">VS</div>
+              <div className="text-xl font-black text-gray-300">VS</div>
               
               {/* Opponent Score */}
               <div className="text-center">
-                <div className={`w-20 h-20 rounded-xl flex items-center justify-center shadow-sm border-2 ${
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center shadow-sm border-2 ${
                   !playerWon && !isTie ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"
                 }`}>
-                  <div className="text-center">
-                    <div className={`text-2xl font-black ${!playerWon && !isTie ? "text-red-600" : "text-gray-700"}`}>
-                      {opponentScore}
-                    </div>
+                  <div className={`text-xl font-black ${!playerWon && !isTie ? "text-red-600" : "text-gray-700"}`}>
+                    {opponentScore}
                   </div>
                 </div>
-                <div className="mt-2 text-sm font-semibold text-gray-600">{opponentName}</div>
+                <div className="mt-1 text-xs font-semibold text-gray-600">{opponentName}</div>
               </div>
             </div>
           </div>
@@ -104,7 +99,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
             <Button
               onClick={onAdvanceStage}
               variant="default"
-              size="lg"
+              size="default"
               className="bg-gray-900 hover:bg-gray-800 text-white font-bold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <span>Continue Journey</span>
