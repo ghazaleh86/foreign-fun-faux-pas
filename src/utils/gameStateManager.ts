@@ -39,5 +39,8 @@ export function clearGameState() {
 
 export function hasActiveGame(): boolean {
   const state = getGameState();
-  return !!(state && state.phrases.length > 0 && state.current < state.phrases.length);
+  console.log("🔍 gameStateManager: Checking hasActiveGame, state:", state);
+  const hasActive = !!(state && state.phrases.length > 0 && state.current < state.phrases.length);
+  console.log("🔍 gameStateManager: hasActiveGame result:", hasActive);
+  return hasActive;
 }

@@ -19,29 +19,40 @@ const BottomNavigation = () => {
 
   // Check for active game on mount and when route changes
   useEffect(() => {
-    setActiveGame(hasActiveGame());
+    const gameState = hasActiveGame();
+    console.log("🔍 BottomNavigation: Checking active game state:", gameState);
+    console.log("🔍 BottomNavigation: Current path:", currentPath);
+    setActiveGame(gameState);
   }, [currentPath]);
 
   // Also check when the component mounts
   useEffect(() => {
-    setActiveGame(hasActiveGame());
+    const gameState = hasActiveGame();
+    console.log("🔍 BottomNavigation: Initial active game check:", gameState);
+    setActiveGame(gameState);
   }, []);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
+    console.log("🎮 BottomNavigation: Play button clicked, activeGame:", activeGame);
+    
     // Check if there's an active game
     if (activeGame) {
+      console.log("🎮 BottomNavigation: Continuing active game");
       // If there's an active game, navigate with startGame parameter to continue
       navigate("/?startGame=true");
     } else {
+      console.log("🎮 BottomNavigation: Starting new game");
       // If no active game, go to home page to start new game
       navigate("/");
     }
     
     // Update active game status after navigation
     setTimeout(() => {
-      setActiveGame(hasActiveGame());
+      const newGameState = hasActiveGame();
+      console.log("🔄 BottomNavigation: Updated game state after navigation:", newGameState);
+      setActiveGame(newGameState);
     }, 100);
   };
 
