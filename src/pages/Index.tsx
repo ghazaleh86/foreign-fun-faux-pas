@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
 import MascotAvatar from "../components/MascotAvatar";
-import { hasActiveGame } from "@/utils/gameStateManager";
+import { hasActiveGame, clearGameState } from "@/utils/gameStateManager";
+import { Home } from "lucide-react";
 
 const Index = () => {
   const [started, setStarted] = useState(false);
@@ -120,8 +121,27 @@ const Index = () => {
     );
   }
 
+  const handleBackToLanding = () => {
+    clearGameState();
+    setStarted(false);
+    setAnimationStep(0);
+  };
+
   return (
     <div className="flex flex-col items-start justify-center px-4 py-4">
+      {/* Back to Landing Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleBackToLanding}
+          className="bg-white/90 backdrop-blur-sm border-pink-300 hover:bg-pink-50 shadow-lg"
+        >
+          <Home className="w-4 h-4 mr-2" />
+          Back to Start
+        </Button>
+      </div>
+      
       <PhraseQuiz opponentName={opponent.name} opponentEmoji={opponent.emoji} />
     </div>
   );
