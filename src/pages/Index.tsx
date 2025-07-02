@@ -63,7 +63,7 @@ const Index = () => {
         }`}>
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 rounded-full blur-xl opacity-60 scale-150 animate-pulse"></div>
           <div className="relative">
-            <div className="w-32 h-32 md:w-60 md:h-60 rounded-full overflow-hidden mb-4 md:mb-6 hover:scale-105 transition-transform duration-300">
+            <div className="w-28 h-28 md:w-52 md:h-52 rounded-full overflow-hidden mb-4 md:mb-6 hover:scale-105 transition-transform duration-300">
               <img 
                 src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXk3bzJmeXU4eGM5OThzZThvaGk3cTN2bTl5OG50M3ptMGVld2lqZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/T4xp0C3qwSLw9KoeEZ/giphy.gif" 
                 alt="Chippy the Chipmunk - Animated Learning Companion" 
@@ -95,7 +95,7 @@ const Index = () => {
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-6"
         }`}>
-          <p className="text-base md:text-xl text-slate-600 font-medium leading-relaxed max-w-xl px-4">
+          <p className="text-base md:text-xl text-slate-600 font-medium leading-loose max-w-xl px-4">
             Listen to a phrase, pick the right (or hilarious) meaning,<br />
             <span className="text-pink-600 font-semibold">and challenge Chippy the chipmunk! 🐿️</span>
           </p>
