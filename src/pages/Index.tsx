@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
 import MascotAvatar from "../components/MascotAvatar";
@@ -9,18 +10,21 @@ import { Home } from "lucide-react";
 const Index = () => {
   const [started, setStarted] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
+  const [searchParams] = useSearchParams();
 
   // Chippy is now the consistent opponent
   const opponent = { name: "Chippy", emoji: "🐿️" };
 
-  // Check for active game on mount only
+  // Check for active game on mount and handle forced start
   useEffect(() => {
     console.log("🏠 Index: Checking for active game on mount");
-    if (hasActiveGame()) {
-      console.log("🎮 Index: Active game found, starting directly");
+    const shouldStartGame = searchParams.get("startGame") === "true";
+    
+    if (hasActiveGame() || shouldStartGame) {
+      console.log("🎮 Index: Active game found or forced start, starting directly");
       setStarted(true);
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!started && !hasActiveGame()) {
