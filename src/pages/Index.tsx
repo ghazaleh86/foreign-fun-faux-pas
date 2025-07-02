@@ -83,7 +83,7 @@ const Index = () => {
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-4"
         }`}>
-          <h1 className="text-4xl md:text-6xl font-black mb-3 text-gray-800 drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-game text-gray-800 drop-shadow-lg">
             Guess that Phrase
           </h1>
           <div className="w-24 h-1 bg-pink-400 mx-auto rounded-full"></div>
