@@ -49,7 +49,8 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
       audioPlayed: audioPlayedRef.current,
       text: text.slice(0, 20),
       isMobile: isMobileDevice(),
-      userHasInteracted
+      userHasInteracted,
+      triggerKey: JSON.stringify(triggerKey)
     });
     
     // On mobile, don't auto-play audio unless user has interacted
@@ -60,14 +61,14 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     
     audioPlayedRef.current = true;
 
-    // Add a small delay for mobile devices to ensure audio context is ready
+    // Enhanced audio playback with better error handling and fallbacks
     const playAudio = async () => {
       try {
         // Get native voice and optimized settings for the language
         const nativeVoiceId = getNativeVoiceForLanguage(language);
         const languageSettings = getLanguageVoiceSettings(language);
 
-        console.log(`🎵 Playing audio for ${language} with native voice:`, nativeVoiceId);
+        console.log(`🎵 Attempting ElevenLabs TTS for ${language} with voice:`, nativeVoiceId);
 
         await playWithElevenLabsTTS({ 
           text, 
@@ -76,82 +77,24 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
           ...languageSettings,
           useSpeakerBoost: true
         });
-      } catch (error) {
-        console.log('🔄 ElevenLabs failed, trying browser TTS fallback');
         
-        // Enhanced mobile-friendly fallback
-        if ("speechSynthesis" in window) {
-          try {
-            // Cancel any ongoing speech
-            window.speechSynthesis.cancel();
-            
-            // Wait for voices to be loaded
-            const waitForVoices = () => {
-              return new Promise<void>((resolve) => {
-                const voices = window.speechSynthesis.getVoices();
-                if (voices.length > 0) {
-                  resolve();
-                } else {
-                  window.speechSynthesis.addEventListener('voiceschanged', () => {
-                    resolve();
-                  }, { once: true });
-                  
-                  // Fallback timeout
-                  setTimeout(resolve, 1000);
-                }
-              });
-            };
-
-            await waitForVoices();
-            
-            const utterance = new window.SpeechSynthesisUtterance(text);
-            utterance.lang = guessSpeechLang(language);
-            utterance.rate = 0.8; // Slower for better mobile clarity
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
-            
-            // Enhanced voice selection for mobile
-            const voices = window.speechSynthesis.getVoices();
-            let selectedVoice = null;
-            
-            // Try to find a good voice for the language
-            const preferredVoices = voices.filter(voice => {
-              const voiceLang = voice.lang.toLowerCase();
-              const targetLang = (language || "en").toLowerCase();
-              return voiceLang.includes(targetLang) || voiceLang.includes(targetLang.split('-')[0]);
-            });
-            
-            if (preferredVoices.length > 0) {
-              // Prefer local voices for mobile reliability
-              selectedVoice = preferredVoices.find(voice => voice.localService) || preferredVoices[0];
-            }
-            
-            if (selectedVoice) {
-              utterance.voice = selectedVoice;
-              console.log('🎵 Using voice:', selectedVoice.name);
-            }
-            
-            // Handle mobile-specific events
-            utterance.onstart = () => {
-              console.log('✅ Speech started successfully');
-            };
-            
-            utterance.onend = () => {
-              console.log('✅ Speech completed');
-            };
-            
-            utterance.onerror = (event) => {
-              console.error('❌ Speech synthesis error:', event.error);
-            };
-            
-            // Use a small timeout to ensure the speech synthesis is ready
-            setTimeout(() => {
-              window.speechSynthesis.speak(utterance);
-            }, 100);
-            
-          } catch (speechError) {
-            console.error('❌ Browser TTS also failed:', speechError);
-          }
+        console.log('✅ ElevenLabs TTS succeeded');
+      } catch (elevenLabsError) {
+        console.log('🔄 ElevenLabs failed, trying browser TTS fallback:', elevenLabsError);
+        
+        // Import the enhanced browser TTS fallback
+        try {
+          const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
+          await playWithBrowserTTS(text, language);
+          console.log('✅ Browser TTS fallback succeeded');
+        } catch (browserTtsError) {
+          console.error('❌ All TTS methods failed:', {
+            elevenLabs: elevenLabsError,
+            browserTts: browserTtsError
+          });
+          
+          // Last resort: Show a visual indicator that audio failed
+          console.log('💡 Consider using the manual play button');
         }
       }
     };
@@ -167,7 +110,8 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
   }, [...triggerKey, shouldPlay, text, language]);
 
   useEffect(() => {
-    // Reset trigger on new phrase/step
+    // Reset trigger on new phrase/step - CRITICAL for ensuring audio plays on each new question
+    console.log('🔄 Resetting audio state for new question:', triggerKey);
     audioPlayedRef.current = false;
   }, [...triggerKey]);
 

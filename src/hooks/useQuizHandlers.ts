@@ -207,7 +207,7 @@ export function useQuizHandlers({
     resetQuestionState();
   }, [setShowStagePreview, resetQuestionState]);
 
-  const handlePlayAudio = useCallback(() => {
+  const handlePlayAudio = useCallback(async () => {
     if (!phrase) return;
     
     const ttsText = phrase.pronunciation || phrase.phrase_text;
@@ -215,7 +215,11 @@ export function useQuizHandlers({
     const nativeVoiceId = getNativeVoiceForLanguage(language);
     const languageSettings = getLanguageVoiceSettings(language);
     
-    console.log(`🎵 Manual play audio for ${language} with native voice:`, nativeVoiceId);
+    console.log(`🎵 Manual play audio triggered for ${language}:`, {
+      text: ttsText.slice(0, 30),
+      voiceId: nativeVoiceId,
+      isMobile: isMobileDevice()
+    });
     
     // For mobile devices, try to resume audio context first
     if (isMobileDevice()) {
@@ -224,29 +228,44 @@ export function useQuizHandlers({
           const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
           if (audioContext.state === 'suspended') {
             await audioContext.resume();
+            console.log('✅ Audio context resumed for manual play');
           }
         };
-        resumeAudioContext().catch(() => {
-          console.log('Could not resume audio context');
-        });
+        await resumeAudioContext();
       } catch (error) {
-        console.log('AudioContext not available');
+        console.log('⚠️ AudioContext not available or failed to resume:', error);
       }
     }
     
-    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS, playWithBrowserTTS }) =>
-      playWithElevenLabsTTS({ 
+    try {
+      // Try ElevenLabs first
+      const { playWithElevenLabsTTS } = await import("@/lib/elevenlabsTtsClient");
+      await playWithElevenLabsTTS({ 
         text: ttsText, 
         language,
         voiceId: nativeVoiceId,
         ...languageSettings,
         useSpeakerBoost: true
-      }).catch(() => {
-        // Enhanced mobile-friendly fallback
-        console.log('Falling back to browser TTS for mobile');
-        playWithBrowserTTS(ttsText, phrase.language || "en");
-      })
-    );
+      });
+      console.log('✅ Manual ElevenLabs TTS succeeded');
+    } catch (elevenLabsError) {
+      console.log('🔄 Manual ElevenLabs failed, trying browser TTS:', elevenLabsError);
+      
+      try {
+        // Import enhanced browser TTS with retry logic
+        const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
+        await playWithBrowserTTS(ttsText, phrase.language || "en");
+        console.log('✅ Manual browser TTS succeeded');
+      } catch (browserError) {
+        console.error('❌ Manual audio playback failed completely:', {
+          elevenLabs: elevenLabsError,
+          browser: browserError
+        });
+        
+        // Show user feedback that audio failed
+        alert('Audio playback failed. Please check your device audio settings.');
+      }
+    }
   }, [phrase]);
 
   return {
