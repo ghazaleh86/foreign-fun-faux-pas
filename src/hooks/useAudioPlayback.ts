@@ -64,47 +64,62 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
 
     // Enhanced audio playback with better error handling and fallbacks
     const playAudio = async () => {
+      // Fix language case conversion: "German" -> "german"
+      const normalizedLanguage = language.toLowerCase();
+      const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
+      const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
+
+      console.log(`🎵 Audio Debug - Language Processing:`, {
+        originalLanguage: language,
+        normalizedLanguage,
+        nativeVoiceId,
+        languageSettings,
+        text: text.slice(0, 30)
+      });
+
       try {
-        // Normalize language to lowercase for consistent voice selection
-        const normalizedLanguage = language.toLowerCase();
-        const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
-        const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
-
-        console.log(`🎵 Audio Debug - Language Processing:`, {
-          originalLanguage: language,
-          normalizedLanguage,
-          nativeVoiceId,
-          languageSettings,
-          text: text.slice(0, 30)
-        });
-
         console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with voice:`, nativeVoiceId);
 
-        await playWithElevenLabsTTS({ 
+        // Add timeout and better error handling
+        const ttsPromise = playWithElevenLabsTTS({ 
           text, 
           language: normalizedLanguage,
           voiceId: nativeVoiceId,
           ...languageSettings,
           useSpeakerBoost: true
         });
+
+        // 10 second timeout for ElevenLabs
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('ElevenLabs TTS timeout after 10 seconds')), 10000)
+        );
+
+        await Promise.race([ttsPromise, timeoutPromise]);
         
-        console.log('✅ ElevenLabs TTS succeeded - SHOULD SOUND NATURAL');
-      } catch (elevenLabsError) {
-        console.log('🔄 ElevenLabs failed, trying browser TTS fallback (WILL BE ROBOTIC):', elevenLabsError);
+        console.log('✅ ElevenLabs TTS succeeded - NATURAL VOICE SHOULD BE PLAYING');
+      } catch (elevenLabsError: any) {
+        console.error('🔄 ElevenLabs failed, details:', {
+          error: elevenLabsError.message,
+          language: normalizedLanguage,
+          voiceId: nativeVoiceId,
+          stack: elevenLabsError.stack
+        });
+        
+        console.log('🔄 Falling back to browser TTS (ROBOTIC VOICE)');
         
         // Import the enhanced browser TTS fallback
         try {
           const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
-          await playWithBrowserTTS(text, language.toLowerCase());
-          console.log('✅ Browser TTS fallback succeeded (BUT SOUNDS ROBOTIC)');
-        } catch (browserTtsError) {
+          await playWithBrowserTTS(text, normalizedLanguage);
+          console.log('✅ Browser TTS fallback succeeded (ROBOTIC VOICE)');
+        } catch (browserTtsError: any) {
           console.error('❌ All TTS methods failed:', {
-            elevenLabs: elevenLabsError,
-            browserTts: browserTtsError
+            elevenLabs: elevenLabsError.message,
+            browserTts: browserTtsError.message
           });
           
-          // Last resort: Show a visual indicator that audio failed
-          console.log('💡 Consider using the manual play button');
+          // Show user-friendly error
+          console.log('💡 Audio failed - try clicking the speaker button manually');
         }
       }
     };

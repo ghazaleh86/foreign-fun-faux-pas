@@ -41,7 +41,8 @@ export async function playWithElevenLabsTTS({
       stability,
       similarityBoost,
       style,
-      useSpeakerBoost
+      useSpeakerBoost,
+      edgeUrl: EDGE_URL
     });
 
     const res = await fetch(EDGE_URL, {
@@ -58,15 +59,26 @@ export async function playWithElevenLabsTTS({
       }),
     });
 
+    console.log('🎵 ElevenLabs API Response Status:', res.status);
+
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('❌ TTS API failed with status:', res.status, 'Error:', errorText);
+      console.error('❌ TTS API failed:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errorText,
+        url: EDGE_URL
+      });
       
       if (res.status === 429) {
-        throw new Error("ElevenLabs quota exceeded. Using browser fallback for better audio quality.");
+        throw new Error("ElevenLabs quota exceeded. Check your API key and usage limits.");
       }
       
-      throw new Error("Failed to fetch TTS audio");
+      if (res.status === 401) {
+        throw new Error("ElevenLabs API key invalid or missing. Check your Supabase edge function secrets.");
+      }
+      
+      throw new Error(`ElevenLabs API error (${res.status}): ${errorText}`);
     }
 
     const audioBlob = await res.blob();

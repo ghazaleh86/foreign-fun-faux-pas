@@ -142,6 +142,16 @@ serve(async (req) => {
     console.log(`[TTS] Language: ${language} | Voice: ${selectedVoiceId} | Text length: ${text.length} | Client: ${clientId}`);
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
+    
+    if (!ELEVENLABS_API_KEY) {
+      console.error("[TTS] ❌ ELEVENLABS_API_KEY not found in environment");
+      return new Response(JSON.stringify({ error: "ElevenLabs API key not configured. Please add ELEVENLABS_API_KEY to your Supabase edge function secrets." }), { 
+        status: 500, 
+        headers: corsHeaders 
+      });
+    }
+    
+    console.log(`[TTS] ✅ API key found, making request to ElevenLabs...`);
 
     // Use the better quality multilingual model
     const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
