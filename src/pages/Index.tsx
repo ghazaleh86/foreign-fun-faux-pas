@@ -13,18 +13,14 @@ const Index = () => {
   // Chippy is now the consistent opponent
   const opponent = { name: "Chippy", emoji: "🐿️" };
 
-  // Check for active game on mount and bypass landing if found
+  // Check for active game on mount only
   useEffect(() => {
     console.log("🏠 Index: Checking for active game on mount");
     if (hasActiveGame()) {
       console.log("🎮 Index: Active game found, starting directly");
       setStarted(true);
-    } else if (started) {
-      // Reset to landing if no active game but component thinks game is started
-      console.log("🏠 Index: No active game found, returning to landing");
-      setStarted(false);
     }
-  }, [started]);
+  }, []);
 
   useEffect(() => {
     if (!started && !hasActiveGame()) {
@@ -42,6 +38,8 @@ const Index = () => {
     }
   }, [started]);
 
+  console.log("🔍 Index render: started =", started, "hasActiveGame =", hasActiveGame());
+  
   if (!started) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-4 min-h-screen relative overflow-hidden">
@@ -107,7 +105,10 @@ const Index = () => {
         }`}>
           <Button
             variant="primary-cta"
-            onClick={() => setStarted(true)}
+            onClick={() => {
+              console.log("Challenge Chippy button clicked! Setting started to true");
+              setStarted(true);
+            }}
             size="lg"
           >
             <span className="flex items-center gap-3">
@@ -129,6 +130,8 @@ const Index = () => {
     setAnimationStep(0);
   };
 
+  console.log("🎮 Rendering game view with PhraseQuiz");
+  
   return (
     <div className="flex flex-col items-start justify-center px-4 py-4">
       {/* Back to Landing Button */}
