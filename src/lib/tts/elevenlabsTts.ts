@@ -34,6 +34,16 @@ export async function playWithElevenLabsTTS({
   }
 
   try {
+    console.log('🎵 ElevenLabs API Call:', {
+      text: processedText.slice(0, 30),
+      language: normalizedLanguage,
+      voiceId,
+      stability,
+      similarityBoost,
+      style,
+      useSpeakerBoost
+    });
+
     const res = await fetch(EDGE_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

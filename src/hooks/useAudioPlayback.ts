@@ -48,6 +48,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
       shouldPlay,
       audioPlayed: audioPlayedRef.current,
       text: text.slice(0, 20),
+      language: language,
       isMobile: isMobileDevice(),
       userHasInteracted,
       triggerKey: JSON.stringify(triggerKey)
@@ -69,6 +70,14 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
         const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
         const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
 
+        console.log(`🎵 Audio Debug - Language Processing:`, {
+          originalLanguage: language,
+          normalizedLanguage,
+          nativeVoiceId,
+          languageSettings,
+          text: text.slice(0, 30)
+        });
+
         console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with voice:`, nativeVoiceId);
 
         await playWithElevenLabsTTS({ 
@@ -79,15 +88,15 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
           useSpeakerBoost: true
         });
         
-        console.log('✅ ElevenLabs TTS succeeded');
+        console.log('✅ ElevenLabs TTS succeeded - SHOULD SOUND NATURAL');
       } catch (elevenLabsError) {
-        console.log('🔄 ElevenLabs failed, trying browser TTS fallback:', elevenLabsError);
+        console.log('🔄 ElevenLabs failed, trying browser TTS fallback (WILL BE ROBOTIC):', elevenLabsError);
         
         // Import the enhanced browser TTS fallback
         try {
           const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
           await playWithBrowserTTS(text, language.toLowerCase());
-          console.log('✅ Browser TTS fallback succeeded');
+          console.log('✅ Browser TTS fallback succeeded (BUT SOUNDS ROBOTIC)');
         } catch (browserTtsError) {
           console.error('❌ All TTS methods failed:', {
             elevenLabs: elevenLabsError,

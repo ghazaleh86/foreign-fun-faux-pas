@@ -134,6 +134,12 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
+  console.log('🎮 QuizLogic Audio Debug:', {
+    phraseLanguage: phrase?.language,
+    phraseText: phrase?.phrase_text?.slice(0, 20),
+    shouldPlay: !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
+  });
+
   // Use the quiz handlers hook
   const {
     handleSelect,
