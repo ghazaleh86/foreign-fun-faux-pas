@@ -5,17 +5,31 @@ import { Option } from "@/components/MultipleChoiceOptions";
 export const STAGE_SIZE = 10;
 export const ROUND_SIZE = 5;
 
-// Updated with more natural-sounding voices
-export const ELEVENLABS_VOICES = [
-  { name: "Rachel", id: "pNInz6obpgDQGcFmaJgB" }, // Very natural female voice
-  { name: "Drew", id: "29vD33N1CtxCmqQRPOHJ" }, // Natural male voice
-  { name: "Clyde", id: "2EiwWnXFnvU5JabPnv8n" }, // Warm male voice
-  { name: "Domi", id: "AZnzlk1XvdvUeBnXmlld" }, // Confident female voice
-  { name: "Dave", id: "CYw3kZ02Hs0563khs1Fj" }, // Conversational male voice
-  { name: "Fin", id: "D38z5RcWu1voky8WS1ja" }, // Friendly male voice
-  { name: "Sarah", id: "EXAVITQu4vr4xnSDxMaL" }, // Clear female voice
-  { name: "Antoni", id: "ErXwobaYiN019PkySvjV" }, // Warm male voice
-];
+// Native voice mappings for better language support
+export const NATIVE_VOICES = {
+  "german": "2EiwWnXFnvU5JabPnv8n", // Clyde - warm German-friendly voice
+  "spanish": "ErXwobaYiN019PkySvjV", // Antoni - warm Spanish-friendly voice
+  "french": "pNInz6obpgDQGcFmaJgB", // Rachel - clear French pronunciation
+  "japanese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear Japanese pronunciation
+  "italian": "AZnzlk1XvdvUeBnXmlld", // Domi - confident Italian voice
+  "portuguese": "29vD33N1CtxCmqQRPOHJ", // Drew - natural Portuguese voice
+  "dutch": "D38z5RcWu1voky8WS1ja", // Fin - friendly Dutch voice
+  "swedish": "CYw3kZ02Hs0563khs1Fj", // Dave - conversational Swedish voice
+  "english": "pNInz6obpgDQGcFmaJgB", // Rachel - default English
+};
+
+// Language-optimized voice settings for natural speech
+export const LANGUAGE_VOICE_SETTINGS = {
+  "german": { stability: 0.6, similarityBoost: 0.9, style: 0.1 },
+  "spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "french": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "japanese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "italian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
+  "portuguese": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
+  "dutch": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "swedish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+};
 
 export const getShuffledOptions = (phrase: Phrase): Option[] => {
   const options: Option[] = [
@@ -42,9 +56,22 @@ export function getSpeedBonusXP(timeTaken: number) {
   return 0;
 }
 
-export const getCurrentVoice = (idx: number) => ELEVENLABS_VOICES[idx % ELEVENLABS_VOICES.length].id;
+// Get native voice for a specific language
+export const getNativeVoiceForLanguage = (language: string) => {
+  const normalizedLanguage = language.toLowerCase();
+  return NATIVE_VOICES[normalizedLanguage] || NATIVE_VOICES["english"];
+};
 
-// Voice-specific settings for optimal naturalness
+// Get optimized voice settings for a specific language
+export const getLanguageVoiceSettings = (language: string) => {
+  const normalizedLanguage = language.toLowerCase();
+  return LANGUAGE_VOICE_SETTINGS[normalizedLanguage] || LANGUAGE_VOICE_SETTINGS["english"];
+};
+
+// Deprecated - kept for backward compatibility but now uses language-based selection
+export const getCurrentVoice = (idx: number) => NATIVE_VOICES["english"];
+
+// Voice-specific settings for optimal naturalness (deprecated in favor of language-based settings)
 export const getVoiceSettings = (voiceId: string) => {
   const voiceConfigs = {
     "pNInz6obpgDQGcFmaJgB": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Rachel

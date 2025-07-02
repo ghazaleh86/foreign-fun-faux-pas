@@ -4,9 +4,9 @@ const EDGE_URL =
 
 import { validateTtsTextInput } from './validateTtsInput';
 
-// Preprocess text for more natural speech
-function preprocessTextForTTS(text: string): string {
-  return text
+// Enhanced text preprocessing for more natural speech across languages
+function preprocessTextForTTS(text: string, language: string = "english"): string {
+  let processed = text
     // Add natural pauses
     .replace(/([.!?])\s*/g, '$1 ')
     // Add slight pause after commas
@@ -19,6 +19,34 @@ function preprocessTextForTTS(text: string): string {
     // Trim extra spaces
     .replace(/\s+/g, ' ')
     .trim();
+
+  // Language-specific preprocessing
+  const normalizedLanguage = language.toLowerCase();
+  
+  switch (normalizedLanguage) {
+    case 'german':
+      // Handle German umlauts and special characters for better pronunciation
+      processed = processed
+        .replace(/ß/g, 'ss')
+        .replace(/ü/g, 'ue')
+        .replace(/ö/g, 'oe')
+        .replace(/ä/g, 'ae');
+      break;
+    case 'spanish':
+      // Add slight emphasis for Spanish pronunciation
+      processed = processed.replace(/ñ/g, 'ny');
+      break;
+    case 'french':
+      // Handle French accents for better pronunciation
+      processed = processed
+        .replace(/é/g, 'e')
+        .replace(/è/g, 'e')
+        .replace(/ê/g, 'e')
+        .replace(/ç/g, 'c');
+      break;
+  }
+  
+  return processed;
 }
 
 // Check if we're on a mobile device
@@ -53,13 +81,15 @@ async function initializeAudioContext(): Promise<AudioContext | null> {
 
 export async function playWithElevenLabsTTS({ 
   text, 
-  voiceId = "pNInz6obpgDQGcFmaJgB", // Rachel - more natural default
-  stability = 0.5,
-  similarityBoost = 0.8,
-  style = 0.2,
+  language = "english",
+  voiceId, 
+  stability,
+  similarityBoost,
+  style,
   useSpeakerBoost = true
 }: { 
   text: string, 
+  language?: string,
   voiceId?: string,
   stability?: number,
   similarityBoost?: number,
@@ -69,7 +99,7 @@ export async function playWithElevenLabsTTS({
   const error = validateTtsTextInput(text);
   if (error) throw new Error(error);
 
-  const processedText = preprocessTextForTTS(text);
+  const processedText = preprocessTextForTTS(text, language);
 
   // For mobile devices, ensure audio context is initialized
   if (isMobileDevice()) {
@@ -82,6 +112,7 @@ export async function playWithElevenLabsTTS({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         text: processedText, 
+        language,
         voiceId,
         stability,
         similarityBoost,
@@ -175,7 +206,7 @@ export function playWithBrowserTTS(text: string, language: string = "en") {
         // Cancel any ongoing speech
         window.speechSynthesis.cancel();
         
-        const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text));
+        const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text, language));
         
         // Enhanced mobile-friendly settings
         utterance.lang = language;

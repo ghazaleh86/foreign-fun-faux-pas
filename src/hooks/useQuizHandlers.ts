@@ -1,11 +1,10 @@
-
 import { useCallback } from "react";
 import { 
   computeSpeedBonus, 
   getSpeedBonusXP, 
-  getCurrentVoice, 
+  getNativeVoiceForLanguage,
+  getLanguageVoiceSettings,
   randomWrongTaunt, 
-  getVoiceSettings,
   STAGE_SIZE,
   ROUND_SIZE
 } from "@/utils/quizHelpers";
@@ -212,7 +211,11 @@ export function useQuizHandlers({
     if (!phrase) return;
     
     const ttsText = phrase.pronunciation || phrase.phrase_text;
-    const voiceSettings = getVoiceSettings(getCurrentVoice(current));
+    const language = phrase.language || "english";
+    const nativeVoiceId = getNativeVoiceForLanguage(language);
+    const languageSettings = getLanguageVoiceSettings(language);
+    
+    console.log(`🎵 Manual play audio for ${language} with native voice:`, nativeVoiceId);
     
     // For mobile devices, try to resume audio context first
     if (isMobileDevice()) {
@@ -234,8 +237,9 @@ export function useQuizHandlers({
     import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS, playWithBrowserTTS }) =>
       playWithElevenLabsTTS({ 
         text: ttsText, 
-        voiceId: getCurrentVoice(current),
-        ...voiceSettings,
+        language,
+        voiceId: nativeVoiceId,
+        ...languageSettings,
         useSpeakerBoost: true
       }).catch(() => {
         // Enhanced mobile-friendly fallback
@@ -243,7 +247,7 @@ export function useQuizHandlers({
         playWithBrowserTTS(ttsText, phrase.language || "en");
       })
     );
-  }, [phrase, current]);
+  }, [phrase]);
 
   return {
     handleSelect,

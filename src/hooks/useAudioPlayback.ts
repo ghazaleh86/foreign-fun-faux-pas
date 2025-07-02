@@ -2,7 +2,7 @@
 import { useRef, useEffect } from "react";
 import { playWithElevenLabsTTS } from "@/lib/elevenlabsTtsClient";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
-import { getVoiceSettings } from "@/utils/quizHelpers";
+import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
 
 // Check if we're on a mobile device
 function isMobileDevice(): boolean {
@@ -42,13 +42,17 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     // Add a small delay for mobile devices to ensure audio context is ready
     const playAudio = async () => {
       try {
-        // Get optimized voice settings
-        const voiceSettings = getVoiceSettings(voiceId);
+        // Get native voice and optimized settings for the language
+        const nativeVoiceId = getNativeVoiceForLanguage(language);
+        const languageSettings = getLanguageVoiceSettings(language);
+
+        console.log(`🎵 Playing audio for ${language} with native voice:`, nativeVoiceId);
 
         await playWithElevenLabsTTS({ 
           text, 
-          voiceId,
-          ...voiceSettings,
+          language,
+          voiceId: nativeVoiceId,
+          ...languageSettings,
           useSpeakerBoost: true
         });
       } catch (error) {
@@ -139,7 +143,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     }
     
     // eslint-disable-next-line
-  }, [...triggerKey, shouldPlay, text, voiceId, language]);
+  }, [...triggerKey, shouldPlay, text, language]);
 
   useEffect(() => {
     // Reset trigger on new phrase/step

@@ -11,6 +11,32 @@ const RATE_LIMIT_WINDOW_MS = 2 * 60 * 1000; // 2 mins
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const clientRequests: Record<string, { count: number; windowStart: number }> = {};
 
+// Native voice mappings for better language support
+const NATIVE_VOICES = {
+  "german": "2EiwWnXFnvU5JabPnv8n", // Clyde - warm German-friendly voice
+  "spanish": "ErXwobaYiN019PkySvjV", // Antoni - warm Spanish-friendly voice
+  "french": "pNInz6obpgDQGcFmaJgB", // Rachel - clear French pronunciation
+  "japanese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear Japanese pronunciation
+  "italian": "AZnzlk1XvdvUeBnXmlld", // Domi - confident Italian voice
+  "portuguese": "29vD33N1CtxCmqQRPOHJ", // Drew - natural Portuguese voice
+  "dutch": "D38z5RcWu1voky8WS1ja", // Fin - friendly Dutch voice
+  "swedish": "CYw3kZ02Hs0563khs1Fj", // Dave - conversational Swedish voice
+  "english": "pNInz6obpgDQGcFmaJgB", // Rachel - default English
+};
+
+// Language-optimized voice settings
+const LANGUAGE_VOICE_SETTINGS = {
+  "german": { stability: 0.6, similarityBoost: 0.9, style: 0.1 },
+  "spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "french": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "japanese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "italian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
+  "portuguese": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
+  "dutch": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "swedish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+};
+
 function getClientIdentifier(req: Request) {
   // Prefer authenticated user if available via headers, else fall back to IP
   const auth = req.headers.get("Authorization");
@@ -45,9 +71,10 @@ serve(async (req) => {
     let { 
       text, 
       voiceId, 
-      stability = 0.5, 
-      similarityBoost = 0.8, 
-      style = 0.2, 
+      language = "english",
+      stability, 
+      similarityBoost, 
+      style, 
       useSpeakerBoost = true 
     } = body;
     
@@ -55,16 +82,26 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid text length." }), { status: 400, headers: corsHeaders });
     }
     
+    // Use native voice for language if not specified
+    const normalizedLanguage = language.toLowerCase();
+    const selectedVoiceId = voiceId || NATIVE_VOICES[normalizedLanguage] || NATIVE_VOICES["english"];
+    
+    // Use language-optimized settings if not specified
+    const languageSettings = LANGUAGE_VOICE_SETTINGS[normalizedLanguage] || LANGUAGE_VOICE_SETTINGS["english"];
+    const finalStability = stability !== undefined ? stability : languageSettings.stability;
+    const finalSimilarityBoost = similarityBoost !== undefined ? similarityBoost : languageSettings.similarityBoost;
+    const finalStyle = style !== undefined ? style : languageSettings.style;
+    
     // [Additional: Log all TTS usage server-side (no PII!)]
-    console.log(`[TTS] Voice: ${voiceId} | Text length: ${text.length} | Client: ${clientId}`);
+    console.log(`[TTS] Language: ${language} | Voice: ${selectedVoiceId} | Text length: ${text.length} | Client: ${clientId}`);
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
 
-    const DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"; // Rachel - more natural default
-    const ELEVENLABS_MODEL_ID = "eleven_turbo_v2_5"; // Better quality and speed
+    // Use the better quality multilingual model
+    const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || DEFAULT_VOICE_ID}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
       {
         method: "POST",
         headers: {
@@ -76,9 +113,9 @@ serve(async (req) => {
           text: text,
           model_id: ELEVENLABS_MODEL_ID,
           voice_settings: {
-            stability: Math.max(0, Math.min(1, stability)),
-            similarity_boost: Math.max(0, Math.min(1, similarityBoost)),
-            style: Math.max(0, Math.min(1, style)),
+            stability: Math.max(0, Math.min(1, finalStability)),
+            similarity_boost: Math.max(0, Math.min(1, finalSimilarityBoost)),
+            style: Math.max(0, Math.min(1, finalStyle)),
             use_speaker_boost: useSpeakerBoost
           }
         }),
