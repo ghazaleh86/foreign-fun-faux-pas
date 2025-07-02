@@ -28,6 +28,13 @@ export const NATIVE_VOICES = {
   "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - good for Thai tones
   "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - suitable for Czech
   "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - good for Afrikaans
+  // Missing languages mapped to similar voices
+  "finnish": "CYw3kZ02Hs0563khs1Fj", // Dave - Swedish voice (similar languages)
+  "danish": "29vD33N1CtxCmqQRPOHJ", // Drew - Norwegian voice (similar languages)
+  "greek": "AZnzlk1XvdvUeBnXmlld", // Domi - Italian voice (Mediterranean similarity)
+  "slovak": "2EiwWnXFnvU5JabPnv8n", // Clyde - Polish-style voice (similar languages)
+  "swahili": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice (commonly spoken with English)
+  "zulu": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice (commonly spoken with English)
   // Language variants mapped to base languages
   "colombian spanish": "ErXwobaYiN019PkySvjV", // Antoni - Spanish
   "mexican spanish": "ErXwobaYiN019PkySvjV", // Antoni - Spanish
@@ -58,6 +65,13 @@ export const LANGUAGE_VOICE_SETTINGS = {
   "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
   "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
   "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  // Missing languages with appropriate settings
+  "finnish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Similar to Swedish
+  "danish": { stability: 0.7, similarityBoost: 0.9, style: 0.05 }, // Similar to Norwegian
+  "greek": { stability: 0.5, similarityBoost: 0.9, style: 0.4 }, // Similar to Italian
+  "slovak": { stability: 0.6, similarityBoost: 0.8, style: 0.2 }, // Similar to Polish
+  "swahili": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // English-based
+  "zulu": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // English-based
   // Language variants mapped to base language settings
   "colombian spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
   "mexican spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
@@ -100,6 +114,13 @@ export const normalizeLanguageVariant = (language: string): string => {
     "mexican spanish": "spanish", 
     "costa rican spanish": "spanish",
     "english (south africa)": "english",
+    // Additional mappings for consistency
+    "finnish": "finnish",
+    "danish": "danish", 
+    "greek": "greek",
+    "slovak": "slovak",
+    "swahili": "swahili",
+    "zulu": "zulu",
   };
   
   return variantMappings[normalized] || normalized;
