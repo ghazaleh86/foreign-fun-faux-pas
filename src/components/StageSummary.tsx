@@ -39,83 +39,92 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
-    <div className="w-full max-w-sm mx-auto px-3 py-2 safe-area-inset-bottom">
+    <div className="w-full max-w-md mx-auto px-4 py-6 safe-area-inset-bottom">
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
-        <CardContent className={`${isMobile ? 'px-3 py-3' : 'px-4 py-4'} text-center relative`}>
-          {/* Mascot - Much smaller */}
-          <div className="relative z-10 mb-2">
-            <div className="bg-gray-50 rounded-full p-2 shadow-sm mx-auto w-20 h-20 flex items-center justify-center border border-gray-100">
-              <MascotAvatar size={64} className="ring-0" />
+        <CardContent className="px-6 py-8 text-center relative">
+          {/* Mascot - Smaller and less prominent */}
+          <div className="relative z-10 mb-6">
+            <div className="bg-gray-50 rounded-full p-2 shadow-sm mx-auto w-16 h-16 flex items-center justify-center border border-gray-100">
+              <MascotAvatar size={48} className="ring-0" />
             </div>
           </div>
 
-          {/* Stage Info - More compact */}
-          <div className="relative z-10 mb-3">
-            <h1 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-black tracking-tight mb-1 text-gray-900`}>
+          {/* Stage Info */}
+          <div className="relative z-10 mb-8">
+            <h1 className="text-3xl font-black tracking-tight mb-3 text-gray-900">
               STAGE {stage + 1}
             </h1>
-            <div className="text-sm font-semibold text-gray-600 flex items-center justify-center gap-1 mb-2">
-              <Trophy className="w-4 h-4 text-amber-500" />
+            <div className="text-base font-semibold text-gray-600 flex items-center justify-center gap-2 mb-4">
+              <Trophy className="w-5 h-5 text-amber-500" />
               Complete!
             </div>
 
-            {/* Result Badge - More compact */}
-            <div className={`inline-flex items-center gap-1 px-4 py-1 rounded-full font-bold text-sm shadow-sm mb-3 border-2 ${
+            {/* Result Badge - More prominent */}
+            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-lg shadow-lg mb-6 border-2 ${
               playerWon 
                 ? "bg-green-50 text-green-700 border-green-200" 
                 : isTie 
                 ? "bg-yellow-50 text-yellow-700 border-yellow-200"
                 : "bg-blue-50 text-blue-700 border-blue-200"
             }`}>
-              {playerWon ? "🏆 You Won!" : isTie ? "🤝 It's a Tie!" : "💪 Keep Going!"}
+              {playerWon ? "🏆 You Won This Stage!" : isTie ? "🤝 Stage Tied!" : "💪 Good Effort!"}
             </div>
           </div>
 
-          {/* Battle Results - More compact */}
-          <div className="relative z-10 mb-3">
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Battle Results</h2>
+          {/* Battle Results */}
+          <div className="relative z-10 mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">Stage Results</h2>
             
-            <div className={`flex items-center justify-center ${isMobile ? 'gap-3' : 'gap-4'}`}>
+            <div className="flex items-center justify-center gap-8 mb-6">
               {/* Your Score */}
-              <div className="text-center flex-1 max-w-[80px]">
-                <div className={`${isMobile ? 'w-14 h-14' : 'w-16 h-16'} rounded-xl flex items-center justify-center shadow-sm border-2 mx-auto ${
-                  playerWon ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-3 ${
+                  playerWon ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"
                 }`}>
                   <div className="text-center">
-                    <div className={`${isMobile ? 'text-lg' : 'text-xl'} font-black ${playerWon ? "text-green-600" : "text-gray-700"}`}>
+                    <div className={`text-2xl font-black ${playerWon ? "text-green-700" : "text-gray-700"}`}>
                       {stageScore}
                     </div>
                   </div>
                 </div>
-                <div className={`mt-1 ${isMobile ? 'text-xs' : 'text-xs'} font-semibold text-gray-600 truncate`}>You</div>
+                <div className="text-sm font-semibold text-gray-700">You</div>
+                <div className="text-xs text-gray-500">This Stage</div>
               </div>
               
               {/* VS Divider */}
-              <div className={`${isMobile ? 'text-base' : 'text-lg'} font-black text-gray-300 flex-shrink-0`}>VS</div>
+              <div className="text-xl font-black text-gray-300 px-2">VS</div>
               
               {/* Opponent Score */}
-              <div className="text-center flex-1 max-w-[80px]">
-                <div className={`${isMobile ? 'w-14 h-14' : 'w-16 h-16'} rounded-xl flex items-center justify-center shadow-sm border-2 mx-auto ${
-                  !playerWon && !isTie ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-3 ${
+                  !playerWon && !isTie ? "bg-red-50 border-red-300" : "bg-gray-50 border-gray-200"
                 }`}>
                   <div className="text-center">
-                    <div className={`${isMobile ? 'text-lg' : 'text-xl'} font-black ${!playerWon && !isTie ? "text-red-600" : "text-gray-700"}`}>
+                    <div className={`text-2xl font-black ${!playerWon && !isTie ? "text-red-700" : "text-gray-700"}`}>
                       {opponentScore}
                     </div>
                   </div>
                 </div>
-                <div className={`mt-1 ${isMobile ? 'text-xs' : 'text-xs'} font-semibold text-gray-600 truncate`}>{opponentName}</div>
+                <div className="text-sm font-semibold text-gray-700">{opponentName}</div>
+                <div className="text-xs text-gray-500">This Stage</div>
               </div>
             </div>
             
-            {/* Totals Display - Only show after first stage */}
+            {/* Total Scores - Only show after first stage */}
             {stage > 0 && (
-              <div className="mt-2 text-xs text-gray-500">
-                <div className="flex justify-center items-center gap-3">
-                  <span>Total: {playerTotal}</span>
-                  <span className="text-gray-300">vs</span>
-                  <span>Total: {opponentTotal}</span>
+              <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <div className="text-sm font-semibold text-gray-600 mb-2">Overall Progress</div>
+                <div className="flex justify-center items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-800">{playerTotal}</div>
+                    <div className="text-xs text-gray-500">Your Total</div>
+                  </div>
+                  <div className="text-gray-300 font-bold">vs</div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-800">{opponentTotal}</div>
+                    <div className="text-xs text-gray-500">{opponentName} Total</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -156,15 +165,15 @@ const StageSummary: React.FC<StageSummaryProps> = ({
           </div>
           
           {/* Action Button */}
-          <div className="relative z-10">
+          <div className="relative z-10 pt-4">
             <Button
               onClick={onAdvanceStage}
               variant="primary-cta"
-              size={isMobile ? "lg" : "lg"}
-              className={`${isMobile ? 'min-h-[48px] text-base px-6' : ''} w-full max-w-[280px]`}
+              size="lg"
+              className="w-full min-h-[56px] text-lg font-bold px-8 shadow-lg"
             >
               <span>Continue Journey</span>
-              <ArrowRight className="ml-2 w-4 h-4" />
+              <ArrowRight className="ml-3 w-5 h-5" />
             </Button>
           </div>
         </CardContent>
