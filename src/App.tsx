@@ -15,10 +15,11 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
+  const isGameView = location.search.includes("startGame=true") || location.pathname === "/";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 overflow-hidden">
-      <div className="pb-20 min-h-screen max-h-screen overflow-auto"> {/* Increased padding for mobile button clearance */}
+      <div className={`${isGameView ? '' : 'pb-20'} min-h-screen max-h-screen overflow-auto`}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/learned" element={<LearnedPhrases />} />

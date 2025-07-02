@@ -62,7 +62,7 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
             </span>
           </div>
           <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-            <span className="text-xl" title={phrase.language}>
+            <span className="text-xl font-emoji" title={phrase.language} style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>
               {languageToFlag(phrase.language)}
             </span>
             <span className="font-medium">{phrase.language}</span>

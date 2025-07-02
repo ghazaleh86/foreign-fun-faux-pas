@@ -39,10 +39,10 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
-    <div className={`w-full max-w-md mx-auto px-4 ${isMobile ? 'h-screen' : 'py-8 min-h-screen'} flex items-center justify-center`}>
+    <div className={`w-full max-w-md mx-auto ${isMobile ? 'h-screen' : 'py-8 min-h-screen'} flex items-center justify-center`}>
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
-        <CardContent className="px-6 py-6 text-center relative space-y-6">
+        <CardContent className={`${isMobile ? 'px-4 py-4' : 'px-6 py-6'} text-center relative space-y-6`}>
           {/* Mascot - Bigger and more prominent */}
           <div className="relative z-10">
             <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full p-4 shadow-lg mx-auto w-24 h-24 flex items-center justify-center border-2 border-yellow-200 animate-scale-in">

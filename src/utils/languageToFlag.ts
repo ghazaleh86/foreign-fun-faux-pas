@@ -4,6 +4,8 @@
  * Extend this as needed for new languages.
  */
 export function languageToFlag(language: string): string {
+  console.log("🏳️ languageToFlag called with:", language);
+  
   const mapping: Record<string, string> = {
     English: "🇬🇧",
     "English (South Africa)": "🇿🇦",
@@ -43,5 +45,8 @@ export function languageToFlag(language: string): string {
     Afrikaans: "🇿🇦",
     // add more or tune as needed
   };
-  return mapping[language] || "🏳️";
+  
+  const flag = mapping[language] || "🌐";
+  console.log("🏳️ languageToFlag result:", language, "→", flag);
+  return flag;
 }
