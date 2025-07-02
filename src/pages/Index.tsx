@@ -136,7 +136,7 @@ const Index = () => {
   console.log("🎮 Rendering game view with PhraseQuiz");
   
   return (
-    <div className="flex flex-col items-start justify-center px-4 py-4">
+    <div className="flex flex-col items-start justify-center px-4">
       {/* Back to Landing Button */}
       <div className="fixed top-4 left-4 z-50">
         <Button
