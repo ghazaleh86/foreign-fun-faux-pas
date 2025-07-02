@@ -39,7 +39,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
-    <div className={`w-full max-w-md mx-auto px-4 py-8 min-h-screen flex items-center justify-center ${isMobile ? 'pb-32' : 'pb-24'}`}>
+    <div className={`w-full max-w-md mx-auto px-4 ${isMobile ? 'py-4 h-screen' : 'py-8 min-h-screen'} flex items-center justify-center`}>
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
         <CardContent className="px-6 py-6 text-center relative space-y-6">
