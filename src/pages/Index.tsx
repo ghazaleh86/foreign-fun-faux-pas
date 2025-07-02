@@ -63,7 +63,7 @@ const Index = () => {
         }`}>
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 rounded-full blur-xl opacity-60 scale-150 animate-pulse"></div>
           <div className="relative">
-            <div className="w-32 h-32 md:w-80 md:h-80 rounded-full overflow-hidden mb-4 md:mb-8 hover:scale-105 transition-transform duration-300">
+            <div className="w-32 h-32 md:w-60 md:h-60 rounded-full overflow-hidden mb-4 md:mb-6 hover:scale-105 transition-transform duration-300">
               <img 
                 src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXk3bzJmeXU4eGM5OThzZThvaGk3cTN2bTl5OG50M3ptMGVld2lqZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/T4xp0C3qwSLw9KoeEZ/giphy.gif" 
                 alt="Chippy the Chipmunk - Animated Learning Companion" 
