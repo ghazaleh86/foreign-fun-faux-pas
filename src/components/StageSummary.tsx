@@ -44,10 +44,10 @@ const StageSummary: React.FC<StageSummaryProps> = ({
         {/* Main Content */}
         <CardContent className="px-6 py-4 text-center relative flex-1 flex flex-col justify-between">
           <div className="flex-1">
-            {/* Mascot - Smaller and less prominent */}
-            <div className="relative z-10 mb-4">
-              <div className="bg-gray-50 rounded-full p-2 shadow-sm mx-auto w-14 h-14 flex items-center justify-center border border-gray-100">
-                <MascotAvatar size={40} className="ring-0" />
+            {/* Mascot - Bigger and more prominent */}
+            <div className="relative z-10 mb-6">
+              <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full p-4 shadow-lg mx-auto w-24 h-24 flex items-center justify-center border-2 border-yellow-200 animate-scale-in">
+                <MascotAvatar size={64} className="ring-0 hover:scale-110 transition-transform duration-300" />
               </div>
             </div>
 
