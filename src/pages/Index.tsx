@@ -18,8 +18,12 @@ const Index = () => {
     if (hasActiveGame()) {
       console.log("🎮 Index: Active game found, starting directly");
       setStarted(true);
+    } else if (started) {
+      // Reset to landing if no active game but component thinks game is started
+      console.log("🏠 Index: No active game found, returning to landing");
+      setStarted(false);
     }
-  }, []);
+  }, [started]);
 
   useEffect(() => {
     if (!started && !hasActiveGame()) {
