@@ -21,8 +21,8 @@ const BottomNavigation = () => {
     
     // Check if there's an active game
     if (hasActiveGame()) {
-      // If there's an active game, go to home page to continue
-      navigate("/");
+      // If there's an active game, navigate with startGame parameter to continue
+      navigate("/?startGame=true");
     } else {
       // If no active game, go to home page to start new game
       navigate("/");
@@ -32,7 +32,7 @@ const BottomNavigation = () => {
   const navItems = [
     {
       path: "/",
-      label: "Play",
+      label: hasActiveGame() ? "Continue" : "Play",
       icon: Gamepad2,
       isActive: currentPath === "/",
       onClick: handlePlayClick,
