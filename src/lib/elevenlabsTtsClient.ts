@@ -44,6 +44,15 @@ function preprocessTextForTTS(text: string, language: string = "english"): strin
         .replace(/ê/g, 'e')
         .replace(/ç/g, 'c');
       break;
+    case 'norwegian':
+    case 'swedish':
+      // Handle Nordic characters
+      processed = processed
+        .replace(/å/g, 'aa')
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ø/g, 'oe');
+      break;
   }
   
   return processed;
@@ -214,26 +223,55 @@ export function playWithBrowserTTS(text: string, language: string = "en") {
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         
-        // Enhanced voice selection for mobile
+        // Enhanced voice selection for mobile with better language mapping
         const voices = window.speechSynthesis.getVoices();
-        const targetLang = language.toLowerCase();
+        let targetLang = language.toLowerCase();
         
-        // Find the best voice for mobile
-        const mobileOptimizedVoices = voices.filter(voice => {
-          const voiceLang = voice.lang.toLowerCase();
-          return (voiceLang.includes(targetLang) || voiceLang.includes(targetLang.split('-')[0])) &&
-                 voice.localService; // Prefer local voices for mobile
-        });
+        // Better language code mapping for browser TTS
+        const langMappings: Record<string, string[]> = {
+          'norwegian': ['nb', 'no', 'nn'],
+          'swedish': ['sv'],
+          'arabic': ['ar'],
+          'chinese': ['zh', 'zh-cn', 'zh-tw'],
+          'german': ['de'],
+          'spanish': ['es'],
+          'french': ['fr'],
+          'italian': ['it'],
+          'portuguese': ['pt'],
+          'dutch': ['nl'],
+          'japanese': ['ja'],
+          'english': ['en']
+        };
         
+        const possibleLangCodes = langMappings[targetLang] || [targetLang];
+        
+        // Find the best voice for the language
         let selectedVoice = null;
-        if (mobileOptimizedVoices.length > 0) {
-          selectedVoice = mobileOptimizedVoices[0];
-        } else {
-          // Fallback to any voice that matches the language
-          selectedVoice = voices.find(voice => {
+        
+        // First try to find local voices for the language
+        for (const langCode of possibleLangCodes) {
+          const localVoices = voices.filter(voice => {
             const voiceLang = voice.lang.toLowerCase();
-            return voiceLang.includes(targetLang) || voiceLang.includes(targetLang.split('-')[0]);
+            return voice.localService && (voiceLang.startsWith(langCode) || voiceLang.includes(langCode));
           });
+          if (localVoices.length > 0) {
+            selectedVoice = localVoices[0];
+            break;
+          }
+        }
+        
+        // If no local voice found, try any voice for the language
+        if (!selectedVoice) {
+          for (const langCode of possibleLangCodes) {
+            const anyVoice = voices.find(voice => {
+              const voiceLang = voice.lang.toLowerCase();
+              return voiceLang.startsWith(langCode) || voiceLang.includes(langCode);
+            });
+            if (anyVoice) {
+              selectedVoice = anyVoice;
+              break;
+            }
+          }
         }
         
         if (selectedVoice) {
