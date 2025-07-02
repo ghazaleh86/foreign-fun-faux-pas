@@ -174,15 +174,17 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     resetHearts,
   });
 
-  // Use the quiz effects hook
-  useQuizEffects({
+  // Use the quiz effects hook - memoize dependencies to prevent re-renders
+  const quizEffectsDeps = useMemo(() => ({
     phrase,
     showAnswer,
     showStagePreview,
     resetQuestionState,
     resetTimer,
     setOptionOrder,
-  });
+  }), [phrase?.id, showAnswer, showStagePreview, resetQuestionState, resetTimer, setOptionOrder]);
+
+  useQuizEffects(quizEffectsDeps);
 
   // Enhanced showNextButton calculation with debugging
   const showNextButton = useMemo(() => {

@@ -13,14 +13,15 @@ interface UseQuizEffectsProps {
   setOptionOrder: (options: Option[]) => void;
 }
 
-export function useQuizEffects({
-  phrase,
-  showAnswer,
-  showStagePreview,
-  resetQuestionState,
-  resetTimer,
-  setOptionOrder,
-}: UseQuizEffectsProps) {
+export function useQuizEffects(props: UseQuizEffectsProps) {
+  const {
+    phrase,
+    showAnswer,
+    showStagePreview,
+    resetQuestionState,
+    resetTimer,
+    setOptionOrder,
+  } = props;
   // Shuffle options only when phrase changes - stable phrase ID tracking
   useEffect(() => {
     if (phrase?.id) {

@@ -1,5 +1,5 @@
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { playWithElevenLabsTTS } from "@/lib/tts";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
@@ -9,12 +9,12 @@ function isMobileDevice(): boolean {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
-// Check if user has interacted with the page (required for mobile audio)
-let userHasInteracted = false;
+// Global user interaction state
+let globalUserHasInteracted = false;
 
 if (typeof window !== 'undefined') {
   const markUserInteraction = () => {
-    userHasInteracted = true;
+    globalUserHasInteracted = true;
     console.log('✅ User interaction detected - audio enabled');
   };
   
@@ -27,9 +27,30 @@ if (typeof window !== 'undefined') {
 export function useAudioPlayback(triggerKey: any[], text: string, language: string, voiceId: string, shouldPlay: boolean) {
   // guarding against duplicate play in one step
   const audioPlayedRef = useRef<boolean>(false);
+  const [userHasInteracted, setUserHasInteracted] = useState(globalUserHasInteracted);
+  
+  // Update local state when global state changes
+  useEffect(() => {
+    const checkInteraction = () => {
+      if (globalUserHasInteracted && !userHasInteracted) {
+        setUserHasInteracted(true);
+      }
+    };
+    
+    const interval = setInterval(checkInteraction, 1000);
+    return () => clearInterval(interval);
+  }, [userHasInteracted]);
 
   useEffect(() => {
     if (!shouldPlay || audioPlayedRef.current || !text.trim()) return;
+    
+    console.log('🎵 Audio playback attempt:', {
+      shouldPlay,
+      audioPlayed: audioPlayedRef.current,
+      text: text.slice(0, 20),
+      isMobile: isMobileDevice(),
+      userHasInteracted
+    });
     
     // On mobile, don't auto-play audio unless user has interacted
     if (isMobileDevice() && !userHasInteracted) {
@@ -151,13 +172,15 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
   }, [...triggerKey]);
 
   // Return a function to manually trigger audio (useful for mobile)
-  const playManually = () => {
+  const playManually = useCallback(() => {
+    console.log('🎵 Manual audio play triggered');
     if (!userHasInteracted) {
-      userHasInteracted = true;
+      globalUserHasInteracted = true;
+      setUserHasInteracted(true);
     }
     audioPlayedRef.current = false; // Reset the guard
-    // Trigger the effect by updating a dependency
-  };
+    // Force re-trigger by updating the audio played state
+  }, [userHasInteracted]);
 
   return { playManually, userHasInteracted };
 }
