@@ -24,7 +24,9 @@ export async function playWithElevenLabsTTS({
   const error = validateTtsTextInput(text);
   if (error) throw new Error(error);
 
-  const processedText = preprocessTextForTTS(text, language);
+  // Normalize language to lowercase for consistent voice selection
+  const normalizedLanguage = language.toLowerCase();
+  const processedText = preprocessTextForTTS(text, normalizedLanguage);
 
   // For mobile devices, ensure audio context is initialized
   if (isMobileDevice()) {
@@ -37,7 +39,7 @@ export async function playWithElevenLabsTTS({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         text: processedText, 
-        language,
+        language: normalizedLanguage,
         voiceId,
         stability,
         similarityBoost,

@@ -9,7 +9,9 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
       return;
     }
 
-    console.log(`🎵 Browser TTS attempt ${retryCount + 1}:`, { text: text.slice(0, 30), language });
+    // Normalize language to lowercase for consistent processing
+    const normalizedLanguage = language.toLowerCase();
+    console.log(`🎵 Browser TTS attempt ${retryCount + 1}:`, { text: text.slice(0, 30), language: normalizedLanguage });
 
     // Cancel any ongoing speech to prevent conflicts
     window.speechSynthesis.cancel();
@@ -49,14 +51,14 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
         // Cancel any ongoing speech
         window.speechSynthesis.cancel();
         
-        const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text, language));
+        const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text, normalizedLanguage));
         
         // Enhanced voice selection for mobile with better language mapping
         const voices = window.speechSynthesis.getVoices();
-        let targetLang = language.toLowerCase();
+        let targetLang = normalizedLanguage;
         
         // Enhanced mobile-friendly settings with language-specific adjustments
-        utterance.lang = language;
+        utterance.lang = normalizedLanguage;
         utterance.rate = targetLang === 'norwegian' ? 0.65 : 0.75; // Extra slow for Norwegian clarity
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
@@ -129,7 +131,7 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
           if (retryCount < 2 && (event.error === 'synthesis-failed' || event.error === 'network')) {
             console.log('🔄 Retrying browser TTS...');
             setTimeout(() => {
-              playWithBrowserTTS(text, language, retryCount + 1)
+              playWithBrowserTTS(text, normalizedLanguage, retryCount + 1)
                 .then(resolve)
                 .catch(reject);
             }, 1000 * (retryCount + 1)); // Exponential backoff

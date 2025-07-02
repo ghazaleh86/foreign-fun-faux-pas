@@ -64,15 +64,16 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     // Enhanced audio playback with better error handling and fallbacks
     const playAudio = async () => {
       try {
-        // Get native voice and optimized settings for the language
-        const nativeVoiceId = getNativeVoiceForLanguage(language);
-        const languageSettings = getLanguageVoiceSettings(language);
+        // Normalize language to lowercase for consistent voice selection
+        const normalizedLanguage = language.toLowerCase();
+        const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
+        const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
 
-        console.log(`🎵 Attempting ElevenLabs TTS for ${language} with voice:`, nativeVoiceId);
+        console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with voice:`, nativeVoiceId);
 
         await playWithElevenLabsTTS({ 
           text, 
-          language,
+          language: normalizedLanguage,
           voiceId: nativeVoiceId,
           ...languageSettings,
           useSpeakerBoost: true
@@ -85,7 +86,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
         // Import the enhanced browser TTS fallback
         try {
           const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
-          await playWithBrowserTTS(text, language);
+          await playWithBrowserTTS(text, language.toLowerCase());
           console.log('✅ Browser TTS fallback succeeded');
         } catch (browserTtsError) {
           console.error('❌ All TTS methods failed:', {

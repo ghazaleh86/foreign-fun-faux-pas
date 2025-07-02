@@ -211,7 +211,7 @@ export function useQuizHandlers({
     if (!phrase) return;
     
     const ttsText = phrase.pronunciation || phrase.phrase_text;
-    const language = phrase.language || "english";
+    const language = (phrase.language || "english").toLowerCase();
     const nativeVoiceId = getNativeVoiceForLanguage(language);
     const languageSettings = getLanguageVoiceSettings(language);
     
@@ -254,7 +254,7 @@ export function useQuizHandlers({
       try {
         // Import enhanced browser TTS with retry logic
         const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
-        await playWithBrowserTTS(ttsText, phrase.language || "en");
+        await playWithBrowserTTS(ttsText, language);
         console.log('✅ Manual browser TTS succeeded');
       } catch (browserError) {
         console.error('❌ Manual audio playback failed completely:', {
