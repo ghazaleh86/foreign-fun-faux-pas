@@ -61,11 +61,13 @@ const Index = () => {
         }`}>
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 rounded-full blur-xl opacity-60 scale-150 animate-pulse"></div>
           <div className="relative">
-            <img 
-              src="/lovable-uploads/c881b360-a1d3-435b-a572-fce9a5e0e4e4.png" 
-              alt="Chippy the Chipmunk - Your Learning Companion" 
-              className="w-32 h-32 md:w-40 md:h-40 object-contain mb-4 hover:scale-105 transition-transform duration-300 animate-fade-in"
-            />
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden mb-4 hover:scale-105 transition-transform duration-300">
+              <img 
+                src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXk3bzJmeXU4eGM5OThzZThvaGk3cTN2bTl5OG50M3ptMGVld2lqZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/T4xp0C3qwSLw9KoeEZ/giphy.gif" 
+                alt="Chippy the Chipmunk - Animated Learning Companion" 
+                className="w-full h-full object-cover animate-fade-in"
+              />
+            </div>
             {/* Sparkle effects around Chippy */}
             <div className="absolute -top-1 -right-1 text-lg animate-bounce" style={{ animationDelay: "0.5s" }}>✨</div>
             <div className="absolute -bottom-1 -left-1 text-base animate-bounce" style={{ animationDelay: "1.5s" }}>🌟</div>
