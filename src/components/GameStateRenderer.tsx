@@ -110,6 +110,8 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
         opponentScore={opponentScores[stage] || 0}
         onAdvanceStage={onAdvanceStage}
         profile={profile}
+        stageScores={stageScores}
+        opponentScores={opponentScores}
       />
     );
   }

@@ -1,9 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MascotAvatar from "./MascotAvatar";
-import { Trophy, ArrowRight } from "lucide-react";
+import { Trophy, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type StageSummaryProps = {
@@ -14,6 +14,8 @@ type StageSummaryProps = {
   opponentScore: number;
   onAdvanceStage: () => void;
   profile: any; // Player profile with hearts, xp, streak
+  stageScores: number[];
+  opponentScores: number[];
 };
 
 const StageSummary: React.FC<StageSummaryProps> = ({
@@ -24,10 +26,17 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   opponentScore,
   onAdvanceStage,
   profile,
+  stageScores,
+  opponentScores,
 }) => {
   const playerWon = stageScore > opponentScore;
   const isTie = stageScore === opponentScore;
   const isMobile = useIsMobile();
+  const [showDetails, setShowDetails] = useState(false);
+  
+  // Calculate totals
+  const playerTotal = stageScores.reduce((sum, score) => sum + score, 0);
+  const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
     <div className="w-full max-w-sm mx-auto px-3 py-2 safe-area-inset-bottom">
@@ -99,6 +108,49 @@ const StageSummary: React.FC<StageSummaryProps> = ({
                 <div className={`mt-1 ${isMobile ? 'text-xs' : 'text-xs'} font-semibold text-gray-600 truncate`}>{opponentName}</div>
               </div>
             </div>
+            
+            {/* Totals Display - Compact */}
+            <div className="mt-3 text-xs text-gray-500">
+              <div className="flex justify-center items-center gap-4">
+                <span>Stage: {stageScore} | Total: {playerTotal}</span>
+                <span className="text-gray-300">|</span>
+                <span>{opponentName}: {opponentScore} | Total: {opponentTotal}</span>
+              </div>
+            </div>
+            
+            {/* Expandable Details */}
+            {stageScores.length > 1 && (
+              <div className="mt-2">
+                <button
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1 mx-auto"
+                >
+                  <span>Stage History</span>
+                  {showDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+                
+                {showDetails && (
+                  <div className="mt-2 bg-gray-50 rounded-lg p-2 text-xs">
+                    <div className="grid grid-cols-3 gap-1 text-center font-semibold mb-1">
+                      <span>Stage</span>
+                      <span>You</span>
+                      <span>{opponentName}</span>
+                    </div>
+                    {stageScores.map((score, idx) => (
+                      <div key={idx} className="grid grid-cols-3 gap-1 text-center py-0.5">
+                        <span className="text-gray-600">{idx + 1}</span>
+                        <span className={score > (opponentScores[idx] || 0) ? "text-green-600 font-semibold" : "text-gray-600"}>
+                          {score}
+                        </span>
+                        <span className={(opponentScores[idx] || 0) > score ? "text-red-600 font-semibold" : "text-gray-600"}>
+                          {opponentScores[idx] || 0}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           {/* Action Button */}
