@@ -46,7 +46,9 @@ export function languageToFlag(language: string): string {
     // add more or tune as needed
   };
   
-  const flag = mapping[language] || "🌐";
-  console.log("🏳️ languageToFlag result:", language, "→", flag);
+  // Handle case-insensitive lookup
+  const normalizedLanguage = language.charAt(0).toUpperCase() + language.slice(1).toLowerCase();
+  const flag = mapping[normalizedLanguage] || mapping[language] || "🌐";
+  console.log("🏳️ languageToFlag result:", language, "→", normalizedLanguage, "→", flag);
   return flag;
 }
