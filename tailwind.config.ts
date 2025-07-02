@@ -21,7 +21,7 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
-				game: ['Nunito', 'sans-serif'],
+				game: ['Quicksand', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
