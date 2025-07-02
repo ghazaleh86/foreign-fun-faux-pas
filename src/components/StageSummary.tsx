@@ -103,9 +103,8 @@ const StageSummary: React.FC<StageSummaryProps> = ({
           <div className="relative z-10">
             <Button
               onClick={onAdvanceStage}
-              variant="default"
-              size="default"
-              className="bg-gray-900 hover:bg-gray-800 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              variant="primary-cta"
+              size="lg"
             >
               <span>Continue Journey</span>
               <ArrowRight className="ml-2 w-4 h-4" />
