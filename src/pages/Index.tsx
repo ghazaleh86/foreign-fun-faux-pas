@@ -95,7 +95,7 @@ const Index = () => {
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-6"
         }`}>
-          <p className="text-base md:text-xl text-slate-600 font-medium leading-loose max-w-xl px-4">
+          <p className="text-base md:text-xl text-slate-600 font-medium leading-loose max-w-2xl px-4">
             Listen to a phrase, pick the right (or hilarious) meaning, <span className="text-pink-600 font-semibold">and challenge Chippy the chipmunk! 🐿️</span>
           </p>
         </div>
