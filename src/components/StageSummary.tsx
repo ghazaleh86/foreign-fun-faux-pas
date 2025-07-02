@@ -109,23 +109,25 @@ const StageSummary: React.FC<StageSummaryProps> = ({
               </div>
             </div>
             
-            {/* Totals Display - Compact */}
-            <div className="mt-3 text-xs text-gray-500">
-              <div className="flex justify-center items-center gap-4">
-                <span>Stage: {stageScore} | Total: {playerTotal}</span>
-                <span className="text-gray-300">|</span>
-                <span>{opponentName}: {opponentScore} | Total: {opponentTotal}</span>
+            {/* Totals Display - Only show after first stage */}
+            {stage > 0 && (
+              <div className="mt-2 text-xs text-gray-500">
+                <div className="flex justify-center items-center gap-3">
+                  <span>Total: {playerTotal}</span>
+                  <span className="text-gray-300">vs</span>
+                  <span>Total: {opponentTotal}</span>
+                </div>
               </div>
-            </div>
+            )}
             
-            {/* Expandable Details */}
-            {stageScores.length > 1 && (
+            {/* Expandable Details - Only show when there are multiple stages */}
+            {stage > 0 && stageScores.length > 1 && (
               <div className="mt-2">
                 <button
                   onClick={() => setShowDetails(!showDetails)}
                   className="text-xs text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1 mx-auto"
                 >
-                  <span>Stage History</span>
+                  <span>Details</span>
                   {showDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
                 
