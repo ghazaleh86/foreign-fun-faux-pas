@@ -35,7 +35,7 @@ const MultipleChoiceOptions: React.FC<MultipleChoiceOptionsProps> = ({
           disabled={showAnswer}
           variant="outline"
           className={cn(
-            "justify-start w-full border-2 text-lg font-bold py-6 transition-all duration-200",
+            "justify-start w-full border-2 text-lg font-bold py-6 transition-all duration-200 min-h-[60px] h-auto whitespace-normal text-left break-words",
             showAnswer
               ? option.isCorrect
                 ? "animate-bounce-in"
@@ -46,11 +46,13 @@ const MultipleChoiceOptions: React.FC<MultipleChoiceOptionsProps> = ({
             optionFlash(idx)
           )}
         >
-          {option.label}
+          <span className="flex-1 text-left leading-relaxed">
+            {option.label}
+          </span>
           {showAnswer && option.isCorrect ? (
-            <CircleCheck className="ml-3 text-green-500" />
+            <CircleCheck className="ml-3 text-green-500 flex-shrink-0" />
           ) : showAnswer && idx === selected ? (
-            <CircleX className="ml-3 text-red-400" />
+            <CircleX className="ml-3 text-red-400 flex-shrink-0" />
           ) : null}
         </Button>
       ))}
