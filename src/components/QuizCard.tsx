@@ -90,20 +90,6 @@ const QuizCard: React.FC<QuizCardProps> = ({
           </div>
         )}
 
-        {/* Next button positioned below audio, before feedback */}
-        {showNextButton && (
-          <div className="mb-4 flex justify-center">
-            <Button
-              onClick={onNext}
-              variant="primary-cta"
-              size="lg"
-              className="px-12"
-            >
-              Next
-            </Button>
-          </div>
-        )}
-
         {/* Dedicated Feedback Section */}
         {feedback && (
           <div className="mb-6 p-4 rounded-lg border-2 border-dashed">
@@ -133,6 +119,20 @@ const QuizCard: React.FC<QuizCardProps> = ({
           showAnswer={showAnswer}
           onSelect={onSelect}
         />
+
+        {/* Next button positioned after options */}
+        {showNextButton && (
+          <div className="mt-4 flex justify-center">
+            <Button
+              onClick={onNext}
+              variant="primary-cta"
+              size="lg"
+              className="px-12"
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </CardContent>
       <QuizFooter
         stage={stage}
