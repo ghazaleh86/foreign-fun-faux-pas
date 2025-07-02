@@ -116,8 +116,26 @@ export function useQuizHandlers({
       markPhraseAsPlayed(phrase.id);
     }
 
-    // If game over (no more hearts), auto end round
+    // Check if this is truly the last question in the stage
+    const currentPositionInStage = current - currentStageStart + 1;
+    const maxQuestionsInStage = Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+    const isLastInStage = currentPositionInStage >= maxQuestionsInStage;
+    const isLastOverall = current >= phrases.length - 1;
+
+    console.log("🔍 useQuizHandlers: Stage completion check:", {
+      current,
+      currentStageStart,
+      currentPositionInStage,
+      maxQuestionsInStage,
+      isLastInStage,
+      isLastOverall,
+      profileHearts: profile?.hearts,
+      isCorrect: optionOrder[idx].isCorrect
+    });
+
+    // If game over (no more hearts), auto end stage
     if (profile && profile.hearts === 1 && !optionOrder[idx].isCorrect) {
+      console.log("💔 useQuizHandlers: Game over - no more hearts");
       setShowAnswer(false);
       setTimeout(() => {
         setStageCompleted(true);
@@ -125,19 +143,27 @@ export function useQuizHandlers({
       return;
     }
 
-    // Detect if this was the last question in the stage
-    const isLastInStage =
-      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-
-    if (isLastInStage || current === phrases.length - 1) {
+    // Only complete stage if this is truly the last question
+    if (isLastInStage || isLastOverall) {
+      console.log("🏁 useQuizHandlers: Completing stage - last question reached");
       setStageCompleted(true);
     }
   }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addXP, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
 
   const handleNext = useCallback(() => {
     // Only allow next question if not at end of stage
-    const isLastInStage =
-      (current - currentStageStart + 1) === Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+    const currentPositionInStage = current - currentStageStart + 1;
+    const maxQuestionsInStage = Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+    const isLastInStage = currentPositionInStage >= maxQuestionsInStage;
+
+    console.log("➡️ useQuizHandlers: Next button clicked:", {
+      current,
+      currentStageStart,
+      currentPositionInStage,
+      maxQuestionsInStage,
+      isLastInStage,
+      canProceed: !isLastInStage && current < phrases.length - 1
+    });
 
     if (!isLastInStage && current < phrases.length - 1) {
       console.log("➡️ QuizLogic: Moving to next question");

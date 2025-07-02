@@ -180,11 +180,26 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     setOptionOrder,
   });
 
-  // Memoize showNextButton calculation
-  const showNextButton = useMemo(() => 
-    showAnswer && (current - currentStageStart + 1) < Math.min(STAGE_SIZE, phrases.length - currentStageStart),
-    [showAnswer, current, currentStageStart, phrases.length]
-  );
+  // Enhanced showNextButton calculation with debugging
+  const showNextButton = useMemo(() => {
+    const isLastInStage = (current - currentStageStart + 1) >= Math.min(STAGE_SIZE, phrases.length - currentStageStart);
+    const shouldShow = showAnswer && !isLastInStage && !stageCompleted;
+    
+    console.log("🔘 QuizLogic: Next button calculation:", {
+      current,
+      currentStageStart,
+      stageSize: STAGE_SIZE,
+      phrasesLength: phrases.length,
+      currentPosition: current - currentStageStart + 1,
+      maxInStage: Math.min(STAGE_SIZE, phrases.length - currentStageStart),
+      isLastInStage,
+      showAnswer,
+      stageCompleted,
+      shouldShow
+    });
+    
+    return shouldShow;
+  }, [showAnswer, current, currentStageStart, phrases.length, stageCompleted]);
 
   return (
     <>
