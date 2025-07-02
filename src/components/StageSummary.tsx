@@ -39,10 +39,10 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 py-6 safe-area-inset-bottom">
+    <div className="w-full max-w-md mx-auto px-4 py-4 pb-20 safe-area-inset-bottom">
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
-        <CardContent className="px-6 py-8 text-center relative">
+        <CardContent className="px-6 py-6 text-center relative">
           {/* Mascot - Smaller and less prominent */}
           <div className="relative z-10 mb-6">
             <div className="bg-gray-50 rounded-full p-2 shadow-sm mx-auto w-16 h-16 flex items-center justify-center border border-gray-100">
@@ -89,7 +89,6 @@ const StageSummary: React.FC<StageSummaryProps> = ({
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-gray-700">You</div>
-                <div className="text-xs text-gray-500">This Stage</div>
               </div>
               
               {/* VS Divider */}
@@ -107,7 +106,6 @@ const StageSummary: React.FC<StageSummaryProps> = ({
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-gray-700">{opponentName}</div>
-                <div className="text-xs text-gray-500">This Stage</div>
               </div>
             </div>
             
@@ -165,12 +163,12 @@ const StageSummary: React.FC<StageSummaryProps> = ({
           </div>
           
           {/* Action Button */}
-          <div className="relative z-10 pt-4">
+          <div className="relative z-10 pt-6">
             <Button
               onClick={onAdvanceStage}
               variant="primary-cta"
               size="lg"
-              className="w-full min-h-[56px] text-lg font-bold px-8 shadow-lg"
+              className="w-full min-h-[60px] text-lg font-bold px-8 shadow-lg"
             >
               <span>Continue Journey</span>
               <ArrowRight className="ml-3 w-5 h-5" />
