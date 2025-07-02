@@ -113,16 +113,9 @@ const QuizCard: React.FC<QuizCardProps> = ({
           </div>
         )}
 
-        <MultipleChoiceOptions
-          options={optionOrder}
-          selected={selected}
-          showAnswer={showAnswer}
-          onSelect={onSelect}
-        />
-
-        {/* Next button positioned after options with proper spacing */}
+        {/* Next button positioned above options for mobile visibility */}
         {showNextButton && (
-          <div className="mt-6 flex justify-center">
+          <div className="mb-4 flex justify-center">
             <Button
               onClick={onNext}
               variant="primary-cta"
@@ -133,6 +126,13 @@ const QuizCard: React.FC<QuizCardProps> = ({
             </Button>
           </div>
         )}
+
+        <MultipleChoiceOptions
+          options={optionOrder}
+          selected={selected}
+          showAnswer={showAnswer}
+          onSelect={onSelect}
+        />
       </CardContent>
       <QuizFooter
         stage={stage}
