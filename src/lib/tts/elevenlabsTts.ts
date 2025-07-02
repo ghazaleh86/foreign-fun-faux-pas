@@ -47,7 +47,13 @@ export async function playWithElevenLabsTTS({
     });
 
     if (!res.ok) {
-      console.error('❌ TTS API failed with status:', res.status);
+      const errorText = await res.text();
+      console.error('❌ TTS API failed with status:', res.status, 'Error:', errorText);
+      
+      if (res.status === 429) {
+        throw new Error("ElevenLabs quota exceeded. Using browser fallback for better audio quality.");
+      }
+      
       throw new Error("Failed to fetch TTS audio");
     }
 

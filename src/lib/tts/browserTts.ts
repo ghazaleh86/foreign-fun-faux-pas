@@ -34,30 +34,30 @@ export function playWithBrowserTTS(text: string, language: string = "en") {
         
         const utterance = new window.SpeechSynthesisUtterance(preprocessTextForTTS(text, language));
         
-        // Enhanced mobile-friendly settings
-        utterance.lang = language;
-        utterance.rate = 0.75; // Slower for mobile clarity
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        
         // Enhanced voice selection for mobile with better language mapping
         const voices = window.speechSynthesis.getVoices();
         let targetLang = language.toLowerCase();
         
+        // Enhanced mobile-friendly settings with language-specific adjustments
+        utterance.lang = language;
+        utterance.rate = targetLang === 'norwegian' ? 0.65 : 0.75; // Extra slow for Norwegian clarity
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
         // Better language code mapping for browser TTS
         const langMappings: Record<string, string[]> = {
-          'norwegian': ['nb', 'no', 'nn'],
-          'swedish': ['sv'],
-          'arabic': ['ar'],
-          'chinese': ['zh', 'zh-cn', 'zh-tw'],
-          'german': ['de'],
-          'spanish': ['es'],
-          'french': ['fr'],
-          'italian': ['it'],
-          'portuguese': ['pt'],
-          'dutch': ['nl'],
-          'japanese': ['ja'],
-          'english': ['en']
+          'norwegian': ['nb-NO', 'nb', 'no-NO', 'no', 'nn-NO', 'nn'],
+          'swedish': ['sv-SE', 'sv'],
+          'arabic': ['ar-SA', 'ar'],
+          'chinese': ['zh-CN', 'zh', 'zh-cn', 'zh-tw'],
+          'german': ['de-DE', 'de'],
+          'spanish': ['es-ES', 'es'],
+          'french': ['fr-FR', 'fr'],
+          'italian': ['it-IT', 'it'],
+          'portuguese': ['pt-PT', 'pt-BR', 'pt'],
+          'dutch': ['nl-NL', 'nl'],
+          'japanese': ['ja-JP', 'ja'],
+          'english': ['en-US', 'en-GB', 'en']
         };
         
         const possibleLangCodes = langMappings[targetLang] || [targetLang];

@@ -15,7 +15,7 @@ export const NATIVE_VOICES = {
   "portuguese": "29vD33N1CtxCmqQRPOHJ", // Drew - natural Portuguese voice
   "dutch": "D38z5RcWu1voky8WS1ja", // Fin - friendly Dutch voice
   "swedish": "CYw3kZ02Hs0563khs1Fj", // Dave - conversational Swedish voice
-  "norwegian": "CYw3kZ02Hs0563khs1Fj", // Dave - Swedish voice works for Norwegian
+  "norwegian": "29vD33N1CtxCmqQRPOHJ", // Drew - natural pronunciation for Norwegian
   "arabic": "ErXwobaYiN019PkySvjV", // Antoni - works well for Arabic
   "chinese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear pronunciation for Chinese
   "english": "pNInz6obpgDQGcFmaJgB", // Rachel - default English
@@ -31,7 +31,7 @@ export const LANGUAGE_VOICE_SETTINGS = {
   "portuguese": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
   "dutch": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
   "swedish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "norwegian": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "norwegian": { stability: 0.7, similarityBoost: 0.9, style: 0.05 },
   "arabic": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
   "chinese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
   "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },

@@ -39,13 +39,22 @@ export function preprocessTextForTTS(text: string, language: string = "english")
         .replace(/ç/g, 'c');
       break;
     case 'norwegian':
+      // Enhanced Norwegian character handling for better pronunciation
+      processed = processed
+        .replace(/å/g, 'oa')
+        .replace(/ø/g, 'uh')
+        .replace(/æ/g, 'ae')
+        // Add natural pauses for Norwegian sentence structure
+        .replace(/\s+og\s+/g, ' og ')
+        .replace(/\s+men\s+/g, ', men ')
+        .replace(/\s+eller\s+/g, ' eller ');
+      break;
     case 'swedish':
-      // Handle Nordic characters
+      // Handle Swedish characters
       processed = processed
         .replace(/å/g, 'aa')
         .replace(/ä/g, 'ae')
-        .replace(/ö/g, 'oe')
-        .replace(/ø/g, 'oe');
+        .replace(/ö/g, 'oe');
       break;
   }
   
