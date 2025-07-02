@@ -1,6 +1,6 @@
 
 import { useRef, useEffect } from "react";
-import { playWithElevenLabsTTS } from "@/lib/elevenlabsTtsClient";
+import { playWithElevenLabsTTS } from "@/lib/tts";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
 
