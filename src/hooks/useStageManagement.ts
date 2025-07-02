@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
-import { STAGE_SIZE, ROUND_SIZE } from "@/utils/quizHelpers";
+import { STAGE_SIZE } from "@/utils/quizHelpers";
 import { getGameState } from "@/utils/gameStateManager";
 
 export function useStageManagement(phrases: any[], profile: any) {
@@ -41,20 +41,20 @@ export function useStageManagement(phrases: any[], profile: any) {
   const currentStageStart = useMemo(() => stage * STAGE_SIZE, [stage]);
   const currentStageEnd = useMemo(() => Math.min(currentStageStart + STAGE_SIZE, phrases.length), [currentStageStart, phrases.length]);
 
-  // Prepare a new round (5 unplayed questions) - only depend on stage and phrases.length
+  // Prepare a new round (STAGE_SIZE questions) - only depend on stage and phrases.length
   useEffect(() => {
     if (!initialized || phrases.length === 0) return;
     
     console.log("🎯 useStageManagement: Round questions effect triggered", {
       phrasesLength: phrases.length,
       stage,
-      roundStart: stage * ROUND_SIZE,
+      roundStart: stage * STAGE_SIZE,
       initialized
     });
     
-    // Pick next ROUND_SIZE questions not played yet in this session
-    const roundStart = stage * ROUND_SIZE;
-    const newRoundQuestions = phrases.slice(roundStart, roundStart + ROUND_SIZE);
+    // Pick next STAGE_SIZE questions not played yet in this session
+    const roundStart = stage * STAGE_SIZE;
+    const newRoundQuestions = phrases.slice(roundStart, roundStart + STAGE_SIZE);
     console.log("🎯 useStageManagement: Setting round questions:", newRoundQuestions.map(p => p.id));
     setRoundQuestions(newRoundQuestions);
   }, [stage, phrases.length, initialized]);

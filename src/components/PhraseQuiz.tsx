@@ -5,7 +5,6 @@ import GameStateRenderer from "./GameStateRenderer";
 import GameStateManager from "./GameStateManager";
 import QuizLogic from "./QuizLogic";
 import { QuizProps } from "@/types/quiz";
-import { getGameState } from "@/utils/gameStateManager";
 
 const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   const [sessionId] = useState(() => Date.now().toString());
@@ -31,31 +30,11 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     resetQuestionState,
   } = useQuizState();
 
-  // Initialize stage management state - check for saved state first
-  const [stage, setStage] = useState(() => {
-    const savedState = getGameState();
-    console.log("🎯 PhraseQuiz: Initializing stage from saved state:", savedState?.stage || 0);
-    return savedState?.stage || 0;
-  });
-  
-  const [stageCompleted, setStageCompleted] = useState(() => {
-    const savedState = getGameState();
-    console.log("✅ PhraseQuiz: Initializing stageCompleted from saved state:", savedState?.stageCompleted || false);
-    return savedState?.stageCompleted || false;
-  });
-  
-  const [showStagePreview, setShowStagePreview] = useState(() => {
-    const savedState = getGameState();
-    console.log("👀 PhraseQuiz: Initializing showStagePreview from saved state:", savedState?.showStagePreview || false);
-    return savedState?.showStagePreview || false;
-  });
-  
-  const [roundCorrect, setRoundCorrect] = useState(() => {
-    const savedState = getGameState();
-    console.log("🎯 PhraseQuiz: Initializing roundCorrect from saved state:", savedState?.roundCorrect || 0);
-    return savedState?.roundCorrect || 0;
-  });
-  
+  // Initialize stage management state - let GameStateManager handle restoration
+  const [stage, setStage] = useState(0);
+  const [stageCompleted, setStageCompleted] = useState(false);
+  const [showStagePreview, setShowStagePreview] = useState(false);
+  const [roundCorrect, setRoundCorrect] = useState(0);
   const [gameStateRestored, setGameStateRestored] = useState(false);
 
   // Mock stage scores for now - these would come from the stage management hook

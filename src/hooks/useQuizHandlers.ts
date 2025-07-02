@@ -1,3 +1,4 @@
+
 import { useCallback } from "react";
 import { 
   computeSpeedBonus, 
@@ -146,23 +147,29 @@ export function useQuizHandlers({
   }, [current, currentStageStart, phrases.length, setCurrent, resetQuestionState]);
 
   const handleAdvanceStage = useCallback(() => {
+    console.log("🚀 useQuizHandlers: handleAdvanceStage called", { roundCorrect, stage });
+    
     // Assess if user passed (3+ correct)
     if (roundCorrect >= 3) {
+      console.log("✅ useQuizHandlers: User passed, advancing to next stage");
       advanceStreak();
       // Skip stage preview, go directly to next stage
       setShowStagePreview(false);
       setStage((s) => s + 1);
       setStageCompleted(false);
-      setCurrent((stage + 1) * ROUND_SIZE);
+      // FIXED: Use STAGE_SIZE for consistency with stage management
+      setCurrent((stage + 1) * STAGE_SIZE);
       resetQuestionState();
       refreshProfile();
     } else {
+      console.log("❌ useQuizHandlers: User did not pass, restarting stage");
       // Did not pass: refill hearts, restart round, reset corrects (using same questions)
       resetHearts();
       setStageCompleted(false);
       resetQuestionState();
       setFeedback("You need at least 3 correct to pass. Try again!");
-      setCurrent(stage * ROUND_SIZE);
+      // FIXED: Use STAGE_SIZE for consistency with stage management
+      setCurrent(stage * STAGE_SIZE);
       setRoundCorrect(0);
       refreshProfile();
     }
@@ -170,6 +177,7 @@ export function useQuizHandlers({
 
   const handleStartStage = useCallback(() => {
     // Called when user presses "Start Stage"
+    console.log("▶️ useQuizHandlers: handleStartStage called");
     setShowStagePreview(false);
     resetQuestionState();
   }, [setShowStagePreview, resetQuestionState]);

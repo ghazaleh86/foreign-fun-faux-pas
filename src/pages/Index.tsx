@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import PhraseQuiz from "../components/PhraseQuiz";
 import { Button } from "@/components/ui/button";
 import MascotAvatar from "../components/MascotAvatar";
+import { hasActiveGame } from "@/utils/gameStateManager";
 
 const Index = () => {
   const [started, setStarted] = useState(false);
@@ -11,8 +12,17 @@ const Index = () => {
   // Chippy is now the consistent opponent
   const opponent = { name: "Chippy", emoji: "🐿️" };
 
+  // Check for active game on mount and bypass landing if found
   useEffect(() => {
-    if (!started) {
+    console.log("🏠 Index: Checking for active game on mount");
+    if (hasActiveGame()) {
+      console.log("🎮 Index: Active game found, starting directly");
+      setStarted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!started && !hasActiveGame()) {
       const timer1 = setTimeout(() => setAnimationStep(1), 200);
       const timer2 = setTimeout(() => setAnimationStep(2), 600);
       const timer3 = setTimeout(() => setAnimationStep(3), 1000);
