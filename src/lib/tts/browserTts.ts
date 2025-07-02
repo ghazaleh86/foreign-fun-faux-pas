@@ -9,9 +9,24 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
       return;
     }
 
-    // Normalize language to lowercase for consistent processing
-    const normalizedLanguage = language.toLowerCase();
-    console.log(`🎵 Browser TTS attempt ${retryCount + 1}:`, { text: text.slice(0, 30), language: normalizedLanguage });
+    // Normalize language variants to base languages
+    const normalizeLanguageVariant = (lang: string): string => {
+      const normalized = lang.toLowerCase();
+      const variantMappings: Record<string, string> = {
+        "colombian spanish": "spanish",
+        "mexican spanish": "spanish", 
+        "costa rican spanish": "spanish",
+        "english (south africa)": "english",
+      };
+      return variantMappings[normalized] || normalized;
+    };
+
+    const normalizedLanguage = normalizeLanguageVariant(language.toLowerCase());
+    console.log(`🎵 Browser TTS attempt ${retryCount + 1}:`, { 
+      originalLanguage: language,
+      normalizedLanguage, 
+      text: text.slice(0, 30) 
+    });
 
     // Cancel any ongoing speech to prevent conflicts
     window.speechSynthesis.cancel();
@@ -63,7 +78,7 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         
-        // Better language code mapping for browser TTS
+        // Comprehensive language code mapping for browser TTS
         const langMappings: Record<string, string[]> = {
           'norwegian': ['nb-NO', 'nb', 'no-NO', 'no', 'nn-NO', 'nn'],
           'swedish': ['sv-SE', 'sv'],
@@ -76,7 +91,21 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
           'portuguese': ['pt-PT', 'pt-BR', 'pt'],
           'dutch': ['nl-NL', 'nl'],
           'japanese': ['ja-JP', 'ja'],
-          'english': ['en-US', 'en-GB', 'en']
+          'english': ['en-US', 'en-GB', 'en'],
+          // Additional missing languages
+          'korean': ['ko-KR', 'ko'],
+          'polish': ['pl-PL', 'pl'],
+          'russian': ['ru-RU', 'ru'],
+          'turkish': ['tr-TR', 'tr'],
+          'vietnamese': ['vi-VN', 'vi'],
+          'thai': ['th-TH', 'th'],
+          'czech': ['cs-CZ', 'cs'],
+          'afrikaans': ['af-ZA', 'af'],
+          // Language variants mapped to base languages
+          'colombian spanish': ['es-CO', 'es-ES', 'es'],
+          'mexican spanish': ['es-MX', 'es-ES', 'es'],
+          'costa rican spanish': ['es-CR', 'es-ES', 'es'],
+          'english (south africa)': ['en-ZA', 'en-GB', 'en-US', 'en']
         };
         
         const possibleLangCodes = langMappings[targetLang] || [targetLang];

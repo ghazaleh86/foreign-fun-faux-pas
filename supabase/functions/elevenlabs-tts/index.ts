@@ -25,6 +25,20 @@ const NATIVE_VOICES = {
   "arabic": "ErXwobaYiN019PkySvjV", // Antoni - works well for Arabic
   "chinese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear pronunciation for Chinese
   "english": "pNInz6obpgDQGcFmaJgB", // Rachel - default English
+  // Additional missing languages
+  "korean": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for Korean
+  "polish": "2EiwWnXFnvU5JabPnv8n", // Clyde - good for Polish
+  "russian": "2EiwWnXFnvU5JabPnv8n", // Clyde - deep voice for Russian
+  "turkish": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Turkish
+  "vietnamese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for Vietnamese tones
+  "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - good for Thai tones
+  "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - suitable for Czech
+  "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - good for Afrikaans
+  // Language variants mapped to base languages
+  "colombian spanish": "ErXwobaYiN019PkySvjV", // Antoni - Spanish
+  "mexican spanish": "ErXwobaYiN019PkySvjV", // Antoni - Spanish
+  "costa rican spanish": "ErXwobaYiN019PkySvjV", // Antoni - Spanish
+  "english (south africa)": "pNInz6obpgDQGcFmaJgB", // Rachel - English
 };
 
 // Language-optimized voice settings
@@ -41,6 +55,20 @@ const LANGUAGE_VOICE_SETTINGS = {
   "arabic": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
   "chinese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
   "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  // Additional missing languages
+  "korean": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "polish": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "russian": { stability: 0.7, similarityBoost: 0.9, style: 0.1 },
+  "turkish": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
+  "vietnamese": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
+  "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
+  "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  // Language variants mapped to base language settings
+  "colombian spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "mexican spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "costa rican spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "english (south africa)": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
 };
 
 function getClientIdentifier(req: Request) {
@@ -88,8 +116,20 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid text length." }), { status: 400, headers: corsHeaders });
     }
     
+    // Normalize language variants to base languages
+    const normalizeLanguageVariant = (lang: string): string => {
+      const normalized = lang.toLowerCase();
+      const variantMappings: Record<string, string> = {
+        "colombian spanish": "spanish",
+        "mexican spanish": "spanish", 
+        "costa rican spanish": "spanish",
+        "english (south africa)": "english",
+      };
+      return variantMappings[normalized] || normalized;
+    };
+
     // Use native voice for language if not specified
-    const normalizedLanguage = language.toLowerCase();
+    const normalizedLanguage = normalizeLanguageVariant(language.toLowerCase());
     const selectedVoiceId = voiceId || NATIVE_VOICES[normalizedLanguage] || NATIVE_VOICES["english"];
     
     // Use language-optimized settings if not specified
