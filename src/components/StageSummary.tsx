@@ -39,95 +39,93 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
 
   return (
-    <div className={`w-full max-w-md mx-auto px-4 py-2 min-h-screen flex flex-col ${isMobile ? 'pb-32' : 'pb-24'}`}>
-      <Card className="w-full bg-white border-0 overflow-hidden shadow-xl flex-1 flex flex-col">
+    <div className={`w-full max-w-md mx-auto px-4 py-8 min-h-screen flex items-center justify-center ${isMobile ? 'pb-32' : 'pb-24'}`}>
+      <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         {/* Main Content */}
-        <CardContent className="px-6 py-4 text-center relative flex-1 flex flex-col justify-between">
-          <div className="flex-1">
-            {/* Mascot - Bigger and more prominent */}
-            <div className="relative z-10 mb-6">
-              <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full p-4 shadow-lg mx-auto w-24 h-24 flex items-center justify-center border-2 border-yellow-200 animate-scale-in">
-                <MascotAvatar size={64} className="ring-0 hover:scale-110 transition-transform duration-300" />
-              </div>
+        <CardContent className="px-6 py-6 text-center relative space-y-6">
+          {/* Mascot - Bigger and more prominent */}
+          <div className="relative z-10">
+            <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full p-4 shadow-lg mx-auto w-24 h-24 flex items-center justify-center border-2 border-yellow-200 animate-scale-in">
+              <MascotAvatar size={64} className="ring-0 hover:scale-110 transition-transform duration-300" />
+            </div>
+          </div>
+
+          {/* Stage Info */}
+          <div className="relative z-10 space-y-3">
+            <h1 className="text-2xl font-black tracking-tight text-gray-900">
+              STAGE {stage + 1}
+            </h1>
+            <div className="text-sm font-semibold text-gray-600 flex items-center justify-center gap-2">
+              <Trophy className="w-4 h-4 text-amber-500" />
+              Complete!
             </div>
 
-            {/* Stage Info */}
-            <div className="relative z-10 mb-4">
-              <h1 className="text-2xl font-black tracking-tight mb-2 text-gray-900">
-                STAGE {stage + 1}
-              </h1>
-              <div className="text-sm font-semibold text-gray-600 flex items-center justify-center gap-2 mb-3">
-                <Trophy className="w-4 h-4 text-amber-500" />
-                Complete!
-              </div>
-
-              {/* Result Badge - More prominent */}
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-base shadow-lg mb-4 border-2 ${
-                playerWon 
-                  ? "bg-green-50 text-green-700 border-green-200" 
-                  : isTie 
-                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                  : "bg-blue-50 text-blue-700 border-blue-200"
-              }`}>
-                {playerWon ? "🏆 You Won This Stage!" : isTie ? "🤝 Stage Tied!" : "💪 Good Effort!"}
-              </div>
+            {/* Result Badge - More prominent */}
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-base shadow-lg border-2 ${
+              playerWon 
+                ? "bg-green-50 text-green-700 border-green-200" 
+                : isTie 
+                ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                : "bg-blue-50 text-blue-700 border-blue-200"
+            }`}>
+              {playerWon ? "🏆 You Won This Stage!" : isTie ? "🤝 Stage Tied!" : "💪 Good Effort!"}
             </div>
+          </div>
 
-            {/* Battle Results */}
-            <div className="relative z-10 mb-4">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">Stage Results</h2>
-              
-              <div className="flex items-center justify-center gap-6 mb-4">
-                {/* Your Score */}
-                <div className="text-center">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-2 ${
-                    playerWon ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"
-                  }`}>
-                    <div className="text-center">
-                      <div className={`text-xl font-black ${playerWon ? "text-green-700" : "text-gray-700"}`}>
-                        {stageScore}
-                      </div>
+          {/* Battle Results */}
+          <div className="relative z-10 space-y-4">
+            <h2 className="text-lg font-bold text-gray-800">Stage Results</h2>
+            
+            <div className="flex items-center justify-center gap-6">
+              {/* Your Score */}
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-2 ${
+                  playerWon ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"
+                }`}>
+                  <div className="text-center">
+                    <div className={`text-xl font-black ${playerWon ? "text-green-700" : "text-gray-700"}`}>
+                      {stageScore}
                     </div>
                   </div>
-                  <div className="text-sm font-semibold text-gray-700">You</div>
                 </div>
-                
-                {/* VS Divider */}
-                <div className="text-lg font-black text-gray-300 px-2">VS</div>
-                
-                {/* Opponent Score */}
-                <div className="text-center">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-2 ${
-                    !playerWon && !isTie ? "bg-red-50 border-red-300" : "bg-gray-50 border-gray-200"
-                  }`}>
-                    <div className="text-center">
-                      <div className={`text-xl font-black ${!playerWon && !isTie ? "text-red-700" : "text-gray-700"}`}>
-                        {opponentScore}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-sm font-semibold text-gray-700">{opponentName}</div>
-                </div>
+                <div className="text-sm font-semibold text-gray-700">You</div>
               </div>
               
-              {/* Total Scores - Only show after first stage */}
-              {stage > 0 && (
-                <div className="bg-gray-50 rounded-xl p-3 mb-2">
-                  <div className="text-xs font-semibold text-gray-600 mb-1">Overall Progress</div>
-                  <div className="flex justify-center items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-base font-bold text-gray-800">{playerTotal}</div>
-                      <div className="text-xs text-gray-500">Your Total</div>
-                    </div>
-                    <div className="text-gray-300 font-bold text-sm">vs</div>
-                    <div className="text-center">
-                      <div className="text-base font-bold text-gray-800">{opponentTotal}</div>
-                      <div className="text-xs text-gray-500">{opponentName} Total</div>
+              {/* VS Divider */}
+              <div className="text-lg font-black text-gray-300 px-2">VS</div>
+              
+              {/* Opponent Score */}
+              <div className="text-center">
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border-2 mx-auto mb-2 ${
+                  !playerWon && !isTie ? "bg-red-50 border-red-300" : "bg-gray-50 border-gray-200"
+                }`}>
+                  <div className="text-center">
+                    <div className={`text-xl font-black ${!playerWon && !isTie ? "text-red-700" : "text-gray-700"}`}>
+                      {opponentScore}
                     </div>
                   </div>
                 </div>
-              )}
+                <div className="text-sm font-semibold text-gray-700">{opponentName}</div>
+              </div>
             </div>
+            
+            {/* Total Scores - Only show after first stage */}
+            {stage > 0 && (
+              <div className="bg-gray-50 rounded-xl p-3">
+                <div className="text-xs font-semibold text-gray-600 mb-1">Overall Progress</div>
+                <div className="flex justify-center items-center gap-4">
+                  <div className="text-center">
+                    <div className="text-base font-bold text-gray-800">{playerTotal}</div>
+                    <div className="text-xs text-gray-500">Your Total</div>
+                  </div>
+                  <div className="text-gray-300 font-bold text-sm">vs</div>
+                  <div className="text-center">
+                    <div className="text-base font-bold text-gray-800">{opponentTotal}</div>
+                    <div className="text-xs text-gray-500">{opponentName} Total</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Action Button */}
