@@ -1,7 +1,6 @@
 
 import React from "react";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Volume2 } from "lucide-react";
 import { Phrase } from "@/types/quiz";
 import { languageToFlag } from "@/utils/languageToFlag";
 
@@ -54,12 +53,6 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
             </span>
             <span className="font-medium">{phrase.language}</span>
           </div>
-          <button
-            className="mt-4 px-6 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 font-medium text-base rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
-            onClick={onPlayAudio}
-          >
-            <Volume2 className="w-5 h-5" />
-          </button>
         </div>
       )}
     </CardHeader>
