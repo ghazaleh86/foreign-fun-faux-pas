@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, BookOpen, Home } from "lucide-react";
@@ -12,27 +12,43 @@ const BottomNavigation = () => {
   const navigate = useNavigate();
   const { profile } = usePlayerProfile();
   const currentPath = location.pathname;
+  const [activeGame, setActiveGame] = useState(false);
   
   // Get the actual count from localStorage
   const learnedPhrasesCount = getLearnedPhrases().length;
+
+  // Check for active game on mount and when route changes
+  useEffect(() => {
+    setActiveGame(hasActiveGame());
+  }, [currentPath]);
+
+  // Also check when the component mounts
+  useEffect(() => {
+    setActiveGame(hasActiveGame());
+  }, []);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Check if there's an active game
-    if (hasActiveGame()) {
+    if (activeGame) {
       // If there's an active game, navigate with startGame parameter to continue
       navigate("/?startGame=true");
     } else {
       // If no active game, go to home page to start new game
       navigate("/");
     }
+    
+    // Update active game status after navigation
+    setTimeout(() => {
+      setActiveGame(hasActiveGame());
+    }, 100);
   };
 
   const navItems = [
     {
       path: "/",
-      label: hasActiveGame() ? "Continue" : "Play",
+      label: activeGame ? "Continue" : "Play",
       icon: Gamepad2,
       isActive: currentPath === "/",
       onClick: handlePlayClick,
