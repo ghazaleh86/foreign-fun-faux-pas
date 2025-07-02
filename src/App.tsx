@@ -17,8 +17,8 @@ const AppContent = () => {
   const isLandingPage = location.pathname === "/";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90">
-      <div className="pb-20"> {/* Add padding bottom for navigation */}
+    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 overflow-hidden">
+      <div className="pb-16 min-h-screen max-h-screen overflow-auto"> {/* Reduced padding, constrained height */}
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/learned" element={<LearnedPhrases />} />
