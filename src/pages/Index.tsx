@@ -48,7 +48,7 @@ const Index = () => {
           <div className="absolute bottom-16 right-8 w-2 h-2 bg-blue-300 rounded-full opacity-50 animate-bounce" style={{ animationDelay: "2s", animationDuration: "2s" }}></div>
         </div>
 
-        {/* Enhanced Mascot with spotlight effect - reduced size */}
+        {/* Enhanced Chippy Hero Image with spotlight effect */}
         <div className={`relative transition-all duration-1000 ease-out ${
           animationStep >= 1 
             ? "opacity-100 transform translate-y-0 scale-100" 
@@ -56,8 +56,12 @@ const Index = () => {
         }`}>
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 rounded-full blur-xl opacity-60 scale-150 animate-pulse"></div>
           <div className="relative">
-            <MascotAvatar size={100} className="mb-4 ring-6 ring-yellow-300/30 shadow-xl hover:scale-105 transition-transform duration-300" />
-            {/* Sparkle effects around mascot - reduced size */}
+            <img 
+              src="/lovable-uploads/c881b360-a1d3-435b-a572-fce9a5e0e4e4.png" 
+              alt="Chippy the Chipmunk - Your Learning Companion" 
+              className="w-32 h-32 md:w-40 md:h-40 object-contain mb-4 hover:scale-105 transition-transform duration-300 animate-fade-in"
+            />
+            {/* Sparkle effects around Chippy */}
             <div className="absolute -top-1 -right-1 text-lg animate-bounce" style={{ animationDelay: "0.5s" }}>✨</div>
             <div className="absolute -bottom-1 -left-1 text-base animate-bounce" style={{ animationDelay: "1.5s" }}>🌟</div>
             <div className="absolute top-1/2 -right-4 text-sm animate-bounce" style={{ animationDelay: "1s" }}>💫</div>
