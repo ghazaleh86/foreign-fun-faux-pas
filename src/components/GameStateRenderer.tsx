@@ -145,6 +145,7 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
         current={current}
         stageSize={stageSize}
         phrasesLength={phrases.length}
+        currentStageStart={currentStageStart}
         opponentEmoji={opponentEmoji}
         timer={timer}
         stageScore={stageScores[stage] || 0}

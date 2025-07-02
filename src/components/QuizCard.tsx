@@ -18,6 +18,7 @@ type QuizCardProps = {
   current: number;
   stageSize: number;
   phrasesLength: number;
+  currentStageStart: number;
   opponentEmoji: string;
   timer: number;
   stageScore: number;
@@ -44,6 +45,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
   current,
   stageSize,
   phrasesLength,
+  currentStageStart,
   opponentEmoji,
   timer,
   stageScore,
@@ -66,6 +68,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
         current={current}
         stageSize={stageSize}
         phrasesLength={phrasesLength}
+        currentStageStart={currentStageStart}
         opponentEmoji={opponentEmoji}
         onPlayAudio={onPlayAudio}
       />

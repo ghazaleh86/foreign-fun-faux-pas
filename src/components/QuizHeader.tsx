@@ -11,6 +11,7 @@ type QuizHeaderProps = {
   current: number;
   stageSize: number;
   phrasesLength: number;
+  currentStageStart: number;
   opponentEmoji: string;
   onPlayAudio: () => void;
 };
@@ -22,16 +23,29 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
   current,
   stageSize,
   phrasesLength,
+  currentStageStart,
   opponentEmoji,
   onPlayAudio,
 }) => {
+  // Calculate stage-relative position
+  const stagePosition = current - currentStageStart + 1;
+  const stageQuestionsCount = Math.min(stageSize, phrasesLength - currentStageStart);
+  
+  console.log("🎯 QuizHeader: Phrase position calculation:", {
+    current,
+    currentStageStart,
+    stagePosition,
+    stageQuestionsCount,
+    stage: stage + 1,
+    totalStages
+  });
   return (
     <CardHeader>
       <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
         <div className="flex items-center justify-center gap-2 w-full">
           <span className="text-2xl">{opponentEmoji}</span>
           <span>
-            Stage {stage + 1} of {totalStages} – Phrase {current - (stage * stageSize) + 1} of {Math.min(stageSize, phrasesLength - (stage * stageSize))}
+            Stage {stage + 1} of {totalStages} – Phrase {stagePosition} of {stageQuestionsCount}
           </span>
         </div>
       </CardTitle>

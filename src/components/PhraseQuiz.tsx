@@ -30,16 +30,8 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     resetQuestionState,
   } = useQuizState();
 
-  // Initialize stage management state - let GameStateManager handle restoration
-  const [stage, setStage] = useState(0);
-  const [stageCompleted, setStageCompleted] = useState(false);
-  const [showStagePreview, setShowStagePreview] = useState(false);
-  const [roundCorrect, setRoundCorrect] = useState(0);
+  // Single source of truth for stage management
   const [gameStateRestored, setGameStateRestored] = useState(false);
-
-  // Mock stage scores for now - these would come from the stage management hook
-  const stageScores: number[] = [];
-  const opponentScores: number[] = [];
 
   // Handle game state restoration
   const handleGameStateRestored = useCallback((restoredState: any) => {
@@ -55,15 +47,11 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
   useEffect(() => {
     console.log("📊 PhraseQuiz: Current state update:", {
       current,
-      stage,
-      stageCompleted,
-      showStagePreview,
-      roundCorrect,
       phrasesLength: phrases.length,
       gameState: state,
       gameStateRestored
     });
-  }, [current, stage, stageCompleted, showStagePreview, roundCorrect, phrases.length, state, gameStateRestored]);
+  }, [current, phrases.length, state, gameStateRestored]);
 
   // Log when phrases change
   useEffect(() => {
@@ -79,26 +67,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
     <div className="w-full flex justify-center items-start min-h-[80vh] pt-6">
       <div className="w-full max-w-xl flex flex-col gap-4">
         <div className="flex-1 w-full flex flex-col items-center justify-center">
-          <GameStateManager
-            phrases={phrases}
-            current={current}
-            score={score}
-            stage={stage}
-            stageScores={stageScores}
-            opponentScores={opponentScores}
-            roundCorrect={roundCorrect}
-            stageCompleted={stageCompleted}
-            showStagePreview={showStagePreview}
-            sessionId={sessionId}
-            state={state}
-            setCurrent={setCurrent}
-            setScore={setScore}
-            setStage={setStage}
-            setRoundCorrect={setRoundCorrect}
-            setStageCompleted={setStageCompleted}
-            setShowStagePreview={setShowStagePreview}
-            onGameStateRestored={handleGameStateRestored}
-          />
+          {/* GameStateManager will be integrated into QuizLogic */}
           
           <QuizLogic
             phrases={phrases}
@@ -115,11 +84,9 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
             state={state}
             markPhraseAsPlayed={markPhraseAsPlayed}
             resetQuestionState={resetQuestionState}
-            stage={stage}
-            stageCompleted={stageCompleted}
-            setStageCompleted={setStageCompleted}
-            showStagePreview={showStagePreview}
             opponentName={opponentName}
+            sessionId={sessionId}
+            onGameStateRestored={handleGameStateRestored}
           >
             {({
               phrase,
@@ -132,10 +99,13 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
               onStartStage,
               showNextButton,
               profile,
-              stageScores: logicStageScores,
-              opponentScores: logicOpponentScores,
+              stageScores,
+              opponentScores,
               totalStages,
               currentStageStart,
+              stage,
+              stageCompleted,
+              showStagePreview,
             }) => (
               <GameStateRenderer
                 state={state}
@@ -144,8 +114,8 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
                 showStagePreview={showStagePreview}
                 current={current}
                 stage={stage}
-                stageScores={logicStageScores}
-                opponentScores={logicOpponentScores}
+                stageScores={stageScores}
+                opponentScores={opponentScores}
                 opponentName={opponentName}
                 opponentEmoji={opponentEmoji}
                 onAdvanceStage={onAdvanceStage}

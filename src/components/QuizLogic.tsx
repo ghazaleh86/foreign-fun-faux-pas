@@ -29,11 +29,9 @@ interface QuizLogicProps {
   state: State;
   markPhraseAsPlayed: (phraseId: string) => void;
   resetQuestionState: () => void;
-  stage: number;
-  stageCompleted: boolean;
-  setStageCompleted: (value: boolean) => void;
-  showStagePreview: boolean;
   opponentName: string;
+  sessionId: string;
+  onGameStateRestored: (restoredState: any) => void;
   children: (props: {
     phrase: Phrase;
     optionOrder: Option[];
@@ -49,6 +47,9 @@ interface QuizLogicProps {
     opponentScores: number[];
     totalStages: number;
     currentStageStart: number;
+    stage: number;
+    stageCompleted: boolean;
+    showStagePreview: boolean;
     roundCorrect: number;
     setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   }) => React.ReactNode;
@@ -69,11 +70,9 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   state,
   markPhraseAsPlayed,
   resetQuestionState,
-  stage,
-  stageCompleted,
-  setStageCompleted,
-  showStagePreview,
   opponentName,
+  sessionId,
+  onGameStateRestored,
   children,
 }) => {
   const [optionOrder, setOptionOrder] = useState<Option[]>([]);
@@ -93,9 +92,13 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   } = usePlayerProfile();
 
   const {
+    stage,
     setStage,
     stageScores,
     opponentScores,
+    stageCompleted,
+    setStageCompleted,
+    showStagePreview,
     setShowStagePreview,
     roundCorrect,
     setRoundCorrect,
@@ -218,6 +221,9 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
         opponentScores,
         totalStages,
         currentStageStart,
+        stage,
+        stageCompleted,
+        showStagePreview,
         roundCorrect,
         setRoundCorrect,
       })}
