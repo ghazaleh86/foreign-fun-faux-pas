@@ -13,6 +13,7 @@ import {
 } from "@/utils/quizHelpers";
 import { Option } from "./MultipleChoiceOptions";
 import { Phrase, State } from "@/types/quiz";
+import GameStateManager from "./GameStateManager";
 
 interface QuizLogicProps {
   phrases: Phrase[];
@@ -206,6 +207,26 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   return (
     <>
+      <GameStateManager
+        phrases={phrases}
+        current={current}
+        score={score}
+        stage={stage}
+        stageScores={stageScores}
+        opponentScores={opponentScores}
+        roundCorrect={roundCorrect}
+        stageCompleted={stageCompleted}
+        showStagePreview={showStagePreview}
+        sessionId={sessionId}
+        state={state}
+        setCurrent={setCurrent}
+        setScore={setScore}
+        setStage={setStage}
+        setRoundCorrect={setRoundCorrect}
+        setStageCompleted={setStageCompleted}
+        setShowStagePreview={setShowStagePreview}
+        onGameStateRestored={onGameStateRestored}
+      />
       {children({
         phrase,
         optionOrder,
