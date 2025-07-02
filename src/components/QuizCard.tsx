@@ -69,7 +69,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
         opponentEmoji={opponentEmoji}
         onPlayAudio={onPlayAudio}
       />
-      <CardContent>
+      <CardContent className="pb-6">
         <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
         <div className="mb-4 text-sm font-bold text-fuchsia-700">
           Time: {timer}s
@@ -120,14 +120,14 @@ const QuizCard: React.FC<QuizCardProps> = ({
           onSelect={onSelect}
         />
 
-        {/* Next button positioned after options */}
+        {/* Next button positioned after options with proper spacing */}
         {showNextButton && (
-          <div className="mt-4 flex justify-center">
+          <div className="mt-6 flex justify-center">
             <Button
               onClick={onNext}
               variant="primary-cta"
               size="lg"
-              className="px-12"
+              className="px-12 py-3"
             >
               Next
             </Button>
