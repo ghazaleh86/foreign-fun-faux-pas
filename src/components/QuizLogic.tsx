@@ -28,6 +28,7 @@ interface QuizLogicProps {
   feedback: string | null;
   setFeedback: (value: string | null) => void;
   state: State;
+  setState: (state: State) => void;
   markPhraseAsPlayed: (phraseId: string) => void;
   resetQuestionState: () => void;
   opponentName: string;
@@ -69,6 +70,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   feedback,
   setFeedback,
   state,
+  setState,
   markPhraseAsPlayed,
   resetQuestionState,
   opponentName,
@@ -178,6 +180,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     setStage,
     refreshProfile,
     resetHearts,
+    setState,
   });
 
   // Use the quiz effects hook - memoize dependencies to prevent re-renders

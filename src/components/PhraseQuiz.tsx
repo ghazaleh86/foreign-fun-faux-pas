@@ -82,6 +82,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
             feedback={feedback}
             setFeedback={setFeedback}
             state={state}
+            setState={setState}
             markPhraseAsPlayed={markPhraseAsPlayed}
             resetQuestionState={resetQuestionState}
             opponentName={opponentName}

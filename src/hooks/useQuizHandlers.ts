@@ -42,6 +42,7 @@ interface UseQuizHandlersProps {
   setStage: (value: number | ((prev: number) => number)) => void;
   refreshProfile: () => void;
   resetHearts: () => void;
+  setState: (state: "loading" | "quiz" | "finished") => void;
 }
 
 // Check if we're on a mobile device
@@ -80,6 +81,7 @@ export function useQuizHandlers({
   setStage,
   refreshProfile,
   resetHearts,
+  setState,
 }: UseQuizHandlersProps) {
   const handleSelect = useCallback((idx: number) => {
     if (selected !== null) return;
@@ -178,14 +180,32 @@ export function useQuizHandlers({
     if (roundCorrect >= 3) {
       console.log("✅ useQuizHandlers: User passed, advancing to next stage");
       advanceStreak();
-      // Skip stage preview, go directly to next stage
-      setShowStagePreview(false);
-      setStage((s) => s + 1);
-      setStageCompleted(false);
-      // FIXED: Use STAGE_SIZE for consistency with stage management
-      setCurrent((stage + 1) * STAGE_SIZE);
-      resetQuestionState();
-      refreshProfile();
+      
+      // Check if this was the final stage - calculate total stages the same way as useStageManagement
+      const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
+      const isGameComplete = stage + 1 >= totalStages;
+      
+      console.log("🏁 useQuizHandlers: Game completion check:", {
+        currentStage: stage,
+        totalStages,
+        isGameComplete,
+        phrasesLength: phrases.length
+      });
+      
+      if (isGameComplete) {
+        console.log("🎉 useQuizHandlers: Game completed! Setting state to finished");
+        // Game is complete - trigger finished state
+        setState("finished");
+      } else {
+        // Skip stage preview, go directly to next stage
+        setShowStagePreview(false);
+        setStage((s) => s + 1);
+        setStageCompleted(false);
+        // FIXED: Use STAGE_SIZE for consistency with stage management
+        setCurrent((stage + 1) * STAGE_SIZE);
+        resetQuestionState();
+        refreshProfile();
+      }
     } else {
       console.log("❌ useQuizHandlers: User did not pass, restarting stage");
       // Did not pass: refill hearts, restart round, reset corrects (using same questions)
@@ -198,7 +218,7 @@ export function useQuizHandlers({
       setRoundCorrect(0);
       refreshProfile();
     }
-  }, [roundCorrect, advanceStreak, setShowStagePreview, setStage, setStageCompleted, setCurrent, stage, resetQuestionState, refreshProfile, resetHearts, setFeedback, setRoundCorrect]);
+  }, [roundCorrect, advanceStreak, setShowStagePreview, setStage, setStageCompleted, setCurrent, stage, resetQuestionState, refreshProfile, resetHearts, setFeedback, setRoundCorrect, phrases.length]);
 
   const handleStartStage = useCallback(() => {
     // Called when user presses "Start Stage"
