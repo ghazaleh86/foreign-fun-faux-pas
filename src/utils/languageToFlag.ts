@@ -49,10 +49,9 @@ export function languageToFlag(language: string): string {
     Finnish: "🇫🇮",
     Czech: "🇨🇿",
     Greek: "🇬🇷",
-    Hungarian: "🇭🇺",
-    Romanian: "🇷🇴",
-    Hebrew: "🇮🇱",
-    Slovak: "🇸🇰",
+  Hungarian: "🇭🇺",
+  Romanian: "🇷🇴",
+  Slovak: "🇸🇰",
     Bulgarian: "🇧🇬",
     Croatian: "🇭🇷",
     Serbian: "🇷🇸",
@@ -60,9 +59,18 @@ export function languageToFlag(language: string): string {
     Indonesian: "🇮🇩",
     Malay: "🇲🇾",
     Thai: "🇹🇭",
-    Vietnamese: "🇻🇳",
-    Afrikaans: "🇿🇦",
-    // add more or tune as needed
+  Vietnamese: "🇻🇳",
+  Afrikaans: "🇿🇦",
+  Farsi: "🇮🇷",
+  Persian: "🇮🇷",
+  Mali: "🇲🇱",
+  Bambara: "🇲🇱",
+  Irish: "🇮🇪",
+  Gaeilge: "🇮🇪",
+  Scottish: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  "Scottish Gaelic": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  Hebrew: "🇮🇱",
+  // add more or tune as needed
   };
   
   // Handle case-insensitive lookup

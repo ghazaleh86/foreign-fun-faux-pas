@@ -34,6 +34,15 @@ const NATIVE_VOICES = {
   "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - good for Thai tones
   "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - suitable for Czech
   "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - good for Afrikaans
+  "farsi": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Farsi
+  "persian": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Persian
+  "mali": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Mali
+  "bambara": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Bambara
+  "irish": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Irish
+  "gaeilge": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Gaeilge
+  "scottish": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Scottish
+  "scottish gaelic": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Scottish Gaelic
+  "hebrew": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Hebrew
   // Missing languages mapped to similar voices
   "finnish": "CYw3kZ02Hs0563khs1Fj", // Dave - Swedish voice (similar languages)
   "danish": "29vD33N1CtxCmqQRPOHJ", // Drew - Norwegian voice (similar languages)
@@ -71,6 +80,15 @@ const LANGUAGE_VOICE_SETTINGS = {
   "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
   "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
   "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "farsi": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  "persian": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  "mali": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "bambara": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "irish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "gaeilge": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "scottish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "scottish gaelic": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "hebrew": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
   // Missing languages with appropriate settings
   "finnish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Similar to Swedish
   "danish": { stability: 0.7, similarityBoost: 0.9, style: 0.05 }, // Similar to Norwegian

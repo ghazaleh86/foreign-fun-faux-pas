@@ -27,18 +27,26 @@ export function guessSpeechLang(language: string): string {
     Czech: "cs-CZ",
     Greek: "el-GR",
     Hungarian: "hu-HU",
-    Romanian: "ro-RO",
-    Hebrew: "he-IL",
-    Slovak: "sk-SK",
+  Romanian: "ro-RO",
+  Slovak: "sk-SK",
     Bulgarian: "bg-BG",
     Croatian: "hr-HR",
     Serbian: "sr-RS",
     Catalan: "ca-ES",
     Indonesian: "id-ID",
     Malay: "ms-MY",
-    Thai: "th-TH",
-    Vietnamese: "vi-VN"
-    // Extend as needed.
+  Thai: "th-TH",
+  Vietnamese: "vi-VN",
+  Farsi: "fa-IR",
+  Persian: "fa-IR", 
+  Mali: "bm-ML",
+  Bambara: "bm-ML",
+  Irish: "ga-IE",
+  Gaeilge: "ga-IE",
+  Scottish: "gd-GB",
+  "Scottish Gaelic": "gd-GB",
+  Hebrew: "he-IL"
+  // Extend as needed.
   };
   return languageMap[language] || "en-US";
 }
