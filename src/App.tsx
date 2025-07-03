@@ -17,7 +17,10 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
-  const isGameView = location.search.includes("startGame=true") || location.pathname === "/";
+  // Check for any game-related view: active game or game states like stage summary
+  const isGameView = location.search.includes("startGame=true") || 
+                     location.pathname === "/" || 
+                     (location.pathname === "/" && typeof window !== 'undefined' && localStorage.getItem('currentGameState_v1'));
 
   // Stop all audio when navigating between routes
   useEffect(() => {
