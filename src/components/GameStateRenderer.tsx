@@ -70,7 +70,10 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   onPlayAudio,
   currentStageStart,
 }) => {
-  const percent = phrases.length > 0 ? Math.round((score / phrases.length) * 100) : 0;
+  // Calculate total correct answers from all stages
+  const totalCorrectAnswers = stageScores.filter(score => score > 0).length;
+  const totalQuestionsPlayed = Math.min(current + 1, phrases.length);
+  const percent = totalQuestionsPlayed > 0 ? Math.round((totalCorrectAnswers / totalQuestionsPlayed) * 100) : 0;
 
   // Loading State
   if (state === "loading") {
@@ -120,8 +123,8 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   if (state === "finished") {
     return (
       <GameSummary
-        score={score}
-        total={phrases.length}
+        score={totalCorrectAnswers}
+        total={totalQuestionsPlayed}
         percent={percent}
         totalStages={totalStages}
         stageScores={stageScores}
