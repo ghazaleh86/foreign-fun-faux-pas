@@ -1,7 +1,5 @@
 
 import React from "react";
-import mascotGif1 from "@/assets/mascot-1.gif";
-import mascotGif2 from "@/assets/mascot-2.gif";
 
 type MascotAvatarProps = {
   size?: number; // pixel size
@@ -9,8 +7,12 @@ type MascotAvatarProps = {
 };
 
 const MascotAvatar: React.FC<MascotAvatarProps> = ({ size = 100, className = "" }) => {
-  // Randomly select one of the two gifs
-  const selectedGif = Math.random() > 0.5 ? mascotGif1 : mascotGif2;
+  // Randomly select one of the two Giphy URLs
+  const gifs = [
+    "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXJwamh6YXk2ZnppZHVzcWJyd2hxZnB1cGl5YnMwb25mYWl2emhuNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Go5rRm5kZu6jjDn0XT/giphy.gif",
+    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHNkbmh4YjJ0ZGN6NWdxN3ZrMjZzcjNjZnNuZjFraHExb3h3YndkayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4ZGRNIC9DgsiBVjlBS/giphy.gif"
+  ];
+  const selectedGif = gifs[Math.floor(Math.random() * gifs.length)];
   
   return (
     <div
