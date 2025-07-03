@@ -1,6 +1,7 @@
 import { validateTtsTextInput } from '../validateTtsInput';
 import { preprocessTextForTTS } from './textPreprocessing';
 import { isMobileDevice, initializeAudioContext } from './audioUtils';
+import { audioManager } from './audioManager';
 
 const EDGE_URL = "https://ayfmkmnecfjyhdutxfjp.supabase.co/functions/v1/elevenlabs-tts";
 
@@ -27,6 +28,9 @@ export async function playWithElevenLabsTTS({
   // Normalize language to lowercase for consistent voice selection
   const normalizedLanguage = language.toLowerCase();
   const processedText = preprocessTextForTTS(text, normalizedLanguage);
+
+  // Stop any existing audio before starting new one
+  audioManager.prepareForNewAudio();
 
   // For mobile devices, ensure audio context is initialized
   if (isMobileDevice()) {
@@ -84,6 +88,9 @@ export async function playWithElevenLabsTTS({
     const audioBlob = await res.blob();
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
+    
+    // Register with audio manager for cleanup
+    audioManager.registerAudio(audio);
     
     // Mobile-optimized audio settings
     audio.volume = 1.0;

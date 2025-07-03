@@ -3,6 +3,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { playWithElevenLabsTTS } from "@/lib/tts";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
+import { audioManager } from "@/lib/tts/audioManager";
 
 // Check if we're on a mobile device
 function isMobileDevice(): boolean {
@@ -140,9 +141,18 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     audioPlayedRef.current = false;
   }, [...triggerKey]);
 
+  // Cleanup audio on component unmount
+  useEffect(() => {
+    return () => {
+      console.log('🧹 Cleaning up audio on component unmount');
+      audioManager.stopAllAudio();
+    };
+  }, []);
+
   // Return a function to manually trigger audio (useful for mobile)
   const playManually = useCallback(() => {
     console.log('🎵 Manual audio play triggered');
+    audioManager.stopAllAudio(); // Stop any existing audio first
     if (!userHasInteracted) {
       globalUserHasInteracted = true;
       setUserHasInteracted(true);

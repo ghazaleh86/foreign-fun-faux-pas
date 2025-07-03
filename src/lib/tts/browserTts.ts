@@ -1,4 +1,5 @@
 import { preprocessTextForTTS } from './textPreprocessing';
+import { audioManager } from './audioManager';
 
 // Enhanced fallback with better mobile support and retry logic
 export function playWithBrowserTTS(text: string, language: string = "en", retryCount: number = 0) {
@@ -28,8 +29,8 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
       text: text.slice(0, 30) 
     });
 
-    // Cancel any ongoing speech to prevent conflicts
-    window.speechSynthesis.cancel();
+    // Stop all audio including ElevenLabs before starting browser TTS
+    audioManager.stopAllAudio();
     
     // Wait a bit after cancellation on mobile
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
