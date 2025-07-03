@@ -8,6 +8,7 @@ export type Phrase = {
   incorrect1: string;
   incorrect2: string;
   notes: string | null;
+  difficulty: number;
 };
 
 export type State = "loading" | "quiz" | "finished";

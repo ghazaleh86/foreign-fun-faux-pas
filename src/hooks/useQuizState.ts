@@ -27,6 +27,7 @@ export function useQuizState() {
       const { data, error } = await supabase
         .from("phrases")
         .select("*")
+        .order("difficulty", { ascending: true })
         .order("created_at", { ascending: false });
 
       if (!data || error) {
@@ -40,11 +41,27 @@ export function useQuizState() {
         if (unplayedPhrases.length === 0) {
           // All phrases have been played - clear the played list and start fresh
           setPlayedPhraseIds([]);
-          setPhrases(data as Phrase[]);
-          console.log("All phrases played! Starting fresh with full database.");
+          // Sort all phrases by difficulty for progression (easy to hard)
+          const sortedPhrases = (data as Phrase[]).sort((a, b) => {
+            if (a.difficulty !== b.difficulty) {
+              return a.difficulty - b.difficulty;
+            }
+            // If same difficulty, randomize within difficulty level
+            return Math.random() - 0.5;
+          });
+          setPhrases(sortedPhrases);
+          console.log("All phrases played! Starting fresh with difficulty progression.");
         } else {
-          setPhrases(unplayedPhrases as Phrase[]);
-          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total.`);
+          // Sort unplayed phrases by difficulty for progression
+          const sortedUnplayedPhrases = unplayedPhrases.sort((a, b) => {
+            if (a.difficulty !== b.difficulty) {
+              return a.difficulty - b.difficulty;
+            }
+            // If same difficulty, randomize within difficulty level  
+            return Math.random() - 0.5;
+          });
+          setPhrases(sortedUnplayedPhrases as Phrase[]);
+          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total, sorted by difficulty.`);
         }
         setState("quiz");
       }

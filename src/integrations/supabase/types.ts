@@ -42,6 +42,7 @@ export type Database = {
         Row: {
           correct_meaning: string
           created_at: string
+          difficulty: number | null
           id: string
           incorrect1: string
           incorrect2: string
@@ -53,6 +54,7 @@ export type Database = {
         Insert: {
           correct_meaning: string
           created_at?: string
+          difficulty?: number | null
           id?: string
           incorrect1: string
           incorrect2: string
@@ -64,6 +66,7 @@ export type Database = {
         Update: {
           correct_meaning?: string
           created_at?: string
+          difficulty?: number | null
           id?: string
           incorrect1?: string
           incorrect2?: string
