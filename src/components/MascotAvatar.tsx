@@ -10,12 +10,8 @@ const MascotAvatar: React.FC<MascotAvatarProps> = ({ size = 100, className = "" 
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Randomly select one of the two Giphy URLs
-  const gifs = [
-    "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXJwamh6YXk2ZnppZHVzcWJyd2hxZnB1cGl5YnMwb25mYWl2emhuNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Go5rRm5kZu6jjDn0XT/giphy.gif",
-    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHNkbmh4YjJ0ZGN6NWdxN3ZrMjZzcjNjZnNuZjFraHExb3h3YndkayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4ZGRNIC9DgsiBVjlBS/giphy.gif"
-  ];
-  const selectedGif = gifs[Math.floor(Math.random() * gifs.length)];
+  // Use the single working GIF URL
+  const gifUrl = "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzg1bW1lNW44azQ3bDc5MWIwM3pncHgyZW5zZTIwenlwZGFteDR5dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CXWR55ees9JdvNblLW/giphy.gif";
 
   const handleImageLoad = () => {
     setIsLoading(false);
@@ -46,7 +42,7 @@ const MascotAvatar: React.FC<MascotAvatarProps> = ({ size = 100, className = "" 
             <div className="animate-pulse bg-yellow-200 w-full h-full rounded-full" />
           )}
           <img
-            src={selectedGif}
+            src={gifUrl}
             alt="Mascot"
             style={{
               width: "100%",
