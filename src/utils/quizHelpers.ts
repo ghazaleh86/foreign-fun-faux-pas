@@ -58,14 +58,6 @@ export const NATIVE_VOICES = {
   "tok pisin": "D38z5RcWu1voky8WS1ja", // Fin - friendly English-based pidgin
   
   // Additional missing languages
-  "korean": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for Korean
-  "polish": "2EiwWnXFnvU5JabPnv8n", // Clyde - good for Polish
-  "russian": "2EiwWnXFnvU5JabPnv8n", // Clyde - deep voice for Russian
-  "turkish": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Turkish
-  "vietnamese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for Vietnamese tones
-  "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - good for Thai tones
-  "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - suitable for Czech
-  "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - good for Afrikaans
   "farsi": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Farsi
   "persian": "ErXwobaYiN019PkySvjV", // Antoni - versatile for Persian
   "mali": "pNInz6obpgDQGcFmaJgB", // Rachel - English voice for Mali
@@ -143,14 +135,14 @@ export const LANGUAGE_VOICE_SETTINGS = {
   "tok pisin": { stability: 0.4, similarityBoost: 0.8, style: 0.3 }, // Friendly pidgin
   
   // Additional missing languages
-  "korean": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
-  "polish": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
-  "russian": { stability: 0.7, similarityBoost: 0.9, style: 0.1 },
-  "turkish": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
-  "vietnamese": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
-  "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
-  "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
-  "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "farsi": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
+  "persian": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
+  "mali": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "bambara": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "irish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "gaeilge": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "scottish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "scottish gaelic": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   // Missing languages with appropriate settings
   "finnish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 }, // Similar to Swedish
   "danish": { stability: 0.7, similarityBoost: 0.9, style: 0.05 }, // Similar to Norwegian

@@ -97,7 +97,7 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
         };
         
         utterance.lang = normalizedLanguage;
-        utterance.rate = islandLanguageRates[targetLang] || 0.75;
+        utterance.rate = islandLanguageRates[normalizedLanguage] || 0.75;
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         
@@ -246,7 +246,7 @@ export function playWithBrowserTTS(text: string, language: string = "en", retryC
         }, isMobile ? 200 : 100);
         
       } catch (error) {
-        console.error(`❌ Error setting up browser TTS for ${targetLang}:`, error);
+        console.error(`❌ Error setting up browser TTS for ${normalizedLanguage}:`, error);
         reject(error);
       }
     }).catch(reject);
