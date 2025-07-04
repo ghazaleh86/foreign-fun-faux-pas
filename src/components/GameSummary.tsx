@@ -36,7 +36,7 @@ const GameSummary: React.FC<GameSummaryProps> = ({
   const isTie = playerTotal === opponentTotal;
 
   return (
-    <div className={`w-full max-w-lg mx-auto ${isMobile ? 'h-screen pt-4 pb-24' : 'py-8 min-h-screen pb-8'} flex items-start justify-center`}>
+    <div className={`w-full max-w-lg mx-auto ${isMobile ? 'h-screen pt-4 pb-32' : 'py-8 min-h-screen pb-8'} flex items-start justify-center`}>
       <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
         <CardContent className={`${isMobile ? 'px-4 py-6' : 'px-6 py-8'} text-center relative space-y-6`}>
           <GameSummaryMascot />
