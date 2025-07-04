@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Star, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
           size="lg"
           onClick={onStartStage}
         >
-          Start Stage!
+          Start stage!
         </Button>
       </div>
     </div>

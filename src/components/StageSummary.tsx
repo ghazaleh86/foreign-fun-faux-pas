@@ -68,7 +68,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
                 ? "bg-yellow-50 text-yellow-700 border-yellow-200"
                 : "bg-blue-50 text-blue-700 border-blue-200"
             }`}>
-              {playerWon ? "🏆 You Won This Stage!" : isTie ? "🤝 Stage Tied!" : "💪 Good Effort!"}
+              {playerWon ? "🏆 You won this stage!" : isTie ? "🤝 Stage tied!" : "💪 Good effort!"}
             </div>
           </div>
 
@@ -136,7 +136,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
               size="lg"
               className="w-full min-h-[56px] text-lg font-bold px-8 shadow-lg"
             >
-              <span>Continue Journey</span>
+              <span>Continue journey</span>
               <ArrowRight className="ml-3 w-5 h-5" />
             </Button>
           </div>

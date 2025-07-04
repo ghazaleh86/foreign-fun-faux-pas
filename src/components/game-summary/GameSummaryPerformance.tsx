@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Trophy, Star, Medal, Crown } from "lucide-react";
 
@@ -7,11 +8,11 @@ type GameSummaryPerformanceProps = {
 
 const GameSummaryPerformance: React.FC<GameSummaryPerformanceProps> = ({ percent }) => {
   const getPerformanceData = () => {
-    if (percent >= 90) return { icon: Crown, message: "Outstanding Performance!", color: "text-yellow-600", bgColor: "bg-yellow-50", borderColor: "border-yellow-200" };
-    if (percent >= 80) return { icon: Trophy, message: "Excellent Work!", color: "text-green-600", bgColor: "bg-green-50", borderColor: "border-green-200" };
-    if (percent >= 70) return { icon: Medal, message: "Great Job!", color: "text-blue-600", bgColor: "bg-blue-50", borderColor: "border-blue-200" };
-    if (percent >= 60) return { icon: Star, message: "Good Effort!", color: "text-purple-600", bgColor: "bg-purple-50", borderColor: "border-purple-200" };
-    return { icon: Star, message: "Keep Practicing!", color: "text-gray-600", bgColor: "bg-gray-50", borderColor: "border-gray-200" };
+    if (percent >= 90) return { icon: Crown, message: "Outstanding performance!", color: "text-yellow-600", bgColor: "bg-yellow-50", borderColor: "border-yellow-200" };
+    if (percent >= 80) return { icon: Trophy, message: "Excellent work!", color: "text-green-600", bgColor: "bg-green-50", borderColor: "border-green-200" };
+    if (percent >= 70) return { icon: Medal, message: "Great job!", color: "text-blue-600", bgColor: "bg-blue-50", borderColor: "border-blue-200" };
+    if (percent >= 60) return { icon: Star, message: "Good effort!", color: "text-purple-600", bgColor: "bg-purple-50", borderColor: "border-purple-200" };
+    return { icon: Star, message: "Keep practicing!", color: "text-gray-600", bgColor: "bg-gray-50", borderColor: "border-gray-200" };
   };
 
   const performance = getPerformanceData();

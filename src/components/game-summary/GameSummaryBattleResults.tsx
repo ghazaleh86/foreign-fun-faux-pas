@@ -1,3 +1,4 @@
+
 import React from "react";
 
 type GameSummaryBattleResultsProps = {
@@ -60,7 +61,7 @@ const GameSummaryBattleResults: React.FC<GameSummaryBattleResultsProps> = ({
           ? "bg-yellow-50 text-yellow-700 border-yellow-200"
           : "bg-blue-50 text-blue-700 border-blue-200"
       }`}>
-        {playerWon ? "🏆 You Won Overall!" : isTie ? "🤝 Overall Tie!" : "💪 Valiant Effort!"}
+        {playerWon ? "🏆 You won overall!" : isTie ? "🤝 Overall tie!" : "💪 Valiant effort!"}
       </div>
     </div>
   );

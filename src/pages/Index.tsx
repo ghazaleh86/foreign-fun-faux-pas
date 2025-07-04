@@ -146,7 +146,7 @@ const Index = () => {
           className="bg-white/90 backdrop-blur-sm border-pink-300 hover:bg-pink-50 shadow-lg"
         >
           <Home className="w-4 h-4 mr-2" />
-          Back to Start
+          Back to start
         </Button>
       </div>
       
