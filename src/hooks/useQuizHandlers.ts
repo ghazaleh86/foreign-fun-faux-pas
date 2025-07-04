@@ -1,13 +1,8 @@
-import { useCallback } from "react";
-import { 
-  computeSpeedBonus, 
-  getSpeedBonusXP, 
-  getNativeVoiceForLanguage,
-  getLanguageVoiceSettings,
-  randomWrongTaunt, 
-  STAGE_SIZE,
-  ROUND_SIZE
-} from "@/utils/quizHelpers";
+
+import { useAnswerSelection } from "./useAnswerSelection";
+import { useNavigation } from "./useNavigation";
+import { useStageProgression } from "./useStageProgression";
+import { useAudioPlaybackControls } from "./useAudioPlaybackControls";
 import { Option } from "@/components/MultipleChoiceOptions";
 import { Phrase } from "@/types/quiz";
 
@@ -45,248 +40,60 @@ interface UseQuizHandlersProps {
   setState: (state: "loading" | "quiz" | "finished") => void;
 }
 
-// Check if we're on a mobile device
-function isMobileDevice(): boolean {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
+export function useQuizHandlers(props: UseQuizHandlersProps) {
+  const { handleSelect } = useAnswerSelection({
+    selected: props.selected,
+    setSelected: props.setSelected,
+    setShowAnswer: props.setShowAnswer,
+    getElapsed: props.getElapsed,
+    optionOrder: props.optionOrder,
+    addXP: props.addXP,
+    setRoundCorrect: props.setRoundCorrect,
+    setScore: props.setScore,
+    updateStageScores: props.updateStageScores,
+    stage: props.stage,
+    setFeedback: props.setFeedback,
+    phrase: props.phrase,
+    markPhraseAsLearned: props.markPhraseAsLearned,
+    markPhraseAsPlayed: props.markPhraseAsPlayed,
+    profile: props.profile,
+    loseHeart: props.loseHeart,
+    updateOpponentScores: props.updateOpponentScores,
+    opponentName: props.opponentName,
+    current: props.current,
+    currentStageStart: props.currentStageStart,
+    phrases: props.phrases,
+    setStageCompleted: props.setStageCompleted,
+  });
 
-export function useQuizHandlers({
-  selected,
-  setSelected,
-  setShowAnswer,
-  getElapsed,
-  optionOrder,
-  addXP,
-  setRoundCorrect,
-  setScore,
-  updateStageScores,
-  stage,
-  setFeedback,
-  phrase,
-  markPhraseAsLearned,
-  markPhraseAsPlayed,
-  profile,
-  loseHeart,
-  updateOpponentScores,
-  opponentName,
-  current,
-  currentStageStart,
-  phrases,
-  setStageCompleted,
-  setCurrent,
-  resetQuestionState,
-  roundCorrect,
-  advanceStreak,
-  setShowStagePreview,
-  setStage,
-  refreshProfile,
-  resetHearts,
-  setState,
-}: UseQuizHandlersProps) {
-  const handleSelect = useCallback((idx: number) => {
-    if (selected !== null) return;
-    console.log("🎯 QuizLogic: Answer selected:", idx);
-    setSelected(idx);
-    setShowAnswer(true);
+  const { handleNext } = useNavigation({
+    current: props.current,
+    currentStageStart: props.currentStageStart,
+    phrases: props.phrases,
+    setCurrent: props.setCurrent,
+    resetQuestionState: props.resetQuestionState,
+  });
 
-    let timeTaken = getElapsed();
+  const { handleAdvanceStage, handleStartStage } = useStageProgression({
+    roundCorrect: props.roundCorrect,
+    stage: props.stage,
+    phrases: props.phrases,
+    advanceStreak: props.advanceStreak,
+    setShowStagePreview: props.setShowStagePreview,
+    setStage: props.setStage,
+    setStageCompleted: props.setStageCompleted,
+    setCurrent: props.setCurrent,
+    resetQuestionState: props.resetQuestionState,
+    refreshProfile: props.refreshProfile,
+    resetHearts: props.resetHearts,
+    setFeedback: props.setFeedback,
+    setRoundCorrect: props.setRoundCorrect,
+    setState: props.setState,
+  });
 
-    if (optionOrder[idx].isCorrect) {
-      // +10 XP, plus speed bonus
-      const bonusXP = getSpeedBonusXP(timeTaken);
-      addXP(10 + bonusXP);
-      setRoundCorrect((c) => c + 1);
-      const bonus = computeSpeedBonus(timeTaken);
-      setScore((s) => s + bonus);
-      updateStageScores(stage, bonus);
-      setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
-      
-      // Mark phrase as learned immediately when answered correctly
-      if (phrase) {
-        markPhraseAsLearned(phrase);
-      }
-    } else {
-      loseHeart();
-      const opponentGotIt = Math.random() < 0.7 ? 1 : 0;
-      updateOpponentScores(stage, opponentGotIt);
-      setFeedback(randomWrongTaunt(opponentName));
-    }
-
-    // Mark this phrase as played immediately
-    if (phrase) {
-      markPhraseAsPlayed(phrase.id);
-    }
-
-    // Check if this is truly the last question in the stage
-    const currentPositionInStage = current - currentStageStart + 1;
-    const maxQuestionsInStage = Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-    const isLastInStage = currentPositionInStage >= maxQuestionsInStage;
-    const isLastOverall = current >= phrases.length - 1;
-
-    console.log("🔍 useQuizHandlers: Stage completion check:", {
-      current,
-      currentStageStart,
-      currentPositionInStage,
-      maxQuestionsInStage,
-      isLastInStage,
-      isLastOverall,
-      profileHearts: profile?.hearts,
-      isCorrect: optionOrder[idx].isCorrect
-    });
-
-    // If game over (no more hearts), auto end stage
-    if (profile && profile.hearts === 1 && !optionOrder[idx].isCorrect) {
-      console.log("💔 useQuizHandlers: Game over - no more hearts");
-      setShowAnswer(false);
-      setTimeout(() => {
-        setStageCompleted(true);
-      }, 700); // Short delay to show last answer
-      return;
-    }
-
-    // Only complete stage if this is truly the last question
-    if (isLastInStage || isLastOverall) {
-      console.log("🏁 useQuizHandlers: Completing stage - last question reached");
-      setStageCompleted(true);
-    }
-  }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addXP, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
-
-  const handleNext = useCallback(() => {
-    // Only allow next question if not at end of stage
-    const currentPositionInStage = current - currentStageStart + 1;
-    const maxQuestionsInStage = Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-    const isLastInStage = currentPositionInStage >= maxQuestionsInStage;
-
-    console.log("➡️ useQuizHandlers: Next button clicked:", {
-      current,
-      currentStageStart,
-      currentPositionInStage,
-      maxQuestionsInStage,
-      isLastInStage,
-      canProceed: !isLastInStage && current < phrases.length - 1
-    });
-
-    if (!isLastInStage && current < phrases.length - 1) {
-      console.log("➡️ QuizLogic: Moving to next question");
-      setCurrent((c) => c + 1);
-      resetQuestionState();
-    }
-  }, [current, currentStageStart, phrases.length, setCurrent, resetQuestionState]);
-
-  const handleAdvanceStage = useCallback(() => {
-    console.log("🚀 useQuizHandlers: handleAdvanceStage called", { roundCorrect, stage });
-    
-    // Assess if user passed (3+ correct)
-    if (roundCorrect >= 3) {
-      console.log("✅ useQuizHandlers: User passed, advancing to next stage");
-      advanceStreak();
-      
-      // Check if this was the final stage - calculate total stages the same way as useStageManagement
-      const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
-      const isGameComplete = stage + 1 >= totalStages;
-      
-      console.log("🏁 useQuizHandlers: Game completion check:", {
-        currentStage: stage,
-        totalStages,
-        isGameComplete,
-        phrasesLength: phrases.length
-      });
-      
-      if (isGameComplete) {
-        console.log("🎉 useQuizHandlers: Game completed! Setting state to finished");
-        // Game is complete - trigger finished state
-        setState("finished");
-      } else {
-        // Skip stage preview, go directly to next stage
-        setShowStagePreview(false);
-        setStage((s) => s + 1);
-        setStageCompleted(false);
-        // FIXED: Use STAGE_SIZE for consistency with stage management
-        setCurrent((stage + 1) * STAGE_SIZE);
-        resetQuestionState();
-        refreshProfile();
-      }
-    } else {
-      console.log("❌ useQuizHandlers: User did not pass, restarting stage");
-      // Did not pass: refill hearts, restart round, reset corrects (using same questions)
-      resetHearts();
-      setStageCompleted(false);
-      resetQuestionState();
-      setFeedback("You need at least 3 correct to pass. Try again!");
-      // FIXED: Use STAGE_SIZE for consistency with stage management
-      setCurrent(stage * STAGE_SIZE);
-      setRoundCorrect(0);
-      refreshProfile();
-    }
-  }, [roundCorrect, advanceStreak, setShowStagePreview, setStage, setStageCompleted, setCurrent, stage, resetQuestionState, refreshProfile, resetHearts, setFeedback, setRoundCorrect, phrases.length]);
-
-  const handleStartStage = useCallback(() => {
-    // Called when user presses "Start Stage"
-    console.log("▶️ useQuizHandlers: handleStartStage called");
-    setShowStagePreview(false);
-    resetQuestionState();
-  }, [setShowStagePreview, resetQuestionState]);
-
-  const handlePlayAudio = useCallback(async () => {
-    if (!phrase) return;
-    
-    const ttsText = phrase.pronunciation || phrase.phrase_text;
-    const language = (phrase.language || "english").toLowerCase();
-    const nativeVoiceId = getNativeVoiceForLanguage(language);
-    const languageSettings = getLanguageVoiceSettings(language);
-    
-    console.log(`🎵 Manual play audio triggered for ${language}:`, {
-      text: ttsText.slice(0, 30),
-      voiceId: nativeVoiceId,
-      isMobile: isMobileDevice()
-    });
-    
-    // For mobile devices, try to resume audio context first
-    if (isMobileDevice()) {
-      try {
-        const resumeAudioContext = async () => {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-            console.log('✅ Audio context resumed for manual play');
-          }
-        };
-        await resumeAudioContext();
-      } catch (error) {
-        console.log('⚠️ AudioContext not available or failed to resume:', error);
-      }
-    }
-    
-    try {
-      // Try ElevenLabs first
-      const { playWithElevenLabsTTS } = await import("@/lib/elevenlabsTtsClient");
-      await playWithElevenLabsTTS({ 
-        text: ttsText, 
-        language,
-        voiceId: nativeVoiceId,
-        ...languageSettings,
-        useSpeakerBoost: true
-      });
-      console.log('✅ Manual ElevenLabs TTS succeeded');
-    } catch (elevenLabsError) {
-      console.log('🔄 Manual ElevenLabs failed, trying browser TTS:', elevenLabsError);
-      
-      try {
-        // Import enhanced browser TTS with retry logic
-        const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
-        await playWithBrowserTTS(ttsText, language);
-        console.log('✅ Manual browser TTS succeeded');
-      } catch (browserError) {
-        console.error('❌ Manual audio playback failed completely:', {
-          elevenLabs: elevenLabsError,
-          browser: browserError
-        });
-        
-        // Show user feedback that audio failed
-        alert('Audio playback failed. Please check your device audio settings.');
-      }
-    }
-  }, [phrase]);
+  const { handlePlayAudio } = useAudioPlaybackControls({
+    phrase: props.phrase,
+  });
 
   return {
     handleSelect,
