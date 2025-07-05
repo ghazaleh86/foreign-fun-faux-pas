@@ -1,6 +1,17 @@
 
 // Speech configuration and rate settings for different languages
 export const islandLanguageRates: Record<string, number> = {
+  // INDIAN SUBCONTINENT LANGUAGES
+  'hindi': 0.7, // Clear Hindi pronunciation
+  'bengali': 0.7, // Moderate Bengali pace
+  'tamil': 0.65, // Respectful Tamil pace
+  'telugu': 0.7, // Clear Telugu articulation
+  'marathi': 0.7, // Standard Marathi pace
+  'gujarati': 0.7, // Clear Gujarati pronunciation
+  'punjabi': 0.75, // Energetic Punjabi pace
+  'urdu': 0.7, // Elegant Urdu pronunciation
+  
+  // PACIFIC ISLANDS
   'norwegian': 0.65, // Extra slow for Norwegian clarity
   'tagalog': 0.7, // Moderate pace for Filipino
   'samoan': 0.6, // Slow for Polynesian rhythm

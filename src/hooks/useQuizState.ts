@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Phrase, State } from "@/types/quiz";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
+import { selectWeightedPhrases } from "@/utils/weightedPhraseSelection";
 
 export function useQuizState() {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -13,7 +14,7 @@ export function useQuizState() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  // Fetch phrases on mount with rotation logic
+  // Fetch phrases on mount with weighted selection and rotation logic
   useEffect(() => {
     const fetchPhrases = async () => {
       setState("loading");
@@ -35,33 +36,28 @@ export function useQuizState() {
         setState("quiz");
         setFeedback("Error fetching phrases. Please try again.");
       } else {
+        console.log(`📊 Total phrases in database: ${data.length}`);
+        
         // Filter out phrases that have been played before
         const unplayedPhrases = data.filter((p: Phrase) => !playedIds.includes(p.id));
         
         if (unplayedPhrases.length === 0) {
           // All phrases have been played - clear the played list and start fresh
           setPlayedPhraseIds([]);
-          // Sort all phrases by difficulty for progression (easy to hard)
-          const sortedPhrases = (data as Phrase[]).sort((a, b) => {
-            if (a.difficulty !== b.difficulty) {
-              return a.difficulty - b.difficulty;
-            }
-            // If same difficulty, randomize within difficulty level
-            return Math.random() - 0.5;
-          });
-          setPhrases(sortedPhrases);
-          console.log("All phrases played! Starting fresh with difficulty progression.");
+          console.log("All phrases played! Starting fresh with weighted selection.");
+          
+          // Apply weighted selection to all phrases
+          const weightedPhrases = selectWeightedPhrases(data as Phrase[], Math.min(50, data.length));
+          setPhrases(weightedPhrases);
         } else {
-          // Sort unplayed phrases by difficulty for progression
-          const sortedUnplayedPhrases = unplayedPhrases.sort((a, b) => {
-            if (a.difficulty !== b.difficulty) {
-              return a.difficulty - b.difficulty;
-            }
-            // If same difficulty, randomize within difficulty level  
-            return Math.random() - 0.5;
-          });
-          setPhrases(sortedUnplayedPhrases as Phrase[]);
-          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total, sorted by difficulty.`);
+          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total.`);
+          
+          // Apply weighted selection to unplayed phrases
+          const weightedUnplayedPhrases = selectWeightedPhrases(
+            unplayedPhrases as Phrase[], 
+            Math.min(50, unplayedPhrases.length)
+          );
+          setPhrases(weightedUnplayedPhrases);
         }
         setState("quiz");
       }

@@ -1,6 +1,16 @@
 
 // Enhanced language code mappings for comprehensive language support including island languages
 export const islandLanguageCodes: Record<string, string[]> = {
+  // INDIAN SUBCONTINENT LANGUAGES
+  'hindi': ['hi-IN', 'hi', 'en-IN'],
+  'bengali': ['bn-IN', 'bn-BD', 'bn', 'en-IN'],
+  'tamil': ['ta-IN', 'ta-LK', 'ta', 'en-IN'],
+  'telugu': ['te-IN', 'te', 'en-IN'],
+  'marathi': ['mr-IN', 'mr', 'en-IN'],
+  'gujarati': ['gu-IN', 'gu', 'en-IN'],
+  'punjabi': ['pa-IN', 'pa-PK', 'pa', 'en-IN'],
+  'urdu': ['ur-PK', 'ur-IN', 'ur', 'en-PK'],
+  
   // PACIFIC ISLANDS
   'tagalog': ['tl-PH', 'fil-PH', 'tl', 'en-PH'],
   'samoan': ['sm-WS', 'sm', 'en-WS', 'en-US'],
@@ -80,4 +90,47 @@ export const normalizeLanguageVariant = (lang: string): string => {
     "filipino": "tagalog",
   };
   return variantMappings[normalized] || normalized;
+};
+
+// Language tier definitions for weighted selection
+export const languageTiers = {
+  tier1: {
+    weight: 0.50, // 50% of phrases
+    languages: [
+      'chinese', 'hindi', 'english', 'spanish', 'arabic', 'bengali', 
+      'portuguese', 'russian', 'japanese', 'french'
+    ]
+  },
+  tier2: {
+    weight: 0.35, // 35% of phrases
+    languages: [
+      'german', 'korean', 'turkish', 'italian', 'vietnamese', 'tamil', 
+      'telugu', 'marathi', 'gujarati', 'punjabi', 'urdu', 'thai', 
+      'polish', 'dutch', 'swedish', 'norwegian', 'czech', 'hebrew'
+    ]
+  },
+  tier3: {
+    weight: 0.15, // 15% of phrases (island/minority languages)
+    languages: [
+      'tagalog', 'samoan', 'fijian', 'tongan', 'chamorro', 'māori', 'maori',
+      'icelandic', 'faroese', 'maltese', 'corsican', 'sicilian',
+      'jamaican patois', 'haitian creole', 'papiamento', 'spanish (cuba)', 
+      'spanish (dominican republic)', 'sinhala', 'dhivehi', 'mauritian creole',
+      'seychellois creole', 'tok pisin', 'afrikaans', 'farsi', 'persian',
+      'mali', 'bambara', 'irish', 'gaeilge', 'scottish', 'scottish gaelic'
+    ]
+  }
+};
+
+// Get language tier for a given language
+export const getLanguageTier = (language: string): 'tier1' | 'tier2' | 'tier3' => {
+  const normalizedLang = normalizeLanguageVariant(language.toLowerCase());
+  
+  if (languageTiers.tier1.languages.includes(normalizedLang)) {
+    return 'tier1';
+  }
+  if (languageTiers.tier2.languages.includes(normalizedLang)) {
+    return 'tier2';
+  }
+  return 'tier3';
 };
