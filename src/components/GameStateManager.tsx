@@ -10,6 +10,8 @@ interface GameStateManagerProps {
   stage: number;
   stageScores: number[];
   opponentScores: number[];
+  stageCorrectCounts: number[];
+  stageTotalCounts: number[];
   roundCorrect: number;
   stageCompleted: boolean;
   showStagePreview: boolean;
@@ -31,6 +33,8 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
   stage,
   stageScores,
   opponentScores,
+  stageCorrectCounts,
+  stageTotalCounts,
   roundCorrect,
   stageCompleted,
   showStagePreview,
@@ -136,6 +140,8 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
         stage,
         stageScores,
         opponentScores,
+        stageCorrectCounts,
+        stageTotalCounts,
         roundCorrect,
         stageCompleted,
         showStagePreview,
@@ -147,7 +153,7 @@ const GameStateManager: React.FC<GameStateManagerProps> = ({
     } else {
       console.log("❌ GameStateManager: Not saving - conditions not met");
     }
-  }, [phrases, current, score, stage, stageScores, opponentScores, roundCorrect, stageCompleted, showStagePreview, sessionId, state]);
+  }, [phrases, current, score, stage, stageScores, opponentScores, stageCorrectCounts, stageTotalCounts, roundCorrect, stageCompleted, showStagePreview, sessionId, state]);
 
   // Clear game state when quiz is finished
   useEffect(() => {

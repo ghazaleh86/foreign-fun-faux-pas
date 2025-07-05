@@ -19,6 +19,8 @@ interface UseAnswerSelectionProps {
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setScore: (value: number | ((prev: number) => number)) => void;
   updateStageScores: (stage: number, value: number) => void;
+  updateStageCorrectCounts: (stage: number, value: number) => void;
+  updateStageTotalCounts: (stage: number, value: number) => void;
   stage: number;
   setFeedback: (feedback: string | null) => void;
   phrase: Phrase | undefined;
@@ -44,6 +46,8 @@ export function useAnswerSelection({
   setRoundCorrect,
   setScore,
   updateStageScores,
+  updateStageCorrectCounts,
+  updateStageTotalCounts,
   stage,
   setFeedback,
   phrase,
@@ -74,6 +78,7 @@ export function useAnswerSelection({
       const bonus = computeSpeedBonus(timeTaken);
       setScore((s) => s + bonus);
       updateStageScores(stage, bonus);
+      updateStageCorrectCounts(stage, 1); // Track simple correct count
       setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
       
       // Mark phrase as learned immediately when answered correctly
@@ -86,6 +91,9 @@ export function useAnswerSelection({
       updateOpponentScores(stage, opponentGotIt);
       setFeedback(randomWrongTaunt(opponentName));
     }
+
+    // Always track total questions answered
+    updateStageTotalCounts(stage, 1);
 
     // Mark this phrase as played immediately
     if (phrase) {

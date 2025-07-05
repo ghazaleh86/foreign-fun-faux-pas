@@ -9,6 +9,8 @@ export type GameState = {
     stage: number;
     stageScores: number[];
     opponentScores: number[];
+    stageCorrectCounts: number[];
+    stageTotalCounts: number[];
     roundCorrect: number;
     stageCompleted: boolean;
     showStagePreview: boolean;

@@ -47,6 +47,8 @@ interface QuizLogicProps {
     profile: any;
     stageScores: number[];
     opponentScores: number[];
+    stageCorrectCounts: number[];
+    stageTotalCounts: number[];
     totalStages: number;
     currentStageStart: number;
     stage: number;
@@ -109,6 +111,10 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     currentStageStart,
     updateStageScores,
     updateOpponentScores,
+    stageCorrectCounts,
+    stageTotalCounts,
+    updateStageCorrectCounts,
+    updateStageTotalCounts,
   } = useStageManagement(phrases, profile);
 
   const { markPhraseAsLearned } = useLearnedPhrases();
@@ -159,6 +165,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     setRoundCorrect,
     setScore,
     updateStageScores,
+    updateStageCorrectCounts,
+    updateStageTotalCounts,
     stage,
     setFeedback,
     phrase,
@@ -225,6 +233,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
         stage={stage}
         stageScores={stageScores}
         opponentScores={opponentScores}
+        stageCorrectCounts={stageCorrectCounts}
+        stageTotalCounts={stageTotalCounts}
         roundCorrect={roundCorrect}
         stageCompleted={stageCompleted}
         showStagePreview={showStagePreview}
@@ -251,6 +261,8 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
         profile,
         stageScores,
         opponentScores,
+        stageCorrectCounts,
+        stageTotalCounts,
         totalStages,
         currentStageStart,
         stage,

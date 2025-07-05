@@ -16,6 +16,8 @@ type GameStateRendererProps = {
   stage: number;
   stageScores: number[];
   opponentScores: number[];
+  stageCorrectCounts: number[];
+  stageTotalCounts: number[];
   opponentName: string;
   opponentEmoji: string;
   onAdvanceStage: () => void;
@@ -48,6 +50,8 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   stage,
   stageScores,
   opponentScores,
+  stageCorrectCounts,
+  stageTotalCounts,
   opponentName,
   opponentEmoji,
   onAdvanceStage,
@@ -70,18 +74,17 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   onPlayAudio,
   currentStageStart,
 }) => {
-  // Simplified scoring: count correct answers only
-  const totalCorrectAnswers = stageScores.reduce((sum, stageScore) => sum + stageScore, 0);
-  const totalQuestionsAnswered = Math.min(current + 1, phrases.length);
+  // Simple, accurate scoring: use correct counts not bonus points
+  const totalCorrectAnswers = stageCorrectCounts.reduce((sum, count) => sum + count, 0);
+  const totalQuestionsAnswered = stageTotalCounts.reduce((sum, count) => sum + count, 0);
   const percent = totalQuestionsAnswered > 0 ? Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) : 0;
 
-  console.log('📊 Simplified Scoring Debug:', {
-    stageScores,
+  console.log('📊 Fixed Scoring Debug:', {
+    stageCorrectCounts,
+    stageTotalCounts,
     totalCorrectAnswers,
     totalQuestionsAnswered,
-    percent,
-    current,
-    phrasesLength: phrases.length
+    percent
   });
 
   // Loading State

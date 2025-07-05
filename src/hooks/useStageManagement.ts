@@ -11,6 +11,8 @@ export function useStageManagement(phrases: any[], profile: any) {
   const [roundCorrect, setRoundCorrect] = useState(0);
   const [stageScores, setStageScores] = useState<number[]>([]);
   const [opponentScores, setOpponentScores] = useState<number[]>([]);
+  const [stageCorrectCounts, setStageCorrectCounts] = useState<number[]>([]);
+  const [stageTotalCounts, setStageTotalCounts] = useState<number[]>([]);
   const [roundQuestions, setRoundQuestions] = useState<any[]>([]);
   const [initialized, setInitialized] = useState(false);
 
@@ -28,6 +30,8 @@ export function useStageManagement(phrases: any[], profile: any) {
         setRoundCorrect(savedState.roundCorrect || 0);
         setStageScores(savedState.stageScores || []);
         setOpponentScores(savedState.opponentScores || []);
+        setStageCorrectCounts(savedState.stageCorrectCounts || []);
+        setStageTotalCounts(savedState.stageTotalCounts || []);
       } else {
         console.log("📝 useStageManagement: No saved state, using defaults");
       }
@@ -79,6 +83,26 @@ export function useStageManagement(phrases: any[], profile: any) {
     });
   }
 
+  function updateStageCorrectCounts(stageIdx: number, value: number) {
+    console.log("✅ useStageManagement: Updating correct counts", { stageIdx, value });
+    setStageCorrectCounts((prev) => {
+      const next = [...prev];
+      next[stageIdx] = (next[stageIdx] ?? 0) + value;
+      console.log("✅ useStageManagement: New correct counts:", next);
+      return next;
+    });
+  }
+
+  function updateStageTotalCounts(stageIdx: number, value: number) {
+    console.log("📊 useStageManagement: Updating total counts", { stageIdx, value });
+    setStageTotalCounts((prev) => {
+      const next = [...prev];
+      next[stageIdx] = (next[stageIdx] ?? 0) + value;
+      console.log("📊 useStageManagement: New total counts:", next);
+      return next;
+    });
+  }
+
   return {
     stage,
     setStage,
@@ -96,5 +120,9 @@ export function useStageManagement(phrases: any[], profile: any) {
     currentStageEnd,
     updateStageScores,
     updateOpponentScores,
+    stageCorrectCounts,
+    stageTotalCounts,
+    updateStageCorrectCounts,
+    updateStageTotalCounts,
   };
 }

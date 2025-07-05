@@ -16,6 +16,8 @@ interface UseQuizHandlersProps {
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setScore: (value: number | ((prev: number) => number)) => void;
   updateStageScores: (stage: number, value: number) => void;
+  updateStageCorrectCounts: (stage: number, value: number) => void;
+  updateStageTotalCounts: (stage: number, value: number) => void;
   stage: number;
   setFeedback: (feedback: string | null) => void;
   phrase: Phrase | undefined;
@@ -51,6 +53,8 @@ export function useQuizHandlers(props: UseQuizHandlersProps) {
     setRoundCorrect: props.setRoundCorrect,
     setScore: props.setScore,
     updateStageScores: props.updateStageScores,
+    updateStageCorrectCounts: props.updateStageCorrectCounts,
+    updateStageTotalCounts: props.updateStageTotalCounts,
     stage: props.stage,
     setFeedback: props.setFeedback,
     phrase: props.phrase,

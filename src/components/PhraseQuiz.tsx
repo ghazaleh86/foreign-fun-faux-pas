@@ -102,6 +102,8 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
               profile,
               stageScores,
               opponentScores,
+              stageCorrectCounts,
+              stageTotalCounts,
               totalStages,
               currentStageStart,
               stage,
@@ -115,9 +117,11 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
                 showStagePreview={showStagePreview}
                 current={current}
                 stage={stage}
-                stageScores={stageScores}
-                opponentScores={opponentScores}
-                opponentName={opponentName}
+              stageScores={stageScores}
+              opponentScores={opponentScores}
+              stageCorrectCounts={stageCorrectCounts}
+              stageTotalCounts={stageTotalCounts}
+              opponentName={opponentName}
                 opponentEmoji={opponentEmoji}
                 onAdvanceStage={onAdvanceStage}
                 onStartStage={onStartStage}
