@@ -70,10 +70,19 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   onPlayAudio,
   currentStageStart,
 }) => {
-  // Calculate total correct answers from all stages
-  const totalCorrectAnswers = stageScores.filter(score => score > 0).length;
-  const totalQuestionsPlayed = Math.min(current + 1, phrases.length);
-  const percent = totalQuestionsPlayed > 0 ? Math.round((totalCorrectAnswers / totalQuestionsPlayed) * 100) : 0;
+  // Simplified scoring: count correct answers only
+  const totalCorrectAnswers = stageScores.reduce((sum, stageScore) => sum + stageScore, 0);
+  const totalQuestionsAnswered = Math.min(current + 1, phrases.length);
+  const percent = totalQuestionsAnswered > 0 ? Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) : 0;
+
+  console.log('📊 Simplified Scoring Debug:', {
+    stageScores,
+    totalCorrectAnswers,
+    totalQuestionsAnswered,
+    percent,
+    current,
+    phrasesLength: phrases.length
+  });
 
   // Loading State
   if (state === "loading") {
@@ -124,7 +133,7 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
     return (
       <GameSummary
         score={totalCorrectAnswers}
-        total={totalQuestionsPlayed}
+        total={totalQuestionsAnswered}
         percent={percent}
         totalStages={totalStages}
         stageScores={stageScores}
@@ -135,8 +144,6 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
       />
     );
   }
-
-  // Skip stage preview entirely - go straight to quiz
 
   // Main quiz UI per stage
   if (state === "quiz" && !stageCompleted && phrases.length > 0 && current < phrases.length) {

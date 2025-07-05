@@ -1,3 +1,4 @@
+
 import React from "react";
 
 type GameSummaryScoreProps = {
@@ -14,8 +15,11 @@ const GameSummaryScore: React.FC<GameSummaryScoreProps> = ({ score, total, perce
         <div className="text-6xl font-black mb-2 bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 bg-clip-text text-transparent animate-pop">
           {score} / {total}
         </div>
-        <div className="text-xl font-bold text-gray-700">Questions Correct: {percent}%</div>
-        <div className="text-lg font-semibold text-gray-600 mt-2">Battle Points: {playerTotal}</div>
+        <div className="text-xl font-bold text-gray-700">Correct Answers: {percent}%</div>
+        <div className="text-sm text-gray-600 mt-3">
+          <div>• Each correct answer = 1 point</div>
+          <div>• You scored {score} points out of {total} questions</div>
+        </div>
       </div>
     </div>
   );
