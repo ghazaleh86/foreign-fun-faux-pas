@@ -92,32 +92,46 @@ export const normalizeLanguageVariant = (lang: string): string => {
   return variantMappings[normalized] || normalized;
 };
 
-// Language tier definitions for weighted selection
+// Language tier definitions for weighted selection with global diversity
 export const languageTiers = {
   tier1: {
-    weight: 0.50, // 50% of phrases
+    weight: 0.50, // 50% of phrases - Major world languages by speaker count
     languages: [
       'chinese', 'hindi', 'english', 'spanish', 'arabic', 'bengali', 
       'portuguese', 'russian', 'japanese', 'french'
     ]
   },
   tier2: {
-    weight: 0.35, // 35% of phrases
+    weight: 0.35, // 35% of phrases - Diverse regional languages from all continents
     languages: [
-      'german', 'korean', 'turkish', 'italian', 'vietnamese', 'tamil', 
-      'telugu', 'marathi', 'gujarati', 'punjabi', 'urdu', 'thai', 
-      'polish', 'dutch', 'swedish', 'norwegian', 'czech', 'hebrew'
+      // European languages
+      'german', 'italian', 'polish', 'dutch', 'swedish', 'norwegian', 'czech',
+      // Asian languages (non-Indian)
+      'korean', 'vietnamese', 'thai', 'turkish',
+      // Middle Eastern & African
+      'hebrew', 'farsi', 'persian', 'afrikaans',
+      // Only 2 major Indian languages in Tier 2 to balance
+      'tamil', 'urdu'
     ]
   },
   tier3: {
-    weight: 0.15, // 15% of phrases (island/minority languages)
+    weight: 0.15, // 15% of phrases - Island/minority/remaining Indian languages
     languages: [
+      // Pacific Islands
       'tagalog', 'samoan', 'fijian', 'tongan', 'chamorro', 'māori', 'maori',
+      // Nordic/European Islands
       'icelandic', 'faroese', 'maltese', 'corsican', 'sicilian',
+      // Caribbean
       'jamaican patois', 'haitian creole', 'papiamento', 'spanish (cuba)', 
-      'spanish (dominican republic)', 'sinhala', 'dhivehi', 'mauritian creole',
-      'seychellois creole', 'tok pisin', 'afrikaans', 'farsi', 'persian',
-      'mali', 'bambara', 'irish', 'gaeilge', 'scottish', 'scottish gaelic'
+      'spanish (dominican republic)',
+      // Indian Ocean & Oceanic
+      'sinhala', 'dhivehi', 'mauritian creole', 'seychellois creole', 'tok pisin',
+      // African minority
+      'mali', 'bambara',
+      // Celtic
+      'irish', 'gaeilge', 'scottish', 'scottish gaelic',
+      // Remaining Indian languages moved to Tier 3
+      'telugu', 'marathi', 'gujarati', 'punjabi'
     ]
   }
 };
