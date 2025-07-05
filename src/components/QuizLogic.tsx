@@ -1,19 +1,16 @@
 
 import React, { useState, useMemo } from "react";
-import { useAudioPlayback } from "@/hooks/useAudioPlayback";
-import { useStageTimer } from "@/hooks/useStageTimer";
-import { useLearnedPhrases } from "@/hooks/useLearnedPhrases";
-import { usePlayerProfile } from "@/hooks/usePlayerProfile";
-import { useStageManagement } from "@/hooks/useStageManagement";
 import { useQuizHandlers } from "@/hooks/useQuizHandlers";
 import { useQuizEffects } from "@/hooks/useQuizEffects";
-import { 
-  STAGE_SIZE, 
-  getCurrentVoice, 
-} from "@/utils/quizHelpers";
 import { Option } from "./MultipleChoiceOptions";
 import { Phrase, State } from "@/types/quiz";
 import GameStateManager from "./GameStateManager";
+import { 
+  QuizAudioController, 
+  useQuizTimer, 
+  useQuizData, 
+  useQuizButtonLogic 
+} from "./quiz";
 
 interface QuizLogicProps {
   phrases: Phrase[];
@@ -87,16 +84,14 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   console.log("🎮 QuizLogic: Rendering with current:", current, "phrase:", phrase?.id);
 
+  // Use extracted data management hook
   const {
     profile,
     addXP,
     loseHeart,
     resetHearts,
     advanceStreak,
-    refresh: refreshProfile,
-  } = usePlayerProfile();
-
-  const {
+    refreshProfile,
     stage,
     setStage,
     stageScores,
@@ -115,37 +110,15 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     stageTotalCounts,
     updateStageCorrectCounts,
     updateStageTotalCounts,
-  } = useStageManagement(phrases, profile);
+    markPhraseAsLearned,
+  } = useQuizData({ phrases, profile: null });
 
-  const { markPhraseAsLearned } = useLearnedPhrases();
-
-  // Timer via custom hook - memoize the timer condition to prevent re-renders
-  const timerShouldRun = useMemo(() => 
-    !showAnswer && state === "quiz" && !showStagePreview && !stageCompleted,
-    [showAnswer, state, showStagePreview, stageCompleted]
-  );
-
-  const { timer, getElapsed, reset: resetTimer } = useStageTimer(timerShouldRun);
-
-  // Memoize audio playback dependencies to prevent re-renders
-  const audioPlaybackDeps = useMemo(() => 
-    [current, state, showStagePreview, showAnswer, stageCompleted],
-    [current, state, showStagePreview, showAnswer, stageCompleted]
-  );
-
-  // Audio auto-play with duplicate guard
-  useAudioPlayback(
-    audioPlaybackDeps,
-    phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
-    phrase?.language || "en",
-    getCurrentVoice(current),
-    !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
-  );
-
-  console.log('🎮 QuizLogic Audio Debug:', {
-    phraseLanguage: phrase?.language,
-    phraseText: phrase?.phrase_text?.slice(0, 20),
-    shouldPlay: !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
+  // Use extracted timer hook
+  const { timer, getElapsed, resetTimer } = useQuizTimer({
+    showAnswer,
+    state,
+    showStagePreview,
+    stageCompleted,
   });
 
   // Use the quiz handlers hook
@@ -203,29 +176,25 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
 
   useQuizEffects(quizEffectsDeps);
 
-  // Enhanced showNextButton calculation with debugging
-  const showNextButton = useMemo(() => {
-    const isLastInStage = (current - currentStageStart + 1) >= Math.min(STAGE_SIZE, phrases.length - currentStageStart);
-    const shouldShow = showAnswer && !isLastInStage && !stageCompleted;
-    
-    console.log("🔘 QuizLogic: Next button calculation:", {
-      current,
-      currentStageStart,
-      stageSize: STAGE_SIZE,
-      phrasesLength: phrases.length,
-      currentPosition: current - currentStageStart + 1,
-      maxInStage: Math.min(STAGE_SIZE, phrases.length - currentStageStart),
-      isLastInStage,
-      showAnswer,
-      stageCompleted,
-      shouldShow
-    });
-    
-    return shouldShow;
-  }, [showAnswer, current, currentStageStart, phrases.length, stageCompleted]);
+  // Use extracted button logic hook
+  const { showNextButton } = useQuizButtonLogic({
+    showAnswer,
+    current,
+    currentStageStart,
+    phrases,
+    stageCompleted,
+  });
 
   return (
     <>
+      <QuizAudioController
+        phrase={phrase}
+        current={current}
+        state={state}
+        showAnswer={showAnswer}
+        showStagePreview={showStagePreview}
+        stageCompleted={stageCompleted}
+      />
       <GameStateManager
         phrases={phrases}
         current={current}
