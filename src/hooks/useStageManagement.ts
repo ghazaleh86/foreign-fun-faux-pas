@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
-import { STAGE_SIZE } from "@/utils/quizHelpers";
+import { STAGE_SIZE, MAX_STAGES } from "@/utils/quizHelpers";
 import { getGameState } from "@/utils/gameStateManager";
 
 export function useStageManagement(phrases: any[], profile: any) {
@@ -37,7 +37,7 @@ export function useStageManagement(phrases: any[], profile: any) {
   }, [initialized]);
 
   // Memoize computed values to prevent unnecessary re-renders
-  const totalStages = useMemo(() => Math.ceil(phrases.length / STAGE_SIZE), [phrases.length]);
+  const totalStages = useMemo(() => Math.min(MAX_STAGES, Math.ceil(phrases.length / STAGE_SIZE)), [phrases.length]);
   const currentStageStart = useMemo(() => stage * STAGE_SIZE, [stage]);
   const currentStageEnd = useMemo(() => Math.min(currentStageStart + STAGE_SIZE, phrases.length), [currentStageStart, phrases.length]);
 

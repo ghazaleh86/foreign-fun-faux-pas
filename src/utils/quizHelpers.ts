@@ -2,6 +2,7 @@ import { Phrase } from "@/types/quiz";
 import { Option } from "@/components/MultipleChoiceOptions";
 
 export const STAGE_SIZE = 10;
+export const MAX_STAGES = 3; // New constant to limit stages
 export const ROUND_SIZE = 5;
 
 // Enhanced native voice mappings for island countries with cultural accuracy

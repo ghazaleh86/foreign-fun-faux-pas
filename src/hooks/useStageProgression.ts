@@ -1,6 +1,5 @@
-
 import { useCallback } from "react";
-import { STAGE_SIZE } from "@/utils/quizHelpers";
+import { STAGE_SIZE, MAX_STAGES } from "@/utils/quizHelpers";
 import { Phrase } from "@/types/quiz";
 
 interface UseStageProgressionProps {
@@ -44,13 +43,12 @@ export function useStageProgression({
       console.log("✅ useStageProgression: User passed, advancing to next stage");
       advanceStreak();
       
-      // Check if this was the final stage - calculate total stages the same way as useStageManagement
-      const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
-      const isGameComplete = stage + 1 >= totalStages;
+      // Check if this was the final stage - use MAX_STAGES instead of calculating from phrases
+      const isGameComplete = stage + 1 >= MAX_STAGES;
       
       console.log("🏁 useStageProgression: Game completion check:", {
         currentStage: stage,
-        totalStages,
+        maxStages: MAX_STAGES,
         isGameComplete,
         phrasesLength: phrases.length
       });
