@@ -74,9 +74,15 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
   onPlayAudio,
   currentStageStart,
 }) => {
-  // Simple, accurate scoring: use correct counts not bonus points
-  const totalCorrectAnswers = stageCorrectCounts.reduce((sum, count) => sum + count, 0);
-  const totalQuestionsAnswered = stageTotalCounts.reduce((sum, count) => sum + count, 0);
+  // Fixed scoring: properly handle undefined values and use filter to remove them
+  const totalCorrectAnswers = stageCorrectCounts
+    .filter(count => typeof count === 'number' && !isNaN(count))
+    .reduce((sum, count) => sum + count, 0);
+  
+  const totalQuestionsAnswered = stageTotalCounts
+    .filter(count => typeof count === 'number' && !isNaN(count))
+    .reduce((sum, count) => sum + count, 0);
+  
   const percent = totalQuestionsAnswered > 0 ? Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) : 0;
 
   console.log('📊 Fixed Scoring Debug:', {
