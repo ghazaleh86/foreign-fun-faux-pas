@@ -10,30 +10,59 @@ const RATE_LIMIT_WINDOW_MS = 2 * 60 * 1000; // 2 mins
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const clientRequests: Record<string, { count: number; windowStart: number }> = {};
 
-// Enhanced native voice mappings for island countries
+// Phase 2 & 4: Comprehensive native voice mappings with intelligent family-based assignment
 const NATIVE_VOICES = {
-  "german": "2EiwWnXFnvU5JabPnv8n",
-  "spanish": "ErXwobaYiN019PkySvjV",
-  "french": "pNInz6obpgDQGcFmaJgB",
-  "japanese": "EXAVITQu4vr4xnSDxMaL",
-  "italian": "AZnzlk1XvdvUeBnXmlld",
-  "portuguese": "29vD33N1CtxCmqQRPOHJ",
-  "dutch": "D38z5RcWu1voky8WS1ja",
-  "swedish": "CYw3kZ02Hs0563khs1Fj",
-  "norwegian": "29vD33N1CtxCmqQRPOHJ",
-  "arabic": "ErXwobaYiN019PkySvjV",
-  "chinese": "EXAVITQu4vr4xnSDxMaL",
-  "english": "pNInz6obpgDQGcFmaJgB",
-  "korean": "EXAVITQu4vr4xnSDxMaL",
-  "polish": "2EiwWnXFnvU5JabPnv8n",
-  "russian": "2EiwWnXFnvU5JabPnv8n",
-  "turkish": "ErXwobaYiN019PkySvjV",
-  "vietnamese": "EXAVITQu4vr4xnSDxMaL",
-  "thai": "EXAVITQu4vr4xnSDxMaL",
-  "czech": "2EiwWnXFnvU5JabPnv8n",
-  "afrikaans": "D38z5RcWu1voky8WS1ja",
+  // MAJOR WORLD LANGUAGES - High quality voices
+  "english": "pNInz6obpgDQGcFmaJgB", // Rachel - clear, natural
+  "spanish": "ErXwobaYiN019PkySvjV", // Antoni - warm, expressive
+  "french": "pNInz6obpgDQGcFmaJgB", // Rachel - sophisticated
+  "german": "2EiwWnXFnvU5JabPnv8n", // Clyde - authoritative
+  "italian": "AZnzlk1XvdvUeBnXmlld", // Domi - expressive
+  "portuguese": "29vD33N1CtxCmqQRPOHJ", // Drew - warm
+  "russian": "2EiwWnXFnvU5JabPnv8n", // Clyde - deep
+  "japanese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear articulation
+  "chinese": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal clarity
+  "arabic": "ErXwobaYiN019PkySvjV", // Antoni - versatile
   
-  // PACIFIC ISLAND LANGUAGES - Culturally appropriate voices
+  // INDIAN SUBCONTINENT - Phase 2 additions with culturally appropriate voices
+  "hindi": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for complex phonetics
+  "bengali": "EXAVITQu4vr4xnSDxMaL", // Sarah - articulate
+  "tamil": "EXAVITQu4vr4xnSDxMaL", // Sarah - precise pronunciation
+  "telugu": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear articulation
+  "marathi": "EXAVITQu4vr4xnSDxMaL", // Sarah - natural flow
+  "gujarati": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear tones
+  "punjabi": "29vD33N1CtxCmqQRPOHJ", // Drew - warm, expressive
+  "urdu": "ErXwobaYiN019PkySvjV", // Antoni - sophisticated
+  
+  // EUROPEAN LANGUAGES - Phase 2 additions
+  "dutch": "D38z5RcWu1voky8WS1ja", // Fin - friendly Germanic
+  "polish": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic authority
+  "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic depth
+  "slovak": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic consistency
+  "hungarian": "2EiwWnXFnvU5JabPnv8n", // Clyde - distinct pronunciation
+  "romanian": "AZnzlk1XvdvUeBnXmlld", // Domi - Romance expressiveness
+  "bulgarian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic depth
+  "croatian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic clarity
+  "serbian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic strength
+  "ukrainian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic authority
+  "greek": "AZnzlk1XvdvUeBnXmlld", // Domi - Mediterranean expressiveness
+  "danish": "29vD33N1CtxCmqQRPOHJ", // Drew - Nordic warmth
+  "finnish": "CYw3kZ02Hs0563khs1Fj", // Dave - Nordic precision
+  "swedish": "CYw3kZ02Hs0563khs1Fj", // Dave - Nordic clarity
+  "norwegian": "29vD33N1CtxCmqQRPOHJ", // Drew - Nordic naturalness
+  
+  // AFRICAN LANGUAGES - Phase 2 additions
+  "swahili": "pNInz6obpgDQGcFmaJgB", // Rachel - clear articulation
+  "zulu": "pNInz6obpgDQGcFmaJgB", // Rachel - strong pronunciation
+  "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - Germanic similarity
+  
+  // ASIAN LANGUAGES
+  "korean": "EXAVITQu4vr4xnSDxMaL", // Sarah - precise tones
+  "vietnamese": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal accuracy
+  "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal precision
+  "turkish": "ErXwobaYiN019PkySvjV", // Antoni - versatile expression
+  
+  // PACIFIC ISLAND LANGUAGES - Phase 2 with culturally appropriate voices
   "tagalog": "D38z5RcWu1voky8WS1ja", // Fin - friendly, warm
   "samoan": "29vD33N1CtxCmqQRPOHJ", // Drew - natural, relaxed
   "fijian": "D38z5RcWu1voky8WS1ja", // Fin - friendly hospitality
@@ -54,7 +83,7 @@ const NATIVE_VOICES = {
   "haitian creole": "pNInz6obpgDQGcFmaJgB", // Rachel - French influence
   "papiamento": "ErXwobaYiN019PkySvjV", // Antoni - multi-lingual
   "spanish (cuba)": "ErXwobaYiN019PkySvjV", // Antoni - Caribbean
-  "spanish (dominican republic)": "ErXwobaYiN019PkySvjV", // Antoni
+  "spanish (dominican republic)": "ErXwobaYiN019PkySvjV", // Antoni - Caribbean
   
   // INDIAN OCEAN & OCEANIC
   "sinhala": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear tones
@@ -63,52 +92,87 @@ const NATIVE_VOICES = {
   "seychellois creole": "pNInz6obpgDQGcFmaJgB", // Rachel - French-based
   "tok pisin": "D38z5RcWu1voky8WS1ja", // Fin - friendly English-based
   
-  // Additional languages and variants
-  "farsi": "ErXwobaYiN019PkySvjV",
-  "persian": "ErXwobaYiN019PkySvjV",
-  "mali": "pNInz6obpgDQGcFmaJgB",
-  "bambara": "pNInz6obpgDQGcFmaJgB",
-  "irish": "pNInz6obpgDQGcFmaJgB",
-  "gaeilge": "pNInz6obpgDQGcFmaJgB",
-  "scottish": "pNInz6obpgDQGcFmaJgB",
-  "scottish gaelic": "pNInz6obpgDQGcFmaJgB",
-  "hebrew": "ErXwobaYiN019PkySvjV",
-  "finnish": "CYw3kZ02Hs0563khs1Fj",
-  "danish": "29vD33N1CtxCmqQRPOHJ",
-  "greek": "AZnzlk1XvdvUeBnXmlld",
-  "slovak": "2EiwWnXFnvU5JabPnv8n",
-  "swahili": "pNInz6obpgDQGcFmaJgB",
-  "zulu": "pNInz6obpgDQGcFmaJgB",
-  "colombian spanish": "ErXwobaYiN019PkySvjV",
-  "mexican spanish": "ErXwobaYiN019PkySvjV",
-  "costa rican spanish": "ErXwobaYiN019PkySvjV",
-  "english (south africa)": "pNInz6obpgDQGcFmaJgB",
+  // MIDDLE EASTERN & PERSIAN
+  "farsi": "ErXwobaYiN019PkySvjV", // Antoni - sophisticated
+  "persian": "ErXwobaYiN019PkySvjV", // Antoni - sophisticated
+  "hebrew": "ErXwobaYiN019PkySvjV", // Antoni - Semitic versatility
+  
+  // CELTIC LANGUAGES
+  "irish": "pNInz6obpgDQGcFmaJgB", // Rachel - Celtic clarity
+  "gaeilge": "pNInz6obpgDQGcFmaJgB", // Rachel - Celtic authenticity
+  "scottish": "pNInz6obpgDQGcFmaJgB", // Rachel - Celtic warmth
+  "scottish gaelic": "pNInz6obpgDQGcFmaJgB", // Rachel - Celtic tradition
+  
+  // AFRICAN MINORITY LANGUAGES
+  "mali": "pNInz6obpgDQGcFmaJgB", // Rachel - clear articulation
+  "bambara": "pNInz6obpgDQGcFmaJgB", // Rachel - West African
+  
+  // SPANISH VARIANTS
+  "colombian spanish": "ErXwobaYiN019PkySvjV", // Antoni - Latin American
+  "mexican spanish": "ErXwobaYiN019PkySvjV", // Antoni - expressive
+  "costa rican spanish": "ErXwobaYiN019PkySvjV", // Antoni - Central American
+  
+  // ENGLISH VARIANTS
+  "english (south africa)": "pNInz6obpgDQGcFmaJgB", // Rachel - clear English
 };
 
-// Enhanced language-optimized voice settings
+// Phase 4: Enhanced language-optimized voice settings with family-based optimization
 const LANGUAGE_VOICE_SETTINGS = {
+  // GERMANIC FAMILY - Authoritative, controlled
   "german": { stability: 0.6, similarityBoost: 0.9, style: 0.1 },
-  "spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
-  "french": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "japanese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
-  "italian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
-  "portuguese": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
   "dutch": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "swedish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "norwegian": { stability: 0.7, similarityBoost: 0.9, style: 0.05 },
-  "arabic": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
-  "chinese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
-  "english": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "korean": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
-  "polish": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
-  "russian": { stability: 0.7, similarityBoost: 0.9, style: 0.1 },
-  "turkish": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
-  "vietnamese": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
-  "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
-  "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "danish": { stability: 0.7, similarityBoost: 0.9, style: 0.05 },
+  "icelandic": { stability: 0.8, similarityBoost: 0.9, style: 0.1 },
+  "faroese": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
   "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
   
-  // PACIFIC ISLAND SETTINGS - Warm, expressive
+  // ROMANCE FAMILY - Expressive, warm
+  "spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  "french": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "italian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
+  "portuguese": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
+  "romanian": { stability: 0.5, similarityBoost: 0.9, style: 0.3 },
+  "corsican": { stability: 0.5, similarityBoost: 0.9, style: 0.3 },
+  "sicilian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
+  
+  // SLAVIC FAMILY - Deep, controlled
+  "russian": { stability: 0.7, similarityBoost: 0.9, style: 0.1 },
+  "polish": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "slovak": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "bulgarian": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "croatian": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "serbian": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "ukrainian": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  
+  // INDIC FAMILY - Clear, precise
+  "hindi": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
+  "bengali": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
+  "tamil": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
+  "telugu": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
+  "marathi": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
+  "gujarati": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
+  "punjabi": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "urdu": { stability: 0.6, similarityBoost: 0.9, style: 0.2 },
+  "sinhala": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  
+  // TONAL LANGUAGES - Precise, controlled
+  "chinese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "japanese": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "korean": { stability: 0.7, similarityBoost: 0.7, style: 0.1 },
+  "vietnamese": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
+  "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
+  
+  // SEMITIC FAMILY - Sophisticated
+  "arabic": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  "hebrew": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  "farsi": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  "persian": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
+  
+  // PACIFIC FAMILY - Warm, expressive
   "tagalog": { stability: 0.4, similarityBoost: 0.9, style: 0.4 },
   "samoan": { stability: 0.3, similarityBoost: 0.8, style: 0.5 },
   "fijian": { stability: 0.4, similarityBoost: 0.8, style: 0.4 },
@@ -116,51 +180,49 @@ const LANGUAGE_VOICE_SETTINGS = {
   "chamorro": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
   "māori": { stability: 0.5, similarityBoost: 0.9, style: 0.2 },
   "maori": { stability: 0.5, similarityBoost: 0.9, style: 0.2 },
+  "tok pisin": { stability: 0.4, similarityBoost: 0.8, style: 0.3 },
   
-  // NORDIC SETTINGS - Controlled, clear
-  "icelandic": { stability: 0.8, similarityBoost: 0.9, style: 0.1 },
-  "faroese": { stability: 0.7, similarityBoost: 0.8, style: 0.1 },
-  "maltese": { stability: 0.5, similarityBoost: 0.9, style: 0.3 },
-  "corsican": { stability: 0.5, similarityBoost: 0.9, style: 0.3 },
-  "sicilian": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
-  
-  // CARIBBEAN SETTINGS - Expressive, dynamic
+  // CARIBBEAN FAMILY - Expressive, dynamic
   "jamaican patois": { stability: 0.3, similarityBoost: 0.9, style: 0.6 },
   "haitian creole": { stability: 0.4, similarityBoost: 0.8, style: 0.4 },
   "papiamento": { stability: 0.4, similarityBoost: 0.9, style: 0.4 },
   "spanish (cuba)": { stability: 0.4, similarityBoost: 0.9, style: 0.4 },
   "spanish (dominican republic)": { stability: 0.3, similarityBoost: 0.9, style: 0.5 },
   
-  // INDIAN OCEAN & OCEANIC SETTINGS
-  "sinhala": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  // OCEANIC FAMILY
   "dhivehi": { stability: 0.6, similarityBoost: 0.8, style: 0.3 },
   "mauritian creole": { stability: 0.4, similarityBoost: 0.8, style: 0.3 },
   "seychellois creole": { stability: 0.4, similarityBoost: 0.8, style: 0.3 },
-  "tok pisin": { stability: 0.4, similarityBoost: 0.8, style: 0.3 },
   
-  // Additional languages
-  "farsi": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
-  "persian": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
-  "mali": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "bambara": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  // CELTIC FAMILY - Traditional, respectful
   "irish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "gaeilge": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "scottish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "scottish gaelic": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "hebrew": { stability: 0.6, similarityBoost: 0.9, style: 0.3 },
-  "finnish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
-  "danish": { stability: 0.7, similarityBoost: 0.9, style: 0.05 },
-  "greek": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
-  "slovak": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  
+  // AFRICAN LANGUAGES
   "swahili": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
   "zulu": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "mali": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "bambara": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  
+  // OTHERS
+  "turkish": { stability: 0.5, similarityBoost: 0.8, style: 0.3 },
+  "finnish": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
+  "hungarian": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  "greek": { stability: 0.5, similarityBoost: 0.9, style: 0.4 },
+  "maltese": { stability: 0.5, similarityBoost: 0.9, style: 0.3 },
+  
+  // SPANISH VARIANTS
   "colombian spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
   "mexican spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
   "costa rican spanish": { stability: 0.4, similarityBoost: 0.9, style: 0.3 },
+  
+  // ENGLISH VARIANTS
   "english (south africa)": { stability: 0.5, similarityBoost: 0.8, style: 0.2 },
 };
 
-// Enhanced model selection for different language families
+// Phase 4: Enhanced model selection for different language families
 const getOptimalModel = (language: string): string => {
   const languageModelMap: Record<string, string> = {
     // Multilingual v2 for European languages with complex phonetics
@@ -169,6 +231,20 @@ const getOptimalModel = (language: string): string => {
     'maltese': 'eleven_multilingual_v2',
     'corsican': 'eleven_multilingual_v2',
     'sicilian': 'eleven_multilingual_v2',
+    'greek': 'eleven_multilingual_v2',
+    'finnish': 'eleven_multilingual_v2',
+    'hungarian': 'eleven_multilingual_v2',
+    
+    // Multilingual v2 for Indian languages
+    'hindi': 'eleven_multilingual_v2',
+    'bengali': 'eleven_multilingual_v2',
+    'tamil': 'eleven_multilingual_v2',
+    'telugu': 'eleven_multilingual_v2',
+    'marathi': 'eleven_multilingual_v2',
+    'gujarati': 'eleven_multilingual_v2',
+    'punjabi': 'eleven_multilingual_v2',
+    'urdu': 'eleven_multilingual_v2',
+    'sinhala': 'eleven_multilingual_v2',
     
     // Turbo v2.5 for creole/pidgin languages needing flexibility
     'jamaican patois': 'eleven_turbo_v2_5',
@@ -187,6 +263,11 @@ const getOptimalModel = (language: string): string => {
     'māori': 'eleven_multilingual_v2',
     'maori': 'eleven_multilingual_v2',
     
+    // Multilingual v2 for African languages
+    'swahili': 'eleven_multilingual_v2',
+    'zulu': 'eleven_multilingual_v2',
+    'afrikaans': 'eleven_multilingual_v2',
+    
     // Default multilingual for others
     default: 'eleven_multilingual_v2'
   };
@@ -195,10 +276,8 @@ const getOptimalModel = (language: string): string => {
 };
 
 function getClientIdentifier(req: Request) {
-  // Prefer authenticated user if available via headers, else fall back to IP
   const auth = req.headers.get("Authorization");
-  if (auth && auth.startsWith("Bearer ")) return auth.slice(7, 50); // short hash for anon key
-  // Fallback to remote address if available (Deno specific)
+  if (auth && auth.startsWith("Bearer ")) return auth.slice(7, 50);
   try { return (req as any).conn?.remoteAddr?.hostname ?? "unknown"; } catch { return "unknown"; }
 }
 
@@ -208,7 +287,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Rate limiting protection
   const clientId = getClientIdentifier(req);
   const now = Date.now();
   if (!clientRequests[clientId] || now - clientRequests[clientId].windowStart > RATE_LIMIT_WINDOW_MS) {
@@ -239,7 +317,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid text length." }), { status: 400, headers: corsHeaders });
     }
     
-    // Enhanced normalize language variants for island countries
+    // Phase 2: Enhanced normalize language variants
     const normalizeLanguageVariant = (lang: string): string => {
       const normalized = lang.toLowerCase();
       const variantMappings: Record<string, string> = {
@@ -250,21 +328,15 @@ serve(async (req) => {
         "spanish (cuba)": "spanish (cuba)", // Keep Cuban distinct
         "spanish (dominican republic)": "spanish (dominican republic)", // Keep Dominican distinct
         "filipino": "tagalog", // Filipino is based on Tagalog
-        "finnish": "finnish",
-        "danish": "danish", 
-        "greek": "greek",
-        "slovak": "slovak",
-        "swahili": "swahili",
-        "zulu": "zulu",
       };
       return variantMappings[normalized] || normalized;
     };
 
-    // Use culturally appropriate voice and settings for island languages
+    // Phase 4: Use comprehensive voice and settings selection
     const normalizedLanguage = normalizeLanguageVariant(language.toLowerCase());
     const selectedVoiceId = voiceId || NATIVE_VOICES[normalizedLanguage] || NATIVE_VOICES["english"];
     
-    // Use island-optimized settings if not specified
+    // Use comprehensive language-optimized settings
     const languageSettings = LANGUAGE_VOICE_SETTINGS[normalizedLanguage] || LANGUAGE_VOICE_SETTINGS["english"];
     const finalStability = stability !== undefined ? stability : languageSettings.stability;
     const finalSimilarityBoost = similarityBoost !== undefined ? similarityBoost : languageSettings.similarityBoost;
@@ -273,8 +345,8 @@ serve(async (req) => {
     // Use optimal model for language family
     const selectedModel = getOptimalModel(normalizedLanguage);
     
-    // Enhanced logging for island languages
-    console.log(`[TTS] Island Language: ${language} (${normalizedLanguage}) | Voice: ${selectedVoiceId} | Model: ${selectedModel} | Text length: ${text.length}`);
+    // Phase 5: Enhanced logging for comprehensive language support
+    console.log(`[TTS] Enhanced Language Processing: ${language} (${normalizedLanguage}) | Voice: ${selectedVoiceId} | Model: ${selectedModel} | Settings: stability=${finalStability}, similarity=${finalSimilarityBoost}, style=${finalStyle}`);
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
     
@@ -286,7 +358,7 @@ serve(async (req) => {
       });
     }
     
-    console.log(`[TTS] ✅ API key found, making request to ElevenLabs with island-optimized settings...`);
+    console.log(`[TTS] ✅ API key found, making request to ElevenLabs with optimized settings...`);
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
@@ -299,7 +371,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           text: text,
-          model_id: selectedModel, // Use optimal model for language
+          model_id: selectedModel,
           voice_settings: {
             stability: Math.max(0, Math.min(1, finalStability)),
             similarity_boost: Math.max(0, Math.min(1, finalSimilarityBoost)),
@@ -321,7 +393,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": "audio/mpeg",
-        "Cache-Control": "public, max-age=3600" // Cache for 1 hour
+        "Cache-Control": "public, max-age=3600"
       },
     });
   } catch (err) {

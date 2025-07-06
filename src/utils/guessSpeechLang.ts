@@ -1,52 +1,111 @@
 
 /**
- * Utility to map language names to Web Speech API BCP-47 codes.
+ * Enhanced utility to map language names to Web Speech API BCP-47 codes with comprehensive coverage.
  */
 export function guessSpeechLang(language: string): string {
   const languageMap: Record<string, string> = {
-    English: "en-US",
-    Spanish: "es-ES",
-    French: "fr-FR",
-    German: "de-DE",
-    Italian: "it-IT",
-    Dutch: "nl-NL",
-    Portuguese: "pt-PT",
-    Russian: "ru-RU",
-    Japanese: "ja-JP",
-    Chinese: "zh-CN",
-    Korean: "ko-KR",
-    Arabic: "ar-SA",
-    Hindi: "hi-IN",
-    Polish: "pl-PL",
-    Turkish: "tr-TR",
-    Ukrainian: "uk-UA",
-    Swedish: "sv-SE",
-    Norwegian: "no-NO",
-    Danish: "da-DK",
-    Finnish: "fi-FI",
-    Czech: "cs-CZ",
-    Greek: "el-GR",
-    Hungarian: "hu-HU",
-  Romanian: "ro-RO",
-  Slovak: "sk-SK",
-    Bulgarian: "bg-BG",
-    Croatian: "hr-HR",
-    Serbian: "sr-RS",
-    Catalan: "ca-ES",
-    Indonesian: "id-ID",
-    Malay: "ms-MY",
-  Thai: "th-TH",
-  Vietnamese: "vi-VN",
-  Farsi: "fa-IR",
-  Persian: "fa-IR", 
-  Mali: "bm-ML",
-  Bambara: "bm-ML",
-  Irish: "ga-IE",
-  Gaeilge: "ga-IE",
-  Scottish: "gd-GB",
-  "Scottish Gaelic": "gd-GB",
-  Hebrew: "he-IL"
-  // Extend as needed.
+    // Major world languages
+    english: "en-US",
+    spanish: "es-ES", 
+    french: "fr-FR",
+    german: "de-DE",
+    italian: "it-IT",
+    portuguese: "pt-PT",
+    russian: "ru-RU",
+    japanese: "ja-JP",
+    chinese: "zh-CN",
+    korean: "ko-KR",
+    arabic: "ar-SA",
+    
+    // Indian subcontinent languages (Phase 2 additions)
+    hindi: "hi-IN",
+    bengali: "bn-IN",
+    tamil: "ta-IN",
+    telugu: "te-IN",
+    marathi: "mr-IN",
+    gujarati: "gu-IN",
+    punjabi: "pa-IN",
+    urdu: "ur-PK",
+    
+    // European languages (Phase 2 additions)
+    dutch: "nl-NL",
+    polish: "pl-PL",
+    turkish: "tr-TR",
+    czech: "cs-CZ",
+    hungarian: "hu-HU",
+    romanian: "ro-RO",
+    bulgarian: "bg-BG",
+    croatian: "hr-HR",
+    serbian: "sr-RS",
+    ukrainian: "uk-UA",
+    greek: "el-GR",
+    danish: "da-DK",
+    finnish: "fi-FI",
+    swedish: "sv-SE",
+    norwegian: "no-NO",
+    slovak: "sk-SK",
+    
+    // African languages (Phase 2 additions)
+    swahili: "sw-KE",
+    zulu: "zu-ZA",
+    afrikaans: "af-ZA",
+    
+    // Middle Eastern & Asian languages
+    hebrew: "he-IL",
+    farsi: "fa-IR",
+    persian: "fa-IR",
+    vietnamese: "vi-VN",
+    thai: "th-TH",
+    indonesian: "id-ID",
+    malay: "ms-MY",
+    
+    // Pacific Island languages (Phase 2 additions)
+    tagalog: "tl-PH",
+    samoan: "sm-WS",
+    fijian: "fj-FJ",
+    tongan: "to-TO",
+    chamorro: "ch-GU",
+    māori: "mi-NZ",
+    maori: "mi-NZ",
+    
+    // Nordic/European Island languages
+    icelandic: "is-IS",
+    faroese: "fo-FO",
+    maltese: "mt-MT",
+    corsican: "co-FR",
+    sicilian: "it-IT", // Fallback to Italian
+    
+    // Caribbean languages
+    "jamaican patois": "en-JM",
+    "haitian creole": "ht-HT",
+    papiamento: "pap-AW",
+    "spanish (cuba)": "es-CU",
+    "spanish (dominican republic)": "es-DO",
+    
+    // Indian Ocean & Oceanic
+    sinhala: "si-LK",
+    dhivehi: "dv-MV",
+    "mauritian creole": "fr-MU",
+    "seychellois creole": "fr-SC",
+    "tok pisin": "en-PG",
+    
+    // Celtic languages
+    irish: "ga-IE",
+    gaeilge: "ga-IE",
+    scottish: "gd-GB",
+    "scottish gaelic": "gd-GB",
+    
+    // Additional African languages
+    mali: "bm-ML",
+    bambara: "bm-ML",
+    
+    // Spanish variants
+    "colombian spanish": "es-CO",
+    "mexican spanish": "es-MX",
+    "costa rican spanish": "es-CR",
+    "english (south africa)": "en-ZA",
   };
-  return languageMap[language] || "en-US";
+  
+  const normalizedLanguage = language.toLowerCase().trim();
+  return languageMap[normalizedLanguage] || "en-US";
 }

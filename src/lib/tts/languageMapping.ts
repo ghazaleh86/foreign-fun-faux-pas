@@ -1,7 +1,7 @@
 
 // Enhanced language code mappings for comprehensive language support including island languages
 export const islandLanguageCodes: Record<string, string[]> = {
-  // INDIAN SUBCONTINENT LANGUAGES
+  // INDIAN SUBCONTINENT LANGUAGES (Phase 2 enhanced)
   'hindi': ['hi-IN', 'hi', 'en-IN'],
   'bengali': ['bn-IN', 'bn-BD', 'bn', 'en-IN'],
   'tamil': ['ta-IN', 'ta-LK', 'ta', 'en-IN'],
@@ -11,7 +11,7 @@ export const islandLanguageCodes: Record<string, string[]> = {
   'punjabi': ['pa-IN', 'pa-PK', 'pa', 'en-IN'],
   'urdu': ['ur-PK', 'ur-IN', 'ur', 'en-PK'],
   
-  // PACIFIC ISLANDS
+  // PACIFIC ISLANDS (Phase 2 enhanced)
   'tagalog': ['tl-PH', 'fil-PH', 'tl', 'en-PH'],
   'samoan': ['sm-WS', 'sm', 'en-WS', 'en-US'],
   'fijian': ['fj-FJ', 'fj', 'en-FJ', 'en-US'],
@@ -41,9 +41,13 @@ export const islandLanguageCodes: Record<string, string[]> = {
   'seychellois creole': ['crs-SC', 'fr-SC', 'fr-FR', 'en-SC'],
   'tok pisin': ['tpi-PG', 'en-PG', 'en-US'],
   
-  // Standard language mappings
+  // EUROPEAN LANGUAGES (Phase 2 enhanced)
   'norwegian': ['nb-NO', 'nb', 'no-NO', 'no', 'nn-NO', 'nn'],
   'swedish': ['sv-SE', 'sv'],
+  'danish': ['da-DK', 'da'],
+  'finnish': ['fi-FI', 'fi'],
+  'greek': ['el-GR', 'el'],
+  'slovak': ['sk-SK', 'sk'],
   'arabic': ['ar-SA', 'ar'],
   'chinese': ['zh-CN', 'zh', 'zh-cn', 'zh-tw'],
   'german': ['de-DE', 'de'],
@@ -62,6 +66,12 @@ export const islandLanguageCodes: Record<string, string[]> = {
   'thai': ['th-TH', 'th'],
   'czech': ['cs-CZ', 'cs'],
   'afrikaans': ['af-ZA', 'af'],
+  
+  // AFRICAN LANGUAGES (Phase 2 additions)
+  'swahili': ['sw-KE', 'sw-TZ', 'sw', 'en-KE'],
+  'zulu': ['zu-ZA', 'zu', 'en-ZA'],
+  
+  // Additional languages
   'farsi': ['fa-IR', 'fa'],
   'persian': ['fa-IR', 'fa'],
   'mali': ['bm-ML', 'bm', 'en-US', 'en'],
@@ -90,6 +100,37 @@ export const normalizeLanguageVariant = (lang: string): string => {
     "filipino": "tagalog",
   };
   return variantMappings[normalized] || normalized;
+};
+
+// Phase 4: Language family groupings for intelligent voice assignment
+export const languageFamilies = {
+  germanic: ['german', 'dutch', 'english', 'swedish', 'norwegian', 'danish', 'icelandic', 'faroese'],
+  romance: ['spanish', 'french', 'italian', 'portuguese', 'romanian', 'corsican', 'sicilian'],
+  slavic: ['russian', 'polish', 'czech', 'slovak', 'bulgarian', 'croatian', 'serbian', 'ukrainian'],
+  indic: ['hindi', 'bengali', 'tamil', 'telugu', 'marathi', 'gujarati', 'punjabi', 'urdu', 'sinhala'],
+  sinitic: ['chinese'],
+  japonic: ['japanese'],
+  korean: ['korean'],
+  semitic: ['arabic', 'hebrew'],
+  finno_ugric: ['finnish', 'hungarian'],
+  turkic: ['turkish'],
+  pacific: ['tagalog', 'samoan', 'fijian', 'tongan', 'chamorro', 'māori', 'maori', 'tok pisin'],
+  celtic: ['irish', 'gaeilge', 'scottish', 'scottish gaelic'],
+  niger_congo: ['swahili', 'zulu', 'mali', 'bambara'],
+  creole: ['jamaican patois', 'haitian creole', 'papiamento', 'mauritian creole', 'seychellois creole'],
+  isolated: ['maltese', 'dhivehi', 'vietnamese', 'thai']
+};
+
+// Get language family for intelligent voice selection
+export const getLanguageFamily = (language: string): string => {
+  const normalizedLang = normalizeLanguageVariant(language.toLowerCase());
+  
+  for (const [family, languages] of Object.entries(languageFamilies)) {
+    if (languages.includes(normalizedLang)) {
+      return family;
+    }
+  }
+  return 'other';
 };
 
 // Language tier definitions for weighted selection with global diversity
@@ -127,11 +168,13 @@ export const languageTiers = {
       // Indian Ocean & Oceanic
       'sinhala', 'dhivehi', 'mauritian creole', 'seychellois creole', 'tok pisin',
       // African minority
-      'mali', 'bambara',
+      'mali', 'bambara', 'swahili', 'zulu',
       // Celtic
       'irish', 'gaeilge', 'scottish', 'scottish gaelic',
       // Remaining Indian languages moved to Tier 3
-      'telugu', 'marathi', 'gujarati', 'punjabi'
+      'telugu', 'marathi', 'gujarati', 'punjabi',
+      // Additional European
+      'danish', 'finnish', 'greek', 'slovak'
     ]
   }
 };
