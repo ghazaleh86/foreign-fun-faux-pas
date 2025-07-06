@@ -63,14 +63,14 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     
     audioPlayedRef.current = true;
 
-    // Enhanced audio playback with better error handling and fallbacks
+    // Enhanced audio playback with better error handling and native voice mapping
     const playAudio = async () => {
-      // Fix language case conversion: "German" -> "german"
+      // Use the improved voice mapping system
       const normalizedLanguage = language.toLowerCase();
       const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
       const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
 
-      console.log(`🎵 Audio Debug - Language Processing:`, {
+      console.log(`🎵 Enhanced Audio Debug - Using Native Voice Mapping:`, {
         originalLanguage: language,
         normalizedLanguage,
         nativeVoiceId,
@@ -79,27 +79,20 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
       });
 
       try {
-        console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with voice:`, nativeVoiceId);
+        console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with native voice:`, nativeVoiceId);
 
-        // Add timeout and better error handling
-        const ttsPromise = playWithElevenLabsTTS({ 
+        // Use the improved ElevenLabs TTS with better error handling
+        await playWithElevenLabsTTS({ 
           text, 
           language: normalizedLanguage,
           voiceId: nativeVoiceId,
           ...languageSettings,
           useSpeakerBoost: true
         });
-
-        // 10 second timeout for ElevenLabs
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('ElevenLabs TTS timeout after 10 seconds')), 10000)
-        );
-
-        await Promise.race([ttsPromise, timeoutPromise]);
         
-        console.log('✅ ElevenLabs TTS succeeded - NATURAL VOICE SHOULD BE PLAYING');
+        console.log('✅ ElevenLabs TTS succeeded - NATIVE VOICE SHOULD BE PLAYING');
       } catch (elevenLabsError: any) {
-        console.error('🔄 ElevenLabs failed, details:', {
+        console.error('🔄 ElevenLabs failed, falling back to browser TTS:', {
           error: elevenLabsError.message,
           language: normalizedLanguage,
           voiceId: nativeVoiceId,

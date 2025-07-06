@@ -1,3 +1,4 @@
+
 import { validateTtsTextInput } from '../validateTtsInput';
 import { preprocessTextForTTS } from './textPreprocessing';
 import { isMobileDevice, initializeAudioContext } from './audioUtils';
@@ -103,33 +104,59 @@ export async function playWithElevenLabsTTS({
       audio.setAttribute('webkit-playsinline', 'true');
     }
     
-    // Handle audio events
-    audio.addEventListener('canplaythrough', () => {
-      console.log('✅ Audio ready to play');
-    });
-    
-    audio.addEventListener('error', (e) => {
-      console.error('❌ Audio playback error:', e);
-      throw new Error('Audio playback failed');
-    });
-    
-    audio.addEventListener('loadstart', () => {
-      console.log('🔄 Audio loading started');
-    });
-    
-    // Play with proper error handling
-    try {
+    // Improved error handling for audio events
+    return new Promise<HTMLAudioElement>((resolve, reject) => {
+      const cleanup = () => {
+        audio.removeEventListener('canplaythrough', onCanPlay);
+        audio.removeEventListener('error', onError);
+        audio.removeEventListener('loadstart', onLoadStart);
+        audio.removeEventListener('ended', onEnded);
+      };
+
+      const onCanPlay = () => {
+        console.log('✅ Audio ready to play');
+      };
+      
+      const onError = (e: Event) => {
+        console.error('❌ Audio playback error:', e);
+        cleanup();
+        reject(new Error('Audio playback failed - media format may not be supported'));
+      };
+      
+      const onLoadStart = () => {
+        console.log('🔄 Audio loading started');
+      };
+
+      const onEnded = () => {
+        console.log('✅ Audio playback completed');
+        cleanup();
+        URL.revokeObjectURL(audioUrl); // Clean up blob URL
+      };
+      
+      // Add event listeners
+      audio.addEventListener('canplaythrough', onCanPlay);
+      audio.addEventListener('error', onError);
+      audio.addEventListener('loadstart', onLoadStart);
+      audio.addEventListener('ended', onEnded);
+      
+      // Play with proper error handling
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        await playPromise;
-        console.log('✅ Audio playing successfully');
+        playPromise
+          .then(() => {
+            console.log('✅ Audio playing successfully');
+            resolve(audio);
+          })
+          .catch((playError) => {
+            console.error('❌ Audio play failed:', playError);
+            cleanup();
+            reject(new Error(`Audio play failed: ${playError.message}`));
+          });
+      } else {
+        // For older browsers that don't return a promise
+        resolve(audio);
       }
-    } catch (playError) {
-      console.error('❌ Audio play failed:', playError);
-      throw playError;
-    }
-    
-    return audio;
+    });
   } catch (err) {
     console.error("[TTS] ElevenLabs Error:", err);
     throw err;

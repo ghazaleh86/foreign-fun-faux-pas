@@ -29,6 +29,16 @@ export const NATIVE_VOICES = {
   "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - suitable for Czech
   "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - good for Afrikaans
   
+  // INDIAN SUBCONTINENT LANGUAGES - Phase 1 additions with culturally appropriate voices
+  "hindi": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for complex phonetics
+  "bengali": "EXAVITQu4vr4xnSDxMaL", // Sarah - articulate
+  "tamil": "EXAVITQu4vr4xnSDxMaL", // Sarah - precise pronunciation
+  "telugu": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear articulation
+  "marathi": "EXAVITQu4vr4xnSDxMaL", // Sarah - natural flow
+  "gujarati": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear tones
+  "punjabi": "29vD33N1CtxCmqQRPOHJ", // Drew - warm, expressive
+  "urdu": "ErXwobaYiN019PkySvjV", // Antoni - sophisticated
+  
   // PACIFIC ISLAND LANGUAGES - Warm, friendly voices for Pacific hospitality
   "tagalog": "D38z5RcWu1voky8WS1ja", // Fin - friendly, warm for Filipino culture
   "samoan": "29vD33N1CtxCmqQRPOHJ", // Drew - natural, relaxed Pacific vibe
@@ -105,6 +115,16 @@ export const LANGUAGE_VOICE_SETTINGS = {
   "thai": { stability: 0.8, similarityBoost: 0.7, style: 0.1 },
   "czech": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
   "afrikaans": { stability: 0.6, similarityBoost: 0.8, style: 0.2 },
+  
+  // INDIAN SUBCONTINENT SETTINGS - Phase 2 additions - Clear, precise
+  "hindi": { stability: 0.7, similarityBoost: 0.8, style: 0.1 }, // High stability for complex phonetics
+  "bengali": { stability: 0.7, similarityBoost: 0.8, style: 0.1 }, // Clear articulation
+  "tamil": { stability: 0.8, similarityBoost: 0.7, style: 0.1 }, // Very controlled for tonal aspects
+  "telugu": { stability: 0.7, similarityBoost: 0.8, style: 0.1 }, // Clear pronunciation
+  "marathi": { stability: 0.7, similarityBoost: 0.8, style: 0.1 }, // Natural flow
+  "gujarati": { stability: 0.7, similarityBoost: 0.8, style: 0.1 }, // Clear tones
+  "punjabi": { stability: 0.6, similarityBoost: 0.8, style: 0.2 }, // Warm, expressive
+  "urdu": { stability: 0.6, similarityBoost: 0.9, style: 0.2 }, // Sophisticated pronunciation
   
   // PACIFIC ISLAND SETTINGS - Relaxed, warm, expressive
   "tagalog": { stability: 0.4, similarityBoost: 0.9, style: 0.4 }, // Expressive Filipino warmth
@@ -208,16 +228,32 @@ export const normalizeLanguageVariant = (language: string): string => {
   return variantMappings[normalized] || normalized;
 };
 
-// Get native voice for a specific language
+// Get native voice for a specific language with improved logging
 export const getNativeVoiceForLanguage = (language: string) => {
   const normalizedLanguage = normalizeLanguageVariant(language.toLowerCase());
-  return NATIVE_VOICES[normalizedLanguage] || NATIVE_VOICES["english"];
+  const voiceId = NATIVE_VOICES[normalizedLanguage];
+  
+  if (!voiceId) {
+    console.warn(`⚠️ No native voice mapping found for language: ${language} (${normalizedLanguage}), falling back to English`);
+    return NATIVE_VOICES["english"];
+  }
+  
+  console.log(`🎵 Voice selected for ${language}: ${voiceId}`);
+  return voiceId;
 };
 
-// Get optimized voice settings for a specific language
+// Get optimized voice settings for a specific language with improved logging
 export const getLanguageVoiceSettings = (language: string) => {
   const normalizedLanguage = normalizeLanguageVariant(language.toLowerCase());
-  return LANGUAGE_VOICE_SETTINGS[normalizedLanguage] || LANGUAGE_VOICE_SETTINGS["english"];
+  const settings = LANGUAGE_VOICE_SETTINGS[normalizedLanguage];
+  
+  if (!settings) {
+    console.warn(`⚠️ No voice settings found for language: ${language} (${normalizedLanguage}), using English settings`);
+    return LANGUAGE_VOICE_SETTINGS["english"];
+  }
+  
+  console.log(`🎛️ Voice settings for ${language}:`, settings);
+  return settings;
 };
 
 // Deprecated - kept for backward compatibility but now uses language-based selection
