@@ -1,4 +1,6 @@
+
 import { Phrase } from "@/types/quiz";
+import { Option } from "@/components/MultipleChoiceOptions";
 
 // Constants for game configuration
 export const STAGE_SIZE = 10;
@@ -73,7 +75,7 @@ export const NATIVE_VOICES: Record<string, string> = {
   english: 'Ava',
   spanish: 'Lucia',
   french: 'Amelie',
-  german: ' বস',
+  german: 'Antoni',
   italian: 'Bianca',
   portuguese: 'Ines',
   mandarin: 'Li',
@@ -139,3 +141,62 @@ export const LANGUAGE_TIERS: Record<string, number> = {
   nepali: 4, // Regional South Asian importance
   khmer: 4, // Cultural heritage significance
 };
+
+// Missing function implementations
+export function getCurrentVoice(current: number): string {
+  // Simple implementation that cycles through available voices
+  const voices = Object.values(NATIVE_VOICES);
+  return voices[current % voices.length] || 'Ava';
+}
+
+export function computeSpeedBonus(timeTaken: number): number {
+  // Calculate speed bonus based on time taken
+  if (timeTaken <= 3) return 50;
+  if (timeTaken <= 5) return 30;
+  if (timeTaken <= 8) return 20;
+  if (timeTaken <= 12) return 10;
+  return 0;
+}
+
+export function getSpeedBonusXP(timeTaken: number): number {
+  // XP bonus for quick answers
+  if (timeTaken <= 3) return 15;
+  if (timeTaken <= 5) return 10;
+  if (timeTaken <= 8) return 5;
+  return 0;
+}
+
+export function randomWrongTaunt(opponentName: string): string {
+  const taunts = [
+    `${opponentName} got that one right! 🎯`,
+    `${opponentName} is pulling ahead! 🏃‍♂️`,
+    `${opponentName} knows their stuff! 🧠`,
+    `${opponentName} scored on that one! ⚽`,
+    `${opponentName} is on fire! 🔥`,
+  ];
+  return taunts[Math.floor(Math.random() * taunts.length)];
+}
+
+export function getNativeVoiceForLanguage(language: string): string {
+  return NATIVE_VOICES[language.toLowerCase()] || 'Ava';
+}
+
+export function getLanguageVoiceSettings(language: string): Record<string, any> {
+  // Return voice settings based on language
+  const normalizedLang = language.toLowerCase();
+  return {
+    stability: 0.75,
+    similarity_boost: 0.8,
+    style: 0.2,
+    use_speaker_boost: true
+  };
+}
+
+export function getShuffledOptions(phrase: Phrase): Option[] {
+  const options: Option[] = [
+    { text: phrase.correct_meaning, isCorrect: true },
+    { text: phrase.incorrect1, isCorrect: false },
+    { text: phrase.incorrect2, isCorrect: false },
+  ];
+  return shuffleArray(options);
+}
