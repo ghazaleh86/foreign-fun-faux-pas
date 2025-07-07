@@ -1,7 +1,6 @@
-
 import { islandLanguageCodes, getLanguageFamily } from './languageMapping';
 
-// Phase 4: Intelligent voice assignment based on language families
+// Phase 4: Enhanced voice assignment based on language families
 const voicesByFamily: Record<string, SpeechSynthesisVoice[]> = {};
 
 export function findBestVoice(targetLanguage: string, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
@@ -45,7 +44,43 @@ export function findBestVoice(targetLanguage: string, voices: SpeechSynthesisVoi
     return selectBestVoiceForFamily(familyVoices, languageFamily);
   }
   
-  // 4. For Indian languages, try English (India) voices as they often have better accent
+  // 4. Enhanced family-based fallbacks for new language groups
+  if (languageFamily === 'slavic') {
+    const slavicVoices = voices.filter(voice => 
+      voice.lang.toLowerCase().includes('ru') || 
+      voice.lang.toLowerCase().includes('pl') ||
+      voice.name.toLowerCase().includes('slavic')
+    );
+    if (slavicVoices.length > 0) {
+      console.log(`🇷🇺 Found Slavic family voice for ${targetLanguage}:`, slavicVoices[0].name);
+      return slavicVoices[0];
+    }
+  }
+  
+  if (languageFamily === 'finno-ugric') {
+    const finnoUgricVoices = voices.filter(voice => 
+      voice.lang.toLowerCase().includes('fi') || 
+      voice.lang.toLowerCase().includes('et') ||
+      voice.name.toLowerCase().includes('nordic')
+    );
+    if (finnoUgricVoices.length > 0) {
+      console.log(`🇫🇮 Found Finno-Ugric family voice for ${targetLanguage}:`, finnoUgricVoices[0].name);
+      return finnoUgricVoices[0];
+    }
+  }
+  
+  if (languageFamily === 'austronesian' || languageFamily === 'austroasiatic') {
+    const southeastAsianVoices = voices.filter(voice => {
+      const lang = voice.lang.toLowerCase();
+      return lang.includes('en-ph') || lang.includes('en-sg') || lang.includes('ms');
+    });
+    if (southeastAsianVoices.length > 0) {
+      console.log(`🇵🇭 Found Southeast Asian voice for ${targetLanguage}:`, southeastAsianVoices[0].name);
+      return southeastAsianVoices[0];
+    }
+  }
+  
+  // 5. For Indian languages, try English (India) voices as they often have better accent
   if (languageFamily === 'indic') {
     const indianEnglishVoices = voices.filter(voice => 
       voice.lang.toLowerCase().includes('en-in') || 
@@ -58,7 +93,7 @@ export function findBestVoice(targetLanguage: string, voices: SpeechSynthesisVoi
     }
   }
   
-  // 5. For Pacific languages, try regional English variants
+  // 6. For Pacific languages, try regional English variants
   if (languageFamily === 'pacific') {
     const pacificEnglishVoices = voices.filter(voice => {
       const lang = voice.lang.toLowerCase();
@@ -74,7 +109,7 @@ export function findBestVoice(targetLanguage: string, voices: SpeechSynthesisVoi
   return null;
 }
 
-// Phase 4: Select best voice within a language family based on characteristics
+// Phase 4: Enhanced voice selection within language families
 function selectBestVoiceForFamily(voices: SpeechSynthesisVoice[], family: string): SpeechSynthesisVoice {
   if (voices.length === 1) return voices[0];
   
@@ -82,7 +117,7 @@ function selectBestVoiceForFamily(voices: SpeechSynthesisVoice[], family: string
   const localVoices = voices.filter(v => v.localService);
   if (localVoices.length > 0) voices = localVoices;
   
-  // Family-specific preferences
+  // Enhanced family-specific preferences
   switch (family) {
     case 'germanic':
       // Prefer deeper, more authoritative voices for Germanic languages
@@ -110,6 +145,35 @@ function selectBestVoiceForFamily(voices: SpeechSynthesisVoice[], family: string
       return voices.find(v => 
         v.name.toLowerCase().includes('friendly') || 
         v.name.toLowerCase().includes('warm')
+      ) || voices[0];
+      
+    case 'slavic':
+      // Clear, strong voices for Slavic languages
+      return voices.find(v => 
+        v.name.toLowerCase().includes('clear') || 
+        v.name.toLowerCase().includes('strong')
+      ) || voices[0];
+      
+    case 'finno-ugric':
+      // Precise, articulate voices for Finno-Ugric languages
+      return voices.find(v => 
+        v.name.toLowerCase().includes('precise') || 
+        v.name.toLowerCase().includes('articulate')
+      ) || voices[0];
+      
+    case 'austronesian':
+    case 'austroasiatic':
+      // Warm, friendly voices for Southeast Asian languages
+      return voices.find(v => 
+        v.name.toLowerCase().includes('warm') || 
+        v.name.toLowerCase().includes('friendly')
+      ) || voices[0];
+      
+    case 'mongolic':
+      // Deep, resonant voices for Mongolic languages
+      return voices.find(v => 
+        v.name.toLowerCase().includes('deep') || 
+        v.name.toLowerCase().includes('resonant')
       ) || voices[0];
       
     default:
