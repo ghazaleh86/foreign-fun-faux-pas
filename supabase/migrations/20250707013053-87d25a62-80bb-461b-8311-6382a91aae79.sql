@@ -1,0 +1,28 @@
+-- Remove thank you phrases that are basic vocabulary
+DELETE FROM phrases WHERE 
+id IN (
+  '59fe1acd-03b0-4a5b-8587-6849abefe63a', -- Thank you very much (sinhala)
+  '23456cf1-0a33-43f2-a751-f7777efe6153', -- Thank you (papiamento)
+  'ae3cc2a2-166a-4706-a1cc-da392f141b3c', -- Thank you (dhivehi)
+  '4a26c227-358d-4257-a56c-26e0c5e21023', -- Thank you very much (samoan)
+  'd749aca7-4b28-4637-a01c-8c6c690b7add', -- Thank you very much (sicilian)
+  '205df5c1-fe81-43dd-a813-8777f2e08027', -- Thank you very much (maltese)
+  'c791121b-dc52-49ac-9fdb-13cc2dc35edc', -- Thank you (croatian)
+  '693c0730-ed3c-49ee-9c5f-9b840aabf8c8', -- Thank you (female speaker) (thai)
+  '4255b6a3-5ede-42e4-b4f0-563e74e187ab', -- Thank you (hungarian)
+  '2451d48b-538b-4ae2-8eb7-f2b0cb7e8105', -- Thank you very much (tongan)
+  '0ba4d3b1-e61b-4e41-bfed-7f54f96b6314', -- Thank you very much (seychellois creole)
+  '22e408e8-427a-41f4-9716-7a7f30439ce8', -- Thank you very much (mauritian creole)
+  '357fa671-910b-4ac4-9c2d-ab445df88513', -- Thank you very much (haitian creole)
+  '6d61266c-96c2-4a39-9145-25d0969568bf', -- Thank you (romanian)
+  '1fae488c-cc0a-49ed-a3b2-cda249743b82', -- Thank you (formal) (tagalog)
+  '8daedb8d-b5c4-4b36-aa74-077ad83e935f', -- Thank you (dhivehi)
+  '8c29da44-beb7-42cc-be7d-aac8387315c1', -- Thank you (chamorro)
+  '05a72677-8edf-43ee-beb6-a9d79e7ad72f', -- Thank you (russian)
+  '6ef4d684-fef2-4a17-83d9-0c5742ddf158', -- Thank you (faroese)
+  '7aff1f12-7d28-4c6c-8892-54741597d329', -- Thank you (icelandic)
+  '190b8b7b-bc3b-4a3a-8857-9c923d501aa9', -- Thank you very much (tok pisin)
+  '1a27bf5d-7d8d-44b6-a7db-f0e063002d87', -- Thank you (indonesian)
+  '63f5bf50-5901-4096-8212-bc8e12e301e4', -- Thank you very much (fijian)
+  'a27dfd3f-e9ec-4f4e-94ad-1013d54f3161'  -- Thank you (corsican)
+);
