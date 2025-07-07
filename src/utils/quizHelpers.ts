@@ -194,9 +194,9 @@ export function getLanguageVoiceSettings(language: string): Record<string, any> 
 
 export function getShuffledOptions(phrase: Phrase): Option[] {
   const options: Option[] = [
-    { text: phrase.correct_meaning, isCorrect: true },
-    { text: phrase.incorrect1, isCorrect: false },
-    { text: phrase.incorrect2, isCorrect: false },
+    { label: phrase.correct_meaning, isCorrect: true },
+    { label: phrase.incorrect1, isCorrect: false },
+    { label: phrase.incorrect2, isCorrect: false },
   ];
   return shuffleArray(options);
 }
