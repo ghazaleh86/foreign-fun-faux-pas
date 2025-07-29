@@ -6,11 +6,15 @@ import { Button } from "@/components/ui/button";
 import MascotAvatar from "../components/MascotAvatar";
 import { hasActiveGame, clearGameState } from "@/utils/gameStateManager";
 import { Home } from "lucide-react";
+import { LanguageSelection } from "@/components/LanguageSelection";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
   const [started, setStarted] = useState(false);
+  const [showLanguageSelection, setShowLanguageSelection] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
   const [searchParams] = useSearchParams();
+  const { isLanguageSelected } = useLanguage();
 
   // Chippy is now the consistent opponent
   const opponent = { name: "Chippy", emoji: "🐿️" };
@@ -25,6 +29,25 @@ const Index = () => {
       setStarted(true);
     }
   }, [searchParams]);
+
+  // Handle language selection completion
+  const handleLanguageSelected = () => {
+    setShowLanguageSelection(false);
+    setStarted(true);
+  };
+
+  // Handle challenge button click
+  const handleChallengeClick = () => {
+    console.log("Challenge Chippy button clicked!");
+    
+    // If language is already selected, start game directly
+    if (isLanguageSelected) {
+      setStarted(true);
+    } else {
+      // Show language selection first
+      setShowLanguageSelection(true);
+    }
+  };
 
   useEffect(() => {
     if (!started && !hasActiveGame()) {
@@ -43,6 +66,11 @@ const Index = () => {
   }, [started]);
 
   console.log("🔍 Index render: started =", started, "hasActiveGame =", hasActiveGame());
+  
+  // Show language selection screen
+  if (showLanguageSelection) {
+    return <LanguageSelection onLanguageSelected={handleLanguageSelected} />;
+  }
   
   if (!started) {
     return (
@@ -108,10 +136,7 @@ const Index = () => {
         }`}>
           <Button
             variant="primary-cta"
-            onClick={() => {
-              console.log("Challenge Chippy button clicked! Setting started to true");
-              setStarted(true);
-            }}
+            onClick={handleChallengeClick}
             size="lg"
           >
             <span className="flex items-center gap-3">
@@ -130,6 +155,7 @@ const Index = () => {
   const handleBackToLanding = () => {
     clearGameState();
     setStarted(false);
+    setShowLanguageSelection(false);
     setAnimationStep(0);
   };
 

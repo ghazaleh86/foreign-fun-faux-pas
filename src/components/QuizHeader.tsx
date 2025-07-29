@@ -3,6 +3,7 @@ import React from "react";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Phrase } from "@/types/quiz";
 import { languageToFlag } from "@/utils/languageToFlag";
+import { LanguageToggle } from "./LanguageToggle";
 
 type QuizHeaderProps = {
   phrase: Phrase;
@@ -41,6 +42,11 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
   });
   return (
     <CardHeader>
+      {/* Language Toggle - positioned at top right */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageToggle />
+      </div>
+      
       <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
         <div className="flex items-center justify-center gap-2 w-full">
           <span className="text-2xl">{opponentEmoji}</span>

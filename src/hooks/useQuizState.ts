@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Phrase, State } from "@/types/quiz";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
 import { selectWeightedPhrases } from "@/utils/weightedPhraseSelection";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function useQuizState() {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -13,8 +14,10 @@ export function useQuizState() {
   const [selected, setSelected] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const { selectedLanguage } = useLanguage();
 
   // Fetch phrases on mount with weighted selection and rotation logic
+  // Re-fetch when selectedLanguage changes
   useEffect(() => {
     const fetchPhrases = async () => {
       setState("loading");
@@ -25,11 +28,20 @@ export function useQuizState() {
         playedIds = []; 
       }
 
-      const { data, error } = await supabase
+      // Build query with optional language filter
+      let query = supabase
         .from("phrases")
         .select("*")
         .order("difficulty", { ascending: true })
         .order("created_at", { ascending: false });
+
+      // Apply language filter if a specific language is selected
+      if (selectedLanguage) {
+        query = query.eq("language", selectedLanguage);
+        console.log(`🌍 Filtering phrases by language: ${selectedLanguage}`);
+      }
+
+      const { data, error } = await query;
 
       if (!data || error) {
         setPhrases([]);
@@ -63,7 +75,7 @@ export function useQuizState() {
       }
     };
     fetchPhrases();
-  }, []);
+  }, [selectedLanguage]); // Re-fetch when language changes
 
   const markPhraseAsPlayed = (phraseId: string) => {
     const playedIds = getPlayedPhraseIds();
