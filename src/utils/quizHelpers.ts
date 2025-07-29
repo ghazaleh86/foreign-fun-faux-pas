@@ -79,7 +79,7 @@ export const NATIVE_VOICES: Record<string, string> = {
   german: 'nPczCjzI2devNBz1zQrb', // Brian - native German
   italian: 'AZnzlk1XvdvUeBnXmlld', // Domi - native Italian
   portuguese: 'cjVigY5qzO86Huf0OWal', // Eric - native Portuguese
-  chinese: 'TX3LPaxmHKxFdv7VOQHJ', // Liam - optimized for tonal languages like Chinese
+  chinese: 'Xb7hH8MSUJpSbSDYk0k2', // Alice - better for tonal pronunciation
   japanese: 'XrExE9yKIg1WjnnlVkGX', // Matilda - good for Japanese pronunciation
   korean: 'Bill',
   arabic: 'Daniel',
