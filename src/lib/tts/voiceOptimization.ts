@@ -1,7 +1,7 @@
 // Enhanced voice optimization for native pronunciation
 import { NATIVE_VOICES } from '@/utils/quizHelpers';
 
-// ElevenLabs voice ID to name mapping for validation
+// ElevenLabs voice ID to name mapping for validation - Updated with all voice IDs
 export const ELEVENLABS_VOICE_IDS = {
   'pNInz6obpgDQGcFmaJgB': 'Rachel',
   'iP95p4xoKVk53GoZ742B': 'Chris', 
@@ -53,7 +53,7 @@ export function getOptimalVoice(language: string): string {
   }
   
   // Fallback: Use default high-quality voice
-  return 'Rachel';
+  return 'pNInz6obpgDQGcFmaJgB'; // Rachel
 }
 
 function getFamilyOptimizedVoice(family: string): string {
@@ -93,11 +93,11 @@ export function normalizeLanguageForVoice(language: string): string {
 }
 
 // Quality scoring for voice-language pairing (for future A/B testing)
-export function getVoiceQualityScore(voiceName: string, language: string): number {
+export function getVoiceQualityScore(voiceId: string, language: string): number {
   const normalizedLang = normalizeLanguageForVoice(language);
   
   // Perfect match bonus
-  if (NATIVE_VOICES[normalizedLang] === voiceName) {
+  if (NATIVE_VOICES[normalizedLang] === voiceId) {
     return 100;
   }
   
@@ -105,7 +105,7 @@ export function getVoiceQualityScore(voiceName: string, language: string): numbe
   for (const [family, languages] of Object.entries(LANGUAGE_FAMILIES)) {
     if (languages.includes(normalizedLang)) {
       const familyVoice = getFamilyOptimizedVoice(family);
-      if (familyVoice === voiceName) {
+      if (familyVoice === voiceId) {
         return 80;
       }
     }

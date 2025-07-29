@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
-import { getCurrentVoice } from "@/utils/quizHelpers";
+import { getNativeVoiceForLanguage } from "@/utils/quizHelpers";
 import { Phrase, State } from "@/types/quiz";
 
 interface QuizAudioControllerProps {
@@ -26,18 +26,19 @@ const QuizAudioController: React.FC<QuizAudioControllerProps> = ({
     [current, state, showStagePreview, showAnswer, stageCompleted]
   );
 
-  // Audio auto-play with duplicate guard
+  // Audio auto-play with duplicate guard - using language-specific voice
   useAudioPlayback(
     audioPlaybackDeps,
     phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
     phrase?.language || "en",
-    getCurrentVoice(current),
+    getNativeVoiceForLanguage(phrase?.language || "en"),
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   );
 
   console.log('🎮 QuizAudioController Audio Debug:', {
     phraseLanguage: phrase?.language,
     phraseText: phrase?.phrase_text?.slice(0, 20),
+    selectedVoice: getNativeVoiceForLanguage(phrase?.language || "en"),
     shouldPlay: !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)
   });
 
