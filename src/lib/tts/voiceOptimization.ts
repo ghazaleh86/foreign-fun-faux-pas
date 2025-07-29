@@ -58,18 +58,18 @@ export function getOptimalVoice(language: string): string {
 
 function getFamilyOptimizedVoice(family: string): string {
   const familyVoices = {
-    germanic: 'Rachel',     // Clear, neutral English
-    romance: 'Jessica',     // Expressive French
-    slavic: 'Will',         // Deep, authoritative
-    indic: 'Lily',          // Clear articulation
-    tonal: 'Matilda',       // Precise pronunciation
-    semitic: 'Daniel',      // Strong articulation
-    turkic: 'Eric',         // Versatile
-    african: 'Rachel',      // Clear pronunciation
-    other: 'Charlotte'      // Expressive
+    germanic: 'pNInz6obpgDQGcFmaJgB',     // Rachel - Clear, neutral English
+    romance: 'cgSgspJ2msm6clMCkdW9',      // Jessica - Expressive French
+    slavic: 'bIHbv24MWmeRgasZH58o',       // Will - Deep, authoritative
+    indic: 'pFZP5JQG7iQjIQuC4Bku',       // Lily - Clear articulation
+    tonal: 'TX3LPaxmHKxFdv7VOQHJ',        // Liam - Optimized for tonal languages like Chinese
+    semitic: 'onwK4e9ZLuTAKqWW03F9',     // Daniel - Strong articulation
+    turkic: 'cjVigY5qzO86Huf0OWal',      // Eric - Versatile
+    african: 'pNInz6obpgDQGcFmaJgB',      // Rachel - Clear pronunciation
+    other: 'XB0fDUnXU5powFXDhCwa'        // Charlotte - Expressive
   };
   
-  return familyVoices[family] || 'Rachel';
+  return familyVoices[family] || 'pNInz6obpgDQGcFmaJgB';
 }
 
 // Enhanced language detection with normalization

@@ -72,15 +72,15 @@ export const isLastQuestionInStage = (current: number, currentStageStart: number
 
 // Enhanced native voice mapping for better pronunciation quality
 export const NATIVE_VOICES: Record<string, string> = {
-  // Major world languages with ElevenLabs voice names matching API IDs
-  english: 'Rachel',
-  spanish: 'Chris', 
-  french: 'Jessica',
-  german: 'Brian',
-  italian: 'Domi',
-  portuguese: 'Eric',
-  chinese: 'Matilda', // Changed from mandarin for consistency
-  japanese: 'Matilda',
+  // Major world languages with ElevenLabs voice IDs for optimal pronunciation
+  english: 'pNInz6obpgDQGcFmaJgB', // Rachel - clear, neutral English
+  spanish: 'iP95p4xoKVk53GoZ742B', // Chris - native Spanish
+  french: 'cgSgspJ2msm6clMCkdW9', // Jessica - native French  
+  german: 'nPczCjzI2devNBz1zQrb', // Brian - native German
+  italian: 'AZnzlk1XvdvUeBnXmlld', // Domi - native Italian
+  portuguese: 'cjVigY5qzO86Huf0OWal', // Eric - native Portuguese
+  chinese: 'TX3LPaxmHKxFdv7VOQHJ', // Liam - optimized for tonal languages like Chinese
+  japanese: 'XrExE9yKIg1WjnnlVkGX', // Matilda - good for Japanese pronunciation
   korean: 'Bill',
   arabic: 'Daniel',
   hindi: 'Lily',
