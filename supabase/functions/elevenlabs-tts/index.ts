@@ -21,7 +21,7 @@ const NATIVE_VOICES = {
   "portuguese": "cjVigY5qzO86Huf0OWal", // Eric - native Portuguese warmth
   "russian": "bIHbv24MWmeRgasZH58o", // Will - deep Slavic pronunciation
   "japanese": "XrExE9yKIg1WjnnlVkGX", // Matilda - precise Japanese articulation
-  "chinese": "XrExE9yKIg1WjnnlVkGX", // Matilda - enhanced tonal clarity
+  "chinese": "Xb7hH8MSUJpSbSDYk0k2", // Alice - better for tonal pronunciation
   "arabic": "onwK4e9ZLuTAKqWW03F9", // Daniel - native Arabic pronunciation
   
   // INDIAN SUBCONTINENT - Optimized for complex phonetics
@@ -328,6 +328,7 @@ serve(async (req) => {
         "spanish (cuba)": "spanish (cuba)", // Keep Cuban distinct
         "spanish (dominican republic)": "spanish (dominican republic)", // Keep Dominican distinct
         "filipino": "tagalog", // Filipino is based on Tagalog
+        "mandarin": "chinese", // Mandarin is a variant of Chinese
       };
       return variantMappings[normalized] || normalized;
     };
