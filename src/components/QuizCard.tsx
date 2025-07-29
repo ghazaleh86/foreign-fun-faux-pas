@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Phrase } from "@/types/quiz";
 import { Option } from "@/components/MultipleChoiceOptions";
 import QuizHeader from "./QuizHeader";
-import QuizProgress from "./QuizProgress";
 import TimerProgress from "./TimerProgress";
 import QuizFooter from "./QuizFooter";
 import MultipleChoiceOptions from "./MultipleChoiceOptions";
@@ -74,12 +73,10 @@ const QuizCard: React.FC<QuizCardProps> = ({
         onPlayAudio={onPlayAudio}
       />
       <CardContent className="pb-6">
-        <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-        
         {/* Timer Progress Bar */}
-        <div className="mb-2">
+        <div className="mb-4">
           <div className="text-xs text-muted-foreground mb-1 flex justify-between">
-            <span>Timer</span>
+            <span>Time</span>
             <span>{timer}s / 30s</span>
           </div>
           <TimerProgress timer={timer} maxTime={30} />
