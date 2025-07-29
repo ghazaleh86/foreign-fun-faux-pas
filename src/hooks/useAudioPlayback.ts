@@ -1,6 +1,6 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { playWithElevenLabsTTS } from "@/lib/tts";
+import { playWithElevenLabsTTS, getOptimalVoice, normalizeLanguageForVoice } from "@/lib/tts";
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
 import { audioManager } from "@/lib/tts/audioManager";
@@ -63,29 +63,29 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
     
     audioPlayedRef.current = true;
 
-    // Enhanced audio playback with better error handling and native voice mapping
+    // Enhanced audio playback with improved native voice selection
     const playAudio = async () => {
-      // Use the improved voice mapping system
-      const normalizedLanguage = language.toLowerCase();
-      const nativeVoiceId = getNativeVoiceForLanguage(normalizedLanguage);
+      // Use the enhanced voice optimization system
+      const normalizedLanguage = normalizeLanguageForVoice(language);
+      const optimalVoice = getOptimalVoice(normalizedLanguage);
       const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
 
-      console.log(`🎵 Enhanced Audio Debug - Using Native Voice Mapping:`, {
+      console.log(`🎵 Enhanced Audio Debug - Using Optimized Voice Selection:`, {
         originalLanguage: language,
         normalizedLanguage,
-        nativeVoiceId,
+        optimalVoice,
         languageSettings,
         text: text.slice(0, 30)
       });
 
       try {
-        console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with native voice:`, nativeVoiceId);
+        console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with optimized voice:`, optimalVoice);
 
-        // Use the improved ElevenLabs TTS with better error handling
+        // Use the enhanced ElevenLabs TTS with native voice optimization
         await playWithElevenLabsTTS({ 
           text, 
           language: normalizedLanguage,
-          voiceId: nativeVoiceId,
+          voiceId: optimalVoice,
           ...languageSettings,
           useSpeakerBoost: true
         });
@@ -95,7 +95,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
         console.error('🔄 ElevenLabs failed, falling back to browser TTS:', {
           error: elevenLabsError.message,
           language: normalizedLanguage,
-          voiceId: nativeVoiceId,
+          voiceId: optimalVoice,
           stack: elevenLabsError.stack
         });
         

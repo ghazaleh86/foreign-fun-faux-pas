@@ -8,3 +8,4 @@ export { audioManager } from './audioManager';
 export { normalizeLanguageVariant, islandLanguageCodes } from './languageMapping';
 export { createSpeechUtterance, islandLanguageRates } from './speechConfig';
 export { findBestVoice, ensureVoicesLoaded } from './voiceSelection';
+export { getOptimalVoice, normalizeLanguageForVoice, getVoiceQualityScore } from './voiceOptimization';

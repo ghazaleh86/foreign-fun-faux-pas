@@ -70,40 +70,54 @@ export const isLastQuestionInStage = (current: number, currentStageStart: number
   return questionIndexInStage === Math.min(stageSize, phrasesLength - currentStageStart) - 1;
 };
 
-// Phase 3: Enhanced native voices with new language support
+// Enhanced native voice mapping for better pronunciation quality
 export const NATIVE_VOICES: Record<string, string> = {
-  english: 'Ava',
-  spanish: 'Lucia',
-  french: 'Amelie',
-  german: 'Antoni',
-  italian: 'Bianca',
-  portuguese: 'Ines',
-  mandarin: 'Li',
-  japanese: 'Aiko',
-  korean: 'Hana',
-  arabic: 'Salma',
-  hindi: 'Aditi',
-  bengali: 'Aisha',
-  tamil: 'Akshaya',
-  telugu: 'Lakshmi',
-  marathi: 'Priya',
-  gujarati: 'Bhakti',
-  punjabi: 'Harleen',
-  urdu: 'Aalia',
+  // Major world languages with ElevenLabs voice names matching API IDs
+  english: 'Rachel',
+  spanish: 'Chris', 
+  french: 'Jessica',
+  german: 'Brian',
+  italian: 'Domi',
+  portuguese: 'Eric',
+  chinese: 'Matilda', // Changed from mandarin for consistency
+  japanese: 'Matilda',
+  korean: 'Bill',
+  arabic: 'Daniel',
+  hindi: 'Lily',
+  bengali: 'Alice',
+  tamil: 'Liam',
+  telugu: 'Jessica',
+  marathi: 'Lily',
+  gujarati: 'Alice',
+  punjabi: 'Liam',
+  urdu: 'Daniel',
 
-  // Eastern European Languages - optimized voice selection
-  ukrainian: 'Liam', // Clear, articulate voice for Slavic languages
-  hungarian: 'Josh', // Warm voice for unique Finno-Ugric phonetics
-  romanian: 'Antoni', // Romance language optimized voice
-  bulgarian: 'Liam', // Consistent Slavic voice selection
-  croatian: 'Josh', // Balanced voice for Balkan languages
+  // European languages with improved voice assignments
+  ukrainian: 'George',
+  hungarian: 'George', 
+  romanian: 'Domi',
+  bulgarian: 'Will',
+  croatian: 'Charlie',
+  dutch: 'Callum',
+  polish: 'Will',
+  czech: 'Charlie',
+  slovak: 'Charlie',
+  serbian: 'Will',
+  greek: 'Charlotte',
+  danish: 'River',
+  finnish: 'Callum',
+  swedish: 'River',
+  norwegian: 'Callum',
   
-  // Asian Languages - culturally appropriate voice selection
-  indonesian: 'Grace', // Friendly voice for Southeast Asian languages
-  mongolian: 'Liam', // Strong, clear voice for Central Asian languages
-  burmese: 'Grace', // Gentle voice suitable for tonal Southeast Asian languages
-  nepali: 'Freya', // Clear voice for South Asian mountain languages
-  khmer: 'Grace', // Soft voice appropriate for Austroasiatic languages
+  // Asian languages with tonal optimization
+  vietnamese: 'Charlotte',
+  thai: 'Lily',
+  turkish: 'Eric',
+  
+  // African languages
+  swahili: 'Rachel',
+  zulu: 'Rachel',
+  afrikaans: 'Callum'
 };
 
 // Phase 3: Enhanced language tier system with new additions

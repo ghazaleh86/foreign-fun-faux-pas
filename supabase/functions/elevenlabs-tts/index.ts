@@ -12,55 +12,55 @@ const clientRequests: Record<string, { count: number; windowStart: number }> = {
 
 // Phase 2 & 4: Comprehensive native voice mappings with intelligent family-based assignment
 const NATIVE_VOICES = {
-  // MAJOR WORLD LANGUAGES - High quality voices
-  "english": "pNInz6obpgDQGcFmaJgB", // Rachel - clear, natural
-  "spanish": "ErXwobaYiN019PkySvjV", // Antoni - warm, expressive
-  "french": "pNInz6obpgDQGcFmaJgB", // Rachel - sophisticated
-  "german": "2EiwWnXFnvU5JabPnv8n", // Clyde - authoritative
-  "italian": "AZnzlk1XvdvUeBnXmlld", // Domi - expressive
-  "portuguese": "29vD33N1CtxCmqQRPOHJ", // Drew - warm
-  "russian": "2EiwWnXFnvU5JabPnv8n", // Clyde - deep
-  "japanese": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear articulation
-  "chinese": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal clarity
-  "arabic": "ErXwobaYiN019PkySvjV", // Antoni - versatile
+  // MAJOR WORLD LANGUAGES - Top quality voices optimized for native pronunciation
+  "english": "pNInz6obpgDQGcFmaJgB", // Rachel - native English clarity
+  "spanish": "iP95p4xoKVk53GoZ742B", // Chris - native Spanish clarity  
+  "french": "cgSgspJ2msm6clMCkdW9", // Jessica - native French elegance
+  "german": "nPczCjzI2devNBz1zQrb", // Brian - native German authority
+  "italian": "AZnzlk1XvdvUeBnXmlld", // Domi - native Italian expressiveness
+  "portuguese": "cjVigY5qzO86Huf0OWal", // Eric - native Portuguese warmth
+  "russian": "bIHbv24MWmeRgasZH58o", // Will - deep Slavic pronunciation
+  "japanese": "XrExE9yKIg1WjnnlVkGX", // Matilda - precise Japanese articulation
+  "chinese": "XrExE9yKIg1WjnnlVkGX", // Matilda - enhanced tonal clarity
+  "arabic": "onwK4e9ZLuTAKqWW03F9", // Daniel - native Arabic pronunciation
   
-  // INDIAN SUBCONTINENT - Phase 2 additions with culturally appropriate voices
-  "hindi": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear for complex phonetics
-  "bengali": "EXAVITQu4vr4xnSDxMaL", // Sarah - articulate
-  "tamil": "EXAVITQu4vr4xnSDxMaL", // Sarah - precise pronunciation
-  "telugu": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear articulation
-  "marathi": "EXAVITQu4vr4xnSDxMaL", // Sarah - natural flow
-  "gujarati": "EXAVITQu4vr4xnSDxMaL", // Sarah - clear tones
-  "punjabi": "29vD33N1CtxCmqQRPOHJ", // Drew - warm, expressive
-  "urdu": "ErXwobaYiN019PkySvjV", // Antoni - sophisticated
+  // INDIAN SUBCONTINENT - Optimized for complex phonetics
+  "hindi": "pFZP5JQG7iQjIQuC4Bku", // Lily - clear articulation for Hindi
+  "bengali": "Xb7hH8MSUJpSbSDYk0k2", // Alice - precise Bengali pronunciation
+  "tamil": "TX3LPaxmHKxFdv7VOQHJ", // Liam - strong Tamil articulation
+  "telugu": "cgSgspJ2msm6clMCkdW9", // Jessica - clear Telugu pronunciation
+  "marathi": "pFZP5JQG7iQjIQuC4Bku", // Lily - natural Marathi flow
+  "gujarati": "Xb7hH8MSUJpSbSDYk0k2", // Alice - clear Gujarati tones
+  "punjabi": "TX3LPaxmHKxFdv7VOQHJ", // Liam - expressive Punjabi
+  "urdu": "onwK4e9ZLuTAKqWW03F9", // Daniel - sophisticated Urdu
   
-  // EUROPEAN LANGUAGES - Phase 2 additions
-  "dutch": "D38z5RcWu1voky8WS1ja", // Fin - friendly Germanic
-  "polish": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic authority
-  "czech": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic depth
-  "slovak": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic consistency
-  "hungarian": "2EiwWnXFnvU5JabPnv8n", // Clyde - distinct pronunciation
-  "romanian": "AZnzlk1XvdvUeBnXmlld", // Domi - Romance expressiveness
-  "bulgarian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic depth
-  "croatian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic clarity
-  "serbian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic strength
-  "ukrainian": "2EiwWnXFnvU5JabPnv8n", // Clyde - Slavic authority
-  "greek": "AZnzlk1XvdvUeBnXmlld", // Domi - Mediterranean expressiveness
-  "danish": "29vD33N1CtxCmqQRPOHJ", // Drew - Nordic warmth
-  "finnish": "CYw3kZ02Hs0563khs1Fj", // Dave - Nordic precision
-  "swedish": "CYw3kZ02Hs0563khs1Fj", // Dave - Nordic clarity
-  "norwegian": "29vD33N1CtxCmqQRPOHJ", // Drew - Nordic naturalness
+  // EUROPEAN LANGUAGES - Native speaker voices
+  "dutch": "N2lVS1w4EtoT3dr4eOWO", // Callum - native Dutch pronunciation
+  "polish": "bIHbv24MWmeRgasZH58o", // Will - strong Polish articulation
+  "czech": "IKne3meq5aSn9XLyUdCD", // Charlie - Czech precision
+  "slovak": "IKne3meq5aSn9XLyUdCD", // Charlie - Slovak clarity
+  "hungarian": "JBFqnCBsd6RMkjVDRZzb", // George - distinct Hungarian
+  "romanian": "AZnzlk1XvdvUeBnXmlld", // Domi - Romance Romanian
+  "bulgarian": "bIHbv24MWmeRgasZH58o", // Will - Bulgarian depth
+  "croatian": "IKne3meq5aSn9XLyUdCD", // Charlie - Croatian clarity
+  "serbian": "bIHbv24MWmeRgasZH58o", // Will - Serbian strength
+  "ukrainian": "JBFqnCBsd6RMkjVDRZzb", // George - Ukrainian authority
+  "greek": "XB0fDUnXU5powFXDhCwa", // Charlotte - Greek expressiveness
+  "danish": "SAz9YHcvj6GT2YYXdXww", // River - Nordic Danish
+  "finnish": "N2lVS1w4EtoT3dr4eOWO", // Callum - Finnish precision
+  "swedish": "SAz9YHcvj6GT2YYXdXww", // River - Swedish clarity
+  "norwegian": "N2lVS1w4EtoT3dr4eOWO", // Callum - Norwegian naturalness
   
   // AFRICAN LANGUAGES - Phase 2 additions
   "swahili": "pNInz6obpgDQGcFmaJgB", // Rachel - clear articulation
   "zulu": "pNInz6obpgDQGcFmaJgB", // Rachel - strong pronunciation
   "afrikaans": "D38z5RcWu1voky8WS1ja", // Fin - Germanic similarity
   
-  // ASIAN LANGUAGES
-  "korean": "EXAVITQu4vr4xnSDxMaL", // Sarah - precise tones
-  "vietnamese": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal accuracy
-  "thai": "EXAVITQu4vr4xnSDxMaL", // Sarah - tonal precision
-  "turkish": "ErXwobaYiN019PkySvjV", // Antoni - versatile expression
+  // ASIAN LANGUAGES - Optimized for tonal accuracy
+  "korean": "pqHfZKP75CvOlQylNhV4", // Bill - precise Korean tones
+  "vietnamese": "XB0fDUnXU5powFXDhCwa", // Charlotte - Vietnamese tonal accuracy
+  "thai": "pFZP5JQG7iQjIQuC4Bku", // Lily - Thai tonal precision
+  "turkish": "cjVigY5qzO86Huf0OWal", // Eric - native Turkish expression
   
   // PACIFIC ISLAND LANGUAGES - Phase 2 with culturally appropriate voices
   "tagalog": "D38z5RcWu1voky8WS1ja", // Fin - friendly, warm
