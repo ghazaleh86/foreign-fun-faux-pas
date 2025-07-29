@@ -6,6 +6,7 @@ import { Phrase } from "@/types/quiz";
 import { Option } from "@/components/MultipleChoiceOptions";
 import QuizHeader from "./QuizHeader";
 import QuizProgress from "./QuizProgress";
+import TimerProgress from "./TimerProgress";
 import QuizFooter from "./QuizFooter";
 import MultipleChoiceOptions from "./MultipleChoiceOptions";
 import { Button } from "@/components/ui/button";
@@ -74,8 +75,14 @@ const QuizCard: React.FC<QuizCardProps> = ({
       />
       <CardContent className="pb-6">
         <QuizProgress stageScore={stageScore} maxScore={maxStageScore} />
-        <div className="mb-4 text-sm font-bold text-fuchsia-700">
-          Time: {timer}s
+        
+        {/* Timer Progress Bar */}
+        <div className="mb-2">
+          <div className="text-xs text-muted-foreground mb-1 flex justify-between">
+            <span>Timer</span>
+            <span>{timer}s / 30s</span>
+          </div>
+          <TimerProgress timer={timer} maxTime={30} />
         </div>
 
         {/* Audio button - now visible on all devices */}
