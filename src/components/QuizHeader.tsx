@@ -64,7 +64,7 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
           </div>
           <div className="text-lg font-semibold tracking-wide mb-0">
             <span>
-              {phrase.pronunciation ? <span className="italic">{phrase.pronunciation}</span> : phrase.phrase_text}
+              <span className="italic">{phrase.phrase_text}</span>
             </span>
           </div>
           <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">

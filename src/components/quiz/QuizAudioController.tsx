@@ -29,7 +29,7 @@ const QuizAudioController: React.FC<QuizAudioControllerProps> = ({
   // Audio auto-play with duplicate guard - using language-specific voice
   useAudioPlayback(
     audioPlaybackDeps,
-    phrase ? (phrase.pronunciation || phrase.phrase_text) : "",
+    phrase ? phrase.phrase_text : "",
     phrase?.language || "en",
     getNativeVoiceForLanguage(phrase?.language || "en"),
     !!(phrase && state === "quiz" && !showAnswer && !showStagePreview && !stageCompleted)

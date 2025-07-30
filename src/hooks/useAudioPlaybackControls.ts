@@ -19,7 +19,7 @@ export function useAudioPlaybackControls({ phrase }: UseAudioPlaybackControlsPro
   const handlePlayAudio = useCallback(async () => {
     if (!phrase) return;
     
-    const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const ttsText = phrase.phrase_text;
     const language = (phrase.language || "english").toLowerCase();
     const nativeVoiceId = getNativeVoiceForLanguage(language);
     const languageSettings = getLanguageVoiceSettings(language);

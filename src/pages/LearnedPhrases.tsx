@@ -41,7 +41,7 @@ const LearnedPhrases = () => {
       filtered = filtered.filter(lp => 
         lp.phrase.phrase_text.toLowerCase().includes(query) ||
         lp.phrase.correct_meaning.toLowerCase().includes(query) ||
-        (lp.phrase.pronunciation && lp.phrase.pronunciation.toLowerCase().includes(query))
+        lp.phrase.phrase_text.toLowerCase().includes(query)
       );
     }
     
@@ -49,7 +49,7 @@ const LearnedPhrases = () => {
   }, [selectedLanguage, searchQuery, learnedPhrases]);
 
   const handlePlayAudio = (phrase: LearnedPhraseLocal["phrase"]) => {
-    const ttsText = phrase.pronunciation || phrase.phrase_text;
+    const ttsText = phrase.phrase_text;
     import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
       playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
         if ("speechSynthesis" in window) {
@@ -158,14 +158,9 @@ const LearnedPhrases = () => {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="mb-3">
-                    <p className="font-semibold text-lg mb-1 text-gray-800">
-                      {learnedPhrase.phrase.pronunciation || learnedPhrase.phrase.phrase_text}
+                     <p className="font-semibold text-lg mb-1 text-gray-800">
+                      {learnedPhrase.phrase.phrase_text}
                     </p>
-                    {learnedPhrase.phrase.pronunciation && (
-                      <p className="text-sm text-gray-500">
-                        {learnedPhrase.phrase.phrase_text}
-                      </p>
-                    )}
                   </div>
                   <div className="mb-3">
                     <p className="text-sm font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
