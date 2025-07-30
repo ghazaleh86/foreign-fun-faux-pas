@@ -5,11 +5,7 @@ import { Option } from "@/components/MultipleChoiceOptions";
 // Constants for game configuration
 export const STAGE_SIZE = 10;
 export const MAX_STAGES = 10;
-export const XP_PER_CORRECT = 10;
-export const XP_PER_HEART = 50;
-export const CORRECT_SCORE = 30;
-export const INCORRECT_SCORE = -20;
-export const STREAK_BONUS = 10;
+export const CORRECT_SCORE = 1;
 export const HEART_PENALTY = 1;
 export const MAX_HEARTS = 3;
 
@@ -164,22 +160,6 @@ export function getCurrentVoice(current: number): string {
   return voices[current % voices.length] || 'Ava';
 }
 
-export function computeSpeedBonus(timeTaken: number): number {
-  // Calculate speed bonus based on time taken
-  if (timeTaken <= 3) return 50;
-  if (timeTaken <= 5) return 30;
-  if (timeTaken <= 8) return 20;
-  if (timeTaken <= 12) return 10;
-  return 0;
-}
-
-export function getSpeedBonusXP(timeTaken: number): number {
-  // XP bonus for quick answers
-  if (timeTaken <= 3) return 15;
-  if (timeTaken <= 5) return 10;
-  if (timeTaken <= 8) return 5;
-  return 0;
-}
 
 export function randomWrongTaunt(opponentName: string): string {
   const taunts = [

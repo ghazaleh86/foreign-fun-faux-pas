@@ -135,7 +135,7 @@ const PhraseQuiz: React.FC<QuizProps> = ({ opponentName, opponentEmoji }) => {
                 phrase={phrase}
                 timer={timer}
                 stageSize={10} // STAGE_SIZE constant
-                maxStageScore={30} // Calculated based on stage size
+                maxStageScore={10} // 1 point per correct answer, 10 questions per stage
                 optionOrder={optionOrder}
                 selected={selected}
                 showAnswer={showAnswer}

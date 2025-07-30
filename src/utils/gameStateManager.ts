@@ -18,7 +18,7 @@ export type GameState = {
   } | null;
 };
 
-const GAME_STATE_KEY = "currentGameState_v1";
+const GAME_STATE_KEY = "currentGameState_v2";
 
 export function saveGameState(gameState: GameState["currentQuizSession"]) {
   if (gameState) {

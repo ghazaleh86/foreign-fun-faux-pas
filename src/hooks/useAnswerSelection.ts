@@ -1,8 +1,6 @@
 
 import { useCallback } from "react";
 import { 
-  computeSpeedBonus, 
-  getSpeedBonusXP, 
   randomWrongTaunt, 
   STAGE_SIZE
 } from "@/utils/quizHelpers";
