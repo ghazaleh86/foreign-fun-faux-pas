@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { STAGE_SIZE, MAX_STAGES } from "@/utils/quizHelpers";
 import { Phrase } from "@/types/quiz";
+import { calculateStars } from "@/utils/starSystem";
 
 interface UseStageProgressionProps {
   roundCorrect: number;
@@ -17,6 +18,7 @@ interface UseStageProgressionProps {
   setFeedback: (feedback: string | null) => void;
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setState: (state: "loading" | "quiz" | "finished") => void;
+  addStars: (stars: number) => void;
 }
 
 export function useStageProgression({
@@ -34,11 +36,19 @@ export function useStageProgression({
   setFeedback,
   setRoundCorrect,
   setState,
+  addStars,
 }: UseStageProgressionProps) {
   const handleAdvanceStage = useCallback(() => {
     console.log("🚀 useStageProgression: handleAdvanceStage called", { roundCorrect, stage });
     
-    // Assess if user passed (3+ correct)
+    // Calculate stars based on performance and award them
+    const stageStars = calculateStars(roundCorrect, STAGE_SIZE);
+    console.log(`⭐ useStageProgression: Stage completed with ${roundCorrect}/${STAGE_SIZE} correct, awarding ${stageStars} stars`);
+    
+    // Award stars for stage completion
+    addStars(stageStars);
+    
+    // Assess if user passed (3+ correct) 
     if (roundCorrect >= 3) {
       console.log("✅ useStageProgression: User passed, advancing to next stage");
       advanceStreak();

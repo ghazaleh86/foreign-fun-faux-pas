@@ -15,7 +15,7 @@ interface UseAnswerSelectionProps {
   setShowAnswer: (value: boolean) => void;
   getElapsed: () => number;
   optionOrder: Option[];
-  addXP: (xp: number) => void;
+  addStars: (stars: number) => void;
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setScore: (value: number | ((prev: number) => number)) => void;
   updateStageScores: (stage: number, value: number) => void;
@@ -42,7 +42,7 @@ export function useAnswerSelection({
   setShowAnswer,
   getElapsed,
   optionOrder,
-  addXP,
+  addStars,
   setRoundCorrect,
   setScore,
   updateStageScores,
@@ -71,15 +71,13 @@ export function useAnswerSelection({
     let timeTaken = getElapsed();
 
     if (optionOrder[idx].isCorrect) {
-      // +10 XP, plus speed bonus
-      const bonusXP = getSpeedBonusXP(timeTaken);
-      addXP(10 + bonusXP);
+      // No XP in new system
       setRoundCorrect((c) => c + 1);
       // Simple scoring: 1 point per correct answer
       setScore((s) => s + 1);
       updateStageScores(stage, 1);
       updateStageCorrectCounts(stage, 1);
-      setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
+      setFeedback(`🎉 Correct! Time: ${timeTaken}s`);
       
       // Mark phrase as learned immediately when answered correctly
       if (phrase) {
@@ -132,7 +130,7 @@ export function useAnswerSelection({
       console.log("🏁 useAnswerSelection: Completing stage - last question reached");
       setStageCompleted(true);
     }
-  }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addXP, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
+  }, [selected, setSelected, setShowAnswer, getElapsed, optionOrder, addStars, setRoundCorrect, setScore, updateStageScores, stage, setFeedback, phrase, markPhraseAsLearned, markPhraseAsPlayed, profile, loseHeart, updateOpponentScores, opponentName, current, currentStageStart, phrases.length, setStageCompleted]);
 
   return { handleSelect };
 }

@@ -27,7 +27,7 @@ const GameActionButton: React.FC<GameActionButtonProps> = ({ showOnHomePage = fa
     return null;
   }
 
-  const hasProgress = profile && (profile.xp > 0 || profile.current_streak > 0);
+  const hasProgress = profile && (profile.total_stars > 0 || profile.current_streak > 0);
   
   const handleGameAction = () => {
     console.log("🎮 GameActionButton: Button clicked, activeGame:", activeGame);

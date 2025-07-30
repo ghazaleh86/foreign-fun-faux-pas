@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import MascotAvatar from "./MascotAvatar";
 import { Trophy, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { calculateStars, getStarDisplay, calculateSpeedBadge, getSpeedBadgeDisplay } from "@/utils/starSystem";
 
 type StageSummaryProps = {
   stage: number;
@@ -37,6 +38,12 @@ const StageSummary: React.FC<StageSummaryProps> = ({
   // Calculate totals
   const playerTotal = stageScores.reduce((sum, score) => sum + score, 0);
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
+  
+  // Calculate stars and speed badge for this stage (assuming 10 questions per stage)
+  const stageStars = calculateStars(stageScore, 10);
+  const starDisplay = getStarDisplay(stageStars);
+  const speedBadge = calculateSpeedBadge(4); // Default to normal pace
+  const speedDisplay = getSpeedBadgeDisplay(speedBadge);
 
   return (
     <div className={`w-full max-w-md mx-auto ${isMobile ? 'h-screen pt-4 pb-24' : 'py-8 min-h-screen pb-8'} flex items-start justify-center`}>
@@ -60,15 +67,22 @@ const StageSummary: React.FC<StageSummaryProps> = ({
               Complete!
             </div>
 
-            {/* Result Badge - More prominent */}
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-base shadow-lg border-2 ${
-              playerWon 
-                ? "bg-green-50 text-green-700 border-green-200" 
-                : isTie 
-                ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                : "bg-blue-50 text-blue-700 border-blue-200"
-            }`}>
-              {playerWon ? "🏆 You won this stage!" : isTie ? "🤝 Stage tied!" : "💪 Good effort!"}
+            {/* Star Rating - More prominent */}
+            <div className="space-y-2">
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg shadow-lg border-2 ${
+                stageStars === 3 
+                  ? "bg-yellow-50 text-yellow-700 border-yellow-200" 
+                  : stageStars === 2 
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : "bg-blue-50 text-blue-700 border-blue-200"
+              }`}>
+                {starDisplay.emoji} {starDisplay.text}
+              </div>
+              
+              {/* Speed Badge */}
+              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium shadow-sm ${speedDisplay.color} bg-gray-50 border border-gray-200`}>
+                {speedDisplay.emoji} {speedDisplay.text}
+              </div>
             </div>
           </div>
 

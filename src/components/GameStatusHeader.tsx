@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 type HeaderProps = {
   hearts: number;
   maxHearts: number;
-  xp: number;
+  totalStars: number;
   currentStreak: number;
 };
 
 const GameStatusHeader: React.FC<HeaderProps> = ({
   hearts,
   maxHearts,
-  xp,
+  totalStars,
   currentStreak,
 }) => {
   return (
@@ -32,10 +32,10 @@ const GameStatusHeader: React.FC<HeaderProps> = ({
           />
         ))}
       </div>
-      {/* XP */}
+      {/* Stars */}
       <div className="flex items-center gap-1 text-yellow-600 font-bold text-lg">
         <Gem className="w-5 h-5 mr-1 text-amber-400" />
-        {xp} XP
+        {totalStars} ⭐
       </div>
       {/* Streak */}
       <div className="flex items-center gap-1 text-orange-600 font-black text-lg">

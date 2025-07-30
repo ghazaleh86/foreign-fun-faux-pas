@@ -11,7 +11,7 @@ interface QuizDataProviderProps {
 export function useQuizData({ phrases, profile }: QuizDataProviderProps) {
   const {
     profile: playerProfile,
-    addXP,
+    addStars,
     loseHeart,
     resetHearts,
     advanceStreak,
@@ -43,7 +43,7 @@ export function useQuizData({ phrases, profile }: QuizDataProviderProps) {
 
   return {
     profile: playerProfile,
-    addXP,
+    addStars,
     loseHeart,
     resetHearts,
     advanceStreak,

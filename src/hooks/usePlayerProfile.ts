@@ -58,10 +58,10 @@ export function usePlayerProfile() {
     setLoading(false);
   }, [user]);
 
-  // Grant XP, with bonus (optionally for speed)
-  const addXP = useCallback(async (baseXP: number) => {
+  // Grant stars
+  const addStars = useCallback(async (stars: number) => {
     if (!profile) return;
-    await updateProfile({ xp: profile.xp + baseXP });
+    await updateProfile({ total_stars: profile.total_stars + stars });
   }, [profile, updateProfile]);
 
   // Lose a heart
@@ -111,14 +111,14 @@ export function usePlayerProfile() {
   const memoizedReturn = useMemo(() => ({
     profile,
     loading,
-    addXP,
+    addStars,
     loseHeart,
     gainHeart,
     resetHearts,
     advanceStreak,
     refresh: fetchProfile,
     updateProfile,
-  }), [profile, loading, addXP, loseHeart, gainHeart, resetHearts, advanceStreak, fetchProfile, updateProfile]);
+  }), [profile, loading, addStars, loseHeart, gainHeart, resetHearts, advanceStreak, fetchProfile, updateProfile]);
 
   return memoizedReturn;
 }

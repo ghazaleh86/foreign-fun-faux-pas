@@ -87,7 +87,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
   // Use extracted data management hook
   const {
     profile,
-    addXP,
+    addStars,
     loseHeart,
     resetHearts,
     advanceStreak,
@@ -134,7 +134,7 @@ const QuizLogic: React.FC<QuizLogicProps> = ({
     setShowAnswer,
     getElapsed,
     optionOrder,
-    addXP,
+    addStars,
     setRoundCorrect,
     setScore,
     updateStageScores,

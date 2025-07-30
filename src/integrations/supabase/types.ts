@@ -92,8 +92,8 @@ export type Database = {
           last_played: string | null
           longest_streak: number
           max_hearts: number
+          total_stars: number | null
           username: string | null
-          xp: number
         }
         Insert: {
           created_at?: string | null
@@ -104,8 +104,8 @@ export type Database = {
           last_played?: string | null
           longest_streak?: number
           max_hearts?: number
+          total_stars?: number | null
           username?: string | null
-          xp?: number
         }
         Update: {
           created_at?: string | null
@@ -116,8 +116,8 @@ export type Database = {
           last_played?: string | null
           longest_streak?: number
           max_hearts?: number
+          total_stars?: number | null
           username?: string | null
-          xp?: number
         }
         Relationships: []
       }

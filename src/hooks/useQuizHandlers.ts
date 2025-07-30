@@ -12,7 +12,7 @@ interface UseQuizHandlersProps {
   setShowAnswer: (value: boolean) => void;
   getElapsed: () => number;
   optionOrder: Option[];
-  addXP: (xp: number) => void;
+  addStars: (stars: number) => void;
   setRoundCorrect: (value: number | ((prev: number) => number)) => void;
   setScore: (value: number | ((prev: number) => number)) => void;
   updateStageScores: (stage: number, value: number) => void;
@@ -49,7 +49,7 @@ export function useQuizHandlers(props: UseQuizHandlersProps) {
     setShowAnswer: props.setShowAnswer,
     getElapsed: props.getElapsed,
     optionOrder: props.optionOrder,
-    addXP: props.addXP,
+    addStars: props.addStars,
     setRoundCorrect: props.setRoundCorrect,
     setScore: props.setScore,
     updateStageScores: props.updateStageScores,
@@ -93,6 +93,7 @@ export function useQuizHandlers(props: UseQuizHandlersProps) {
     setFeedback: props.setFeedback,
     setRoundCorrect: props.setRoundCorrect,
     setState: props.setState,
+    addStars: props.addStars,
   });
 
   const { handlePlayAudio } = useAudioPlaybackControls({

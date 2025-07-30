@@ -2,6 +2,8 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { calculateStars } from "@/utils/starSystem";
+import { STAGE_SIZE } from "@/utils/quizHelpers";
 import {
   GameSummaryMascot,
   GameSummaryPerformance,
@@ -34,6 +36,11 @@ const GameSummary: React.FC<GameSummaryProps> = ({
   const opponentTotal = opponentScores.reduce((sum, score) => sum + score, 0);
   const playerWon = playerTotal > opponentTotal;
   const isTie = playerTotal === opponentTotal;
+  
+  // Calculate total stars earned based on stage performance
+  const totalStarsEarned = stageScores.reduce((totalStars, stageScore) => {
+    return totalStars + calculateStars(stageScore, STAGE_SIZE);
+  }, 0);
 
   return (
     <div className={`w-full max-w-lg mx-auto ${isMobile ? 'h-screen pt-4 pb-40' : 'py-8 min-h-screen pb-8'} flex items-start justify-center`}>
@@ -45,7 +52,8 @@ const GameSummary: React.FC<GameSummaryProps> = ({
             score={score} 
             total={total} 
             percent={percent} 
-            playerTotal={playerTotal} 
+            playerTotal={playerTotal}
+            totalStarsEarned={totalStarsEarned}
           />
           <GameSummaryBattleResults
             playerTotal={playerTotal}
