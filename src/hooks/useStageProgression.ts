@@ -53,14 +53,16 @@ export function useStageProgression({
       console.log("✅ useStageProgression: User passed, advancing to next stage");
       advanceStreak();
       
-      // Check if this was the final stage - use MAX_STAGES instead of calculating from phrases
-      const isGameComplete = stage + 1 >= MAX_STAGES;
+      // Check if this was the final stage based on actual phrase availability
+      const totalStages = Math.ceil(phrases.length / STAGE_SIZE);
+      const isGameComplete = stage + 1 >= totalStages;
       
       console.log("🏁 useStageProgression: Game completion check:", {
         currentStage: stage,
         maxStages: MAX_STAGES,
         isGameComplete,
-        phrasesLength: phrases.length
+        phrasesLength: phrases.length,
+        totalStages
       });
       
       if (isGameComplete) {
@@ -72,8 +74,9 @@ export function useStageProgression({
         setShowStagePreview(false);
         setStage((s) => s + 1);
         setStageCompleted(false);
-        // FIXED: Use STAGE_SIZE for consistency with stage management
-        setCurrent((stage + 1) * STAGE_SIZE);
+        // Set current with bounds checking to prevent going beyond available phrases
+        const nextStageStart = (stage + 1) * STAGE_SIZE;
+        setCurrent(Math.min(nextStageStart, phrases.length - 1));
         resetQuestionState();
         refreshProfile();
       }
@@ -84,8 +87,9 @@ export function useStageProgression({
       setStageCompleted(false);
       resetQuestionState();
       setFeedback("You need at least 3 correct to pass. Try again!");
-      // FIXED: Use STAGE_SIZE for consistency with stage management
-      setCurrent(stage * STAGE_SIZE);
+      // Reset to stage start with bounds checking
+      const stageStart = stage * STAGE_SIZE;
+      setCurrent(Math.min(stageStart, phrases.length - 1));
       setRoundCorrect(0);
       refreshProfile();
     }

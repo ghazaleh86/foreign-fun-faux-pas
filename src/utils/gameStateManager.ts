@@ -42,7 +42,17 @@ export function clearGameState() {
 export function hasActiveGame(): boolean {
   const state = getGameState();
   console.log("🔍 gameStateManager: Checking hasActiveGame, state:", state);
-  const hasActive = !!(state && state.phrases.length > 0 && state.current < state.phrases.length);
+  
+  // Validate state has required properties and is within bounds
+  const hasActive = !!(
+    state && 
+    state.phrases.length > 0 && 
+    state.current < state.phrases.length &&
+    state.current >= 0 &&
+    state.stage >= 0 &&
+    state.stage < Math.ceil(state.phrases.length / 10) // 10 is STAGE_SIZE
+  );
+  
   console.log("🔍 gameStateManager: hasActiveGame result:", hasActive);
   return hasActive;
 }

@@ -28,9 +28,9 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
   opponentEmoji,
   onPlayAudio,
 }) => {
-  // Calculate stage-relative position
-  const stagePosition = current - currentStageStart + 1;
-  const stageQuestionsCount = Math.min(stageSize, phrasesLength - currentStageStart);
+  // Calculate stage-relative position with bounds checking
+  const stagePosition = Math.max(1, Math.min(current - currentStageStart + 1, stageSize));
+  const stageQuestionsCount = Math.max(1, Math.min(stageSize, phrasesLength - currentStageStart));
   
   console.log("🎯 QuizHeader: Phrase position calculation:", {
     current,
