@@ -23,7 +23,7 @@ const GameSummaryScore: React.FC<GameSummaryScoreProps> = ({ score, total, perce
         <div className="text-xl font-bold text-gray-700">Correct Answers: {safePercent}%</div>
         <div className="text-sm text-gray-600 mt-3">
           <div>• Each correct answer = 1 point</div>
-          <div>• You scored {safeScore} points out of {safeTotal} questions</div>
+          <div>• You got {safeScore} correct answers out of {safeTotal} questions</div>
         </div>
       </div>
     </div>

@@ -75,10 +75,10 @@ export function useAnswerSelection({
       const bonusXP = getSpeedBonusXP(timeTaken);
       addXP(10 + bonusXP);
       setRoundCorrect((c) => c + 1);
-      const bonus = computeSpeedBonus(timeTaken);
-      setScore((s) => s + bonus);
-      updateStageScores(stage, bonus);
-      updateStageCorrectCounts(stage, 1); // Track simple correct count
+      // Simple scoring: 1 point per correct answer
+      setScore((s) => s + 1);
+      updateStageScores(stage, 1);
+      updateStageCorrectCounts(stage, 1);
       setFeedback(`🎉 Correct! (+10 XP${bonusXP ? ` +${bonusXP} bonus` : ""}) Time: ${timeTaken}s`);
       
       // Mark phrase as learned immediately when answered correctly
