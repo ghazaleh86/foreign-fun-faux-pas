@@ -24,11 +24,8 @@ const GameSummaryScore: React.FC<GameSummaryScoreProps> = ({ score, total, perce
           {safeStarsEarned} ⭐
         </div>
         <div className="text-xl font-bold text-gray-700">Stars Earned This Game!</div>
-        <div className="text-sm text-gray-600 mt-3">
-          <div>• {safeScore} / {safeTotal} correct answers ({safePercent}%)</div>
-          <div>• ⭐⭐⭐ = 90%+ correct</div>
-          <div>• ⭐⭐ = 70%+ correct</div> 
-          <div>• ⭐ = 50%+ correct</div>
+        <div className="text-lg text-gray-600 mt-2">
+          {safeScore} / {safeTotal} correct ({safePercent}%)
         </div>
       </div>
     </div>
