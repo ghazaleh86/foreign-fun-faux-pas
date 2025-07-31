@@ -25,7 +25,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export function useAudioPlayback(triggerKey: any[], text: string, language: string, voiceId: string, shouldPlay: boolean) {
+export function useAudioPlayback(triggerKey: any[], text: string, pronunciation: string | undefined, language: string, voiceId: string, shouldPlay: boolean) {
   // guarding against duplicate play in one step
   const audioPlayedRef = useRef<boolean>(false);
   const [userHasInteracted, setUserHasInteracted] = useState(globalUserHasInteracted);
@@ -84,7 +84,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
         // Use the enhanced ElevenLabs TTS with native voice optimization
         await playWithElevenLabsTTS({ 
           text, 
-          pronunciation: text, // Same as text since we don't have separate pronunciation here
+          pronunciation,
           language: normalizedLanguage,
           voiceId: optimalVoice,
           ...languageSettings,
