@@ -10,14 +10,15 @@ function getOptimalTtsText(text: string, pronunciation: string | undefined, lang
   const normalizedLanguage = language.toLowerCase();
   
   // Languages that work better with romanized pronunciation for ElevenLabs
-  const preferRomanization = ['korean', 'japanese', 'chinese', 'arabic', 'hindi', 'bengali', 'tamil', 'thai', 'vietnamese'];
+  // Chinese should use native script for authentic pronunciation
+  const preferRomanization = ['korean', 'japanese'];
   
   if (preferRomanization.includes(normalizedLanguage) && pronunciation && pronunciation.trim()) {
     console.log(`🎵 Using romanized pronunciation for ${normalizedLanguage}:`, pronunciation.slice(0, 30));
     return pronunciation;
   }
   
-  // For other languages, prefer native script
+  // For Chinese and other languages, prefer native script for authentic pronunciation
   console.log(`🎵 Using native text for ${normalizedLanguage}:`, text.slice(0, 30));
   return text;
 }
