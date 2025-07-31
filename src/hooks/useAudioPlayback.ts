@@ -84,6 +84,7 @@ export function useAudioPlayback(triggerKey: any[], text: string, language: stri
         // Use the enhanced ElevenLabs TTS with native voice optimization
         await playWithElevenLabsTTS({ 
           text, 
+          pronunciation: text, // Same as text since we don't have separate pronunciation here
           language: normalizedLanguage,
           voiceId: optimalVoice,
           ...languageSettings,

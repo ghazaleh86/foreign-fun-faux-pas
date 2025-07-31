@@ -51,7 +51,8 @@ export function useAudioPlaybackControls({ phrase }: UseAudioPlaybackControlsPro
       // Try ElevenLabs first
       const { playWithElevenLabsTTS } = await import("@/lib/elevenlabsTtsClient");
       await playWithElevenLabsTTS({ 
-        text: ttsText, 
+        text: phrase.phrase_text,
+        pronunciation: phrase.pronunciation, 
         language,
         voiceId: nativeVoiceId,
         ...languageSettings,

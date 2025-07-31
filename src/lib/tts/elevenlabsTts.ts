@@ -1,4 +1,3 @@
-
 import { validateTtsTextInput } from '../validateTtsInput';
 import { preprocessTextForTTS } from './textPreprocessing';
 import { isMobileDevice, initializeAudioContext } from './audioUtils';
@@ -6,8 +5,26 @@ import { audioManager } from './audioManager';
 
 const EDGE_URL = "https://ayfmkmnecfjyhdutxfjp.supabase.co/functions/v1/elevenlabs-tts";
 
+// Smart text selection for optimal pronunciation
+function getOptimalTtsText(text: string, pronunciation: string | undefined, language: string): string {
+  const normalizedLanguage = language.toLowerCase();
+  
+  // Languages that work better with romanized pronunciation for ElevenLabs
+  const preferRomanization = ['korean', 'japanese', 'chinese', 'arabic', 'hindi', 'bengali', 'tamil', 'thai', 'vietnamese'];
+  
+  if (preferRomanization.includes(normalizedLanguage) && pronunciation && pronunciation.trim()) {
+    console.log(`🎵 Using romanized pronunciation for ${normalizedLanguage}:`, pronunciation.slice(0, 30));
+    return pronunciation;
+  }
+  
+  // For other languages, prefer native script
+  console.log(`🎵 Using native text for ${normalizedLanguage}:`, text.slice(0, 30));
+  return text;
+}
+
 export async function playWithElevenLabsTTS({ 
   text, 
+  pronunciation,
   language = "english",
   voiceId, 
   stability,
@@ -15,7 +32,8 @@ export async function playWithElevenLabsTTS({
   style,
   useSpeakerBoost = true
 }: { 
-  text: string, 
+  text: string,
+  pronunciation?: string,
   language?: string,
   voiceId?: string,
   stability?: number,
@@ -28,7 +46,10 @@ export async function playWithElevenLabsTTS({
 
   // Normalize language to lowercase for consistent voice selection
   const normalizedLanguage = language.toLowerCase();
-  const processedText = preprocessTextForTTS(text, normalizedLanguage);
+  
+  // Use smart text selection for optimal pronunciation
+  const optimalText = getOptimalTtsText(text, pronunciation, normalizedLanguage);
+  const processedText = preprocessTextForTTS(optimalText, normalizedLanguage);
 
   // Stop any existing audio before starting new one
   audioManager.prepareForNewAudio();
@@ -40,7 +61,10 @@ export async function playWithElevenLabsTTS({
 
   try {
     console.log('🎵 ElevenLabs API Call:', {
-      text: processedText.slice(0, 30),
+      originalText: text.slice(0, 30),
+      pronunciation: pronunciation?.slice(0, 30),
+      optimalText: optimalText.slice(0, 30),
+      processedText: processedText.slice(0, 30),
       language: normalizedLanguage,
       voiceId,
       stability,

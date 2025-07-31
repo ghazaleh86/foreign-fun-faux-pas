@@ -385,7 +385,19 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errText = await response.text();
-      return new Response(JSON.stringify({ error: errText }), { status: 500, headers: corsHeaders });
+      console.error(`[TTS] ❌ ElevenLabs API Error: ${response.status} - ${errText}`);
+      return new Response(JSON.stringify({ 
+        error: `ElevenLabs API Error (${response.status}): ${errText}`,
+        details: {
+          status: response.status,
+          language: normalizedLanguage,
+          voiceId: selectedVoiceId,
+          model: selectedModel
+        }
+      }), { 
+        status: response.status >= 500 ? 500 : 400, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
 
     const arrayBuffer = await response.arrayBuffer();
