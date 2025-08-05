@@ -51,6 +51,11 @@ const About = () => {
                 getting pronunciation right across 20 languages is way harder than expected.
               </p>
               <p>
+                Still an ongoing process too - constantly fixing phrase translations and literal 
+                meanings to make sure they actually make sense across all the different languages. 
+                Turns out idioms don't translate as cleanly as you'd hope.
+              </p>
+              <p>
                 The result? 379 phrases, one energetic chipmunk, and way more TypeScript than 
                 I originally planned for.
               </p>
