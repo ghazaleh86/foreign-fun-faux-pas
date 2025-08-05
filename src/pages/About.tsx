@@ -16,8 +16,19 @@ const About = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             About Guess That Phrase
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
             A random game idea turned into a phrase-guessing adventure with Chippy.
+          </p>
+          <p className="text-sm text-gray-500">
+            Built by{" "}
+            <a 
+              href="https://ghaz.work" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-pink-600 hover:text-pink-700 font-medium"
+            >
+              Ghazaleh Somerville
+            </a>
           </p>
         </div>
 
