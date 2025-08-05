@@ -26,7 +26,7 @@ const About = () => {
           <CardContent className="p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Code2 className="text-blue-500" />
-              The Vibe Coding Journey
+              The vibe coding journey
             </h2>
             <div className="prose prose-lg text-gray-700 space-y-4">
               <p>
@@ -72,7 +72,7 @@ const About = () => {
           <CardContent className="p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Globe className="text-green-500" />
-              The Tech Stack That Made It Possible
+              The tech stack that made it possible
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <Badge variant="outline" className="p-3 text-center justify-center">
@@ -101,7 +101,7 @@ const About = () => {
         <Card className="border-pink-200 shadow-lg bg-gradient-to-r from-pink-50 to-purple-50">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Ready to Play?
+              Ready to play?
             </h2>
             <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
               Jump in and see how many phrases you can guess with Chippy's help!
