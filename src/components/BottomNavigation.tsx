@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, BookOpen, Home } from "lucide-react";
+import { Gamepad2, BookOpen, Info } from "lucide-react";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 import { getLearnedPhrases } from "@/utils/learnedPhrases";
 import { hasActiveGame } from "@/utils/gameStateManager";
@@ -70,6 +70,12 @@ const BottomNavigation = () => {
       icon: BookOpen,
       isActive: currentPath === "/learned",
       badge: learnedPhrasesCount,
+    },
+    {
+      path: "/about",
+      label: "About",
+      icon: Info,
+      isActive: currentPath === "/about",
     },
   ];
 

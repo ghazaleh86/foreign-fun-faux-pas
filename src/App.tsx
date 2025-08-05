@@ -9,6 +9,7 @@ import BottomNavigation from "./components/BottomNavigation";
 import GameActionButton from "./components/GameActionButton";
 import Index from "./pages/Index";
 import LearnedPhrases from "./pages/LearnedPhrases";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import { audioManager } from "@/lib/tts/audioManager";
 
@@ -34,6 +35,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/learned" element={<LearnedPhrases />} />
+          <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
