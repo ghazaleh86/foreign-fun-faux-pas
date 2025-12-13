@@ -4,7 +4,7 @@ import { Phrase, State } from "@/types/quiz";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
 import { selectWeightedPhrases } from "@/utils/weightedPhraseSelection";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchPhrases } from "@/lib/phraseRepository";
+import { fetchPhrases as fetchLocalPhrases } from "@/lib/phraseRepository";
 
 export function useQuizState() {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -19,7 +19,7 @@ export function useQuizState() {
   // Fetch phrases on mount with weighted selection and rotation logic
   // Re-fetch when selectedLanguage changes
   useEffect(() => {
-    const fetchPhrases = async () => {
+    const loadPhrases = async () => {
       setState("loading");
       let playedIds: string[] = [];
       try {
@@ -29,7 +29,7 @@ export function useQuizState() {
       }
 
       try {
-        const all = await fetchPhrases(selectedLanguage);
+        const all = await fetchLocalPhrases(selectedLanguage);
         console.log(`📦 Local phrases loaded: ${all.length}`);
 
         // Filter out phrases that have been played before
@@ -58,7 +58,7 @@ export function useQuizState() {
         setFeedback("Could not load local phrases. Please try again.");
       }
     };
-    fetchPhrases();
+    loadPhrases();
   }, [selectedLanguage]); // Re-fetch when language changes
 
   const markPhraseAsPlayed = (phraseId: string) => {
