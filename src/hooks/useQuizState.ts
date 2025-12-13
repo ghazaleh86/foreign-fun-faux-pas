@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Phrase, State } from "@/types/quiz";
 import { getPlayedPhraseIds, setPlayedPhraseIds } from "@/utils/playedPhraseIds";
 import { selectWeightedPhrases } from "@/utils/weightedPhraseSelection";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fetchPhrases } from "@/lib/phraseRepository";
 
 export function useQuizState() {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
@@ -28,50 +28,34 @@ export function useQuizState() {
         playedIds = []; 
       }
 
-      // Build query with optional language filter
-      let query = supabase
-        .from("phrases")
-        .select("*")
-        .order("difficulty", { ascending: true })
-        .order("created_at", { ascending: false });
+      try {
+        const all = await fetchPhrases(selectedLanguage);
+        console.log(`📦 Local phrases loaded: ${all.length}`);
 
-      // Apply language filter if a specific language is selected
-      if (selectedLanguage) {
-        query = query.eq("language", selectedLanguage);
-        console.log(`🌍 Filtering phrases by language: ${selectedLanguage}`);
-      }
-
-      const { data, error } = await query;
-
-      if (!data || error) {
-        setPhrases([]);
-        setState("quiz");
-        setFeedback("Error fetching phrases. Please try again.");
-      } else {
-        console.log(`📊 Total phrases in database: ${data.length}`);
-        
         // Filter out phrases that have been played before
-        const unplayedPhrases = data.filter((p: Phrase) => !playedIds.includes(p.id));
-        
+        const unplayedPhrases = all.filter((p: Phrase) => !playedIds.includes(p.id));
+
         if (unplayedPhrases.length === 0) {
           // All phrases have been played - clear the played list and start fresh
           setPlayedPhraseIds([]);
           console.log("All phrases played! Starting fresh with weighted selection.");
-          
-          // Apply weighted selection to all phrases
-          const weightedPhrases = selectWeightedPhrases(data as Phrase[], Math.min(50, data.length));
+
+          const weightedPhrases = selectWeightedPhrases(all as Phrase[], Math.min(50, all.length));
           setPhrases(weightedPhrases);
         } else {
-          console.log(`Found ${unplayedPhrases.length} unplayed phrases out of ${data.length} total.`);
-          
-          // Apply weighted selection to unplayed phrases
           const weightedUnplayedPhrases = selectWeightedPhrases(
-            unplayedPhrases as Phrase[], 
+            unplayedPhrases as Phrase[],
             Math.min(50, unplayedPhrases.length)
           );
           setPhrases(weightedUnplayedPhrases);
         }
+
         setState("quiz");
+      } catch (e) {
+        console.error("Error loading local phrases:", e);
+        setPhrases([]);
+        setState("quiz");
+        setFeedback("Could not load local phrases. Please try again.");
       }
     };
     fetchPhrases();

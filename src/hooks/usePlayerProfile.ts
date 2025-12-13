@@ -1,62 +1,63 @@
 
 import { useEffect, useCallback, useState, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useSupabaseUser } from "@/hooks/useSupabaseUser";
 
 /**
  * Loads/updates player profile (hearts, xp, streak, username, last_played, etc)
  */
 export function usePlayerProfile() {
-  const user = useSupabaseUser();
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch or initialize profile
+  const STORAGE_KEY = "localPlayerProfile_v1";
+
+  const defaultProfile = useCallback(() => {
+    return {
+      id: "local",
+      username: "Player",
+      total_stars: 0,
+      hearts: 3,
+      max_hearts: 3,
+      current_streak: 0,
+      longest_streak: 0,
+      last_played: null as string | null,
+      created_at: new Date().toISOString(),
+    };
+  }, []);
+
   const fetchProfile = useCallback(async () => {
-    if (!user) {
-      setProfile(null);
-      return;
-    }
     setLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-
-    // If no profile found, insert a new one
-    if (!data && user.id) {
-      const { data: newProfile, error: insertErr } = await supabase
-        .from("profiles")
-        .insert({ id: user.id })
-        .select("*")
-        .single();
-      setProfile(newProfile);
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setProfile(JSON.parse(stored));
+      } else {
+        const p = defaultProfile();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+        setProfile(p);
+      }
+    } catch {
+      const p = defaultProfile();
+      setProfile(p);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setProfile(data);
-    setLoading(false);
-  }, [user]);
+  }, [defaultProfile]);
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  // Methods to increment XP, hearts, streak, etc - memoized to prevent re-renders
   const updateProfile = useCallback(async (changes: any) => {
-    if (!user) return;
+    if (!profile) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(changes)
-      .eq("id", user.id)
-      .select("*")
-      .single();
-    setProfile(data);
-    setLoading(false);
-  }, [user]);
+    try {
+      const next = { ...profile, ...changes };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setProfile(next);
+    } finally {
+      setLoading(false);
+    }
+  }, [profile]);
 
   // Grant stars
   const addStars = useCallback(async (stars: number) => {

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { languageToFlag } from '@/utils/languageToFlag';
-import { supabase } from '@/integrations/supabase/client';
 import { Globe, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { fetchLanguageCounts } from "@/lib/phraseRepository";
 
 interface LanguageSelectionProps {
   onLanguageSelected: () => void;
@@ -23,30 +23,7 @@ export function LanguageSelection({ onLanguageSelected }: LanguageSelectionProps
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const { data, error } = await supabase
-          .from('phrases')
-          .select('language')
-          .order('language');
-
-        if (error) {
-          console.error('Error fetching languages:', error);
-          return;
-        }
-
-        // Count phrases per language
-        const languageCounts = data.reduce((acc: Record<string, number>, row) => {
-          acc[row.language] = (acc[row.language] || 0) + 1;
-          return acc;
-        }, {});
-
-        // Convert to array and sort by count (descending) then alphabetically
-        const languageArray = Object.entries(languageCounts)
-          .map(([language, count]) => ({ language, count }))
-          .sort((a, b) => {
-            if (b.count !== a.count) return b.count - a.count;
-            return a.language.localeCompare(b.language);
-          });
-
+        const languageArray = await fetchLanguageCounts();
         setLanguages(languageArray);
       } catch (error) {
         console.error('Error processing languages:', error);
