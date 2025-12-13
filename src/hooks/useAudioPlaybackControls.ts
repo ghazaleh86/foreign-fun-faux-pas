@@ -5,6 +5,7 @@ import {
   getLanguageVoiceSettings
 } from "@/utils/quizHelpers";
 import { Phrase } from "@/types/quiz";
+import { getTtsProvider, setTtsProvider } from "@/utils/ttsPreferences";
 
 // Check if we're on a mobile device
 function isMobileDevice(): boolean {
@@ -48,19 +49,29 @@ export function useAudioPlaybackControls({ phrase }: UseAudioPlaybackControlsPro
     }
     
     try {
-      // Try ElevenLabs first
+      const provider = getTtsProvider();
+
+      if (provider === "browser") {
+        const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
+        await playWithBrowserTTS(ttsText, language);
+        console.log("✅ Manual browser TTS succeeded");
+        return;
+      }
+
+      // Try ElevenLabs (only if user selected it)
       const { playWithElevenLabsTTS } = await import("@/lib/elevenlabsTtsClient");
-      await playWithElevenLabsTTS({ 
+      await playWithElevenLabsTTS({
         text: phrase.phrase_text,
-        pronunciation: phrase.pronunciation, 
+        pronunciation: phrase.pronunciation,
         language,
         voiceId: nativeVoiceId,
         ...languageSettings,
-        useSpeakerBoost: true
+        useSpeakerBoost: true,
       });
-      console.log('✅ Manual ElevenLabs TTS succeeded');
+      console.log("✅ Manual ElevenLabs TTS succeeded");
     } catch (elevenLabsError) {
-      console.log('🔄 Manual ElevenLabs failed, trying browser TTS:', elevenLabsError);
+      console.log('🔄 Manual ElevenLabs failed, switching to browser TTS:', elevenLabsError);
+      setTtsProvider("browser");
       
       try {
         // Import enhanced browser TTS with retry logic

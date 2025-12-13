@@ -12,6 +12,8 @@ import { languageToFlag } from '@/utils/languageToFlag';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { clearGameState } from '@/utils/gameStateManager';
+import { getTtsProvider, setTtsProvider, type TtsProvider } from "@/utils/ttsPreferences";
+import { toast } from "@/components/ui/sonner";
 
 interface LanguageInfo {
   language: string;
@@ -67,6 +69,14 @@ export function LanguageToggle() {
     window.location.reload();
   };
 
+  const handleTtsChange = (provider: TtsProvider) => {
+    setTtsProvider(provider);
+    toast(
+      provider === "browser" ? "Audio: Device voice (no ElevenLabs)" : "Audio: ElevenLabs",
+      { description: provider === "browser" ? "Using your browser/device voice." : "Will try ElevenLabs first, then fallback." }
+    );
+  };
+
   const getCurrentDisplayText = () => {
     if (!selectedLanguage) return 'All Languages';
     return selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1);
@@ -104,6 +114,23 @@ export function LanguageToggle() {
           <span>All Languages</span>
         </DropdownMenuItem>
         
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={() => handleTtsChange("browser")}
+          className={`cursor-pointer ${getTtsProvider() === "browser" ? "bg-blue-50" : ""}`}
+        >
+          <span className="mr-3 text-base">🗣️</span>
+          <span>Audio: Device voice</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleTtsChange("elevenlabs")}
+          className={`cursor-pointer ${getTtsProvider() === "elevenlabs" ? "bg-blue-50" : ""}`}
+        >
+          <span className="mr-3 text-base">🎙️</span>
+          <span>Audio: ElevenLabs</span>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         
         {languages.map(({ language, count }) => (
