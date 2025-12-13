@@ -47,7 +47,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
 
   return (
     <div className={`w-full max-w-md mx-auto ${isMobile ? 'h-screen pt-4 pb-24' : 'py-8 min-h-screen pb-8'} flex items-start justify-center`}>
-      <Card className="w-full bg-white border-0 overflow-hidden shadow-xl">
+      <Card className="w-full bg-white/85 overflow-hidden">
         {/* Main Content */}
         <CardContent className={`${isMobile ? 'px-4 py-4' : 'px-6 py-6'} text-center relative space-y-6`}>
           {/* Mascot - Bigger and more prominent */}
@@ -59,9 +59,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
 
           {/* Stage Info */}
           <div className="relative z-10 space-y-3">
-            <h1 className="text-2xl font-black tracking-tight text-gray-900">
-              STAGE {stage + 1}
-            </h1>
+            <h1 className="game-title text-xl text-gray-900">STAGE {stage + 1}</h1>
             <div className="text-sm font-semibold text-gray-600 flex items-center justify-center gap-2">
               <Trophy className="w-4 h-4 text-amber-500" />
               Complete!
@@ -69,7 +67,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
 
             {/* Star Rating - More prominent */}
             <div className="space-y-2">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg shadow-lg border-2 ${
+              <div className={`inline-flex items-center gap-2 px-4 py-2 font-bold text-lg border-4 border-black game-panel-inset ${
                 stageStars === 3 
                   ? "bg-yellow-50 text-yellow-700 border-yellow-200" 
                   : stageStars === 2 
@@ -148,7 +146,7 @@ const StageSummary: React.FC<StageSummaryProps> = ({
               onClick={onAdvanceStage}
               variant="primary-cta"
               size="lg"
-              className="w-full min-h-[56px] text-lg font-bold px-8 shadow-lg"
+              className="btn-block btn-block-green w-full min-h-[56px] px-8"
             >
               <span>Continue journey</span>
               <ArrowRight className="ml-3 w-5 h-5" />

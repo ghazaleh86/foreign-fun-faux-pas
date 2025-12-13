@@ -47,31 +47,29 @@ const QuizHeader: React.FC<QuizHeaderProps> = ({
         <LanguageToggle />
       </div>
       
-      <CardTitle className="flex flex-col items-center justify-center gap-2 text-gradient bg-gradient-to-r from-pink-500 via-fuchsia-500 to-yellow-400 bg-clip-text text-transparent text-2xl font-bold text-center">
+      <CardTitle className="flex flex-col items-center justify-center gap-2 text-black text-center">
         <div className="flex items-center justify-center gap-2 w-full">
           <span className="text-2xl">{opponentEmoji}</span>
-          <span>
-            Stage {stage + 1} of {totalStages} – Phrase {stagePosition} of {stageQuestionsCount}
+          <span className="game-title text-sm md:text-base">
+            STAGE {stage + 1}/{totalStages} · Q {stagePosition}/{stageQuestionsCount}
           </span>
         </div>
       </CardTitle>
       {phrase && (
         <div className="flex flex-col items-center justify-center mt-1">
-          <div className="flex gap-1 mb-2 scale-90">
-            <div className="h-2 w-2 rounded-full bg-yellow-400 animate-bounce [animation-delay:0.1s]" />
-            <div className="h-3 w-2 rounded-full bg-pink-400 animate-bounce [animation-delay:0.2s]" />
-            <div className="h-4 w-2 rounded-full bg-fuchsia-400 animate-bounce [animation-delay:0.3s]" />
+          <div className="flex gap-1 mb-2 scale-90 opacity-80">
+            <div className="h-2 w-2 bg-yellow-300 animate-bounce [animation-delay:0.1s]" />
+            <div className="h-2 w-2 bg-pink-300 animate-bounce [animation-delay:0.2s]" />
+            <div className="h-2 w-2 bg-fuchsia-300 animate-bounce [animation-delay:0.3s]" />
           </div>
-          <div className="text-lg font-semibold tracking-wide mb-0">
-            <span>
-              <span className="italic">{phrase.phrase_text}</span>
-            </span>
+          <div className="text-lg md:text-xl font-bold tracking-wide mb-0">
+            <span className="game-title normal-case tracking-normal">{phrase.phrase_text}</span>
           </div>
-          <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+          <div className="font-pixel text-[10px] uppercase tracking-wide text-black/70 mt-1 flex items-center gap-2">
             <span className="text-xl font-emoji" title={phrase.language} style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>
               {languageToFlag(phrase.language)}
             </span>
-            <span className="font-medium">{phrase.language}</span>
+            <span>{phrase.language}</span>
           </div>
         </div>
       )}

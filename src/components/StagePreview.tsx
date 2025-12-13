@@ -14,17 +14,16 @@ type StagePreviewProps = {
   profile: any; // Player profile with hearts, xp, streak
 };
 
-const pastelGradients = [
-  "from-[#FFEFBA] via-[#FFF] to-[#B1FFCE]",  // yellow-green
-  "from-[#F8D3FF] via-[#FFA3CF] to-[#F9FFC2]", // pink-yellow
-  "from-[#FAFFD1] via-[#A1FFCE] to-[#FAFFD1]", // light green
+const biomePanels = [
+  "bg-white/85", // plains
+  "bg-white/85", // forest
+  "bg-white/85", // desert
 ];
 
-const getStageColor = (stage: number) =>
-  pastelGradients[stage % pastelGradients.length];
+const getStageColor = (stage: number) => biomePanels[stage % biomePanels.length];
 
 const infoCard =
-  "flex flex-col items-center px-6 py-4 rounded-2xl shadow-md bg-white/60 border-2 font-bold";
+  "flex flex-col items-center px-6 py-4 game-panel-inset bg-white/70 border-4 border-black font-pixel uppercase tracking-wide";
 
 const StagePreview: React.FC<StagePreviewProps> = ({
   stage,
@@ -37,7 +36,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
 }) => {
   const isFirstStage = stage === 0;
   return (
-    <div className={`max-w-xl w-full mx-auto rounded-[40px] shadow-2xl p-0 relative animate-scale-in bg-gradient-to-br ${getStageColor(stage)} h-[500px] flex flex-col justify-between`}>
+    <div className={`max-w-xl w-full mx-auto game-panel p-0 relative animate-scale-in ${getStageColor(stage)} h-[500px] flex flex-col justify-between`}>
       {/* Removed decorative dots for cleaner look */}
 
       <div className="flex flex-col items-center pt-8 pb-6 px-6 flex-1 justify-between">
@@ -47,16 +46,11 @@ const StagePreview: React.FC<StagePreviewProps> = ({
         </div>
         
         {/* Compact Stage Header */}
-        <div className="text-4xl font-black tracking-tight flex items-center gap-3 text-black font-sans animate-fade-in"
-            style={{ letterSpacing: "-0.03em" }}>
+        <div className="text-3xl font-black tracking-tight flex items-center gap-3 text-black animate-fade-in">
           <span className="text-3xl">{opponentEmoji}</span>
           <span>
-            <span className="text-2xl block font-medium tracking-tight text-black/80 leading-none mb-1">
-              STAGE
-            </span>
-            <span className="text-4xl leading-tight font-extrabold tracking-tighter block">
-              {stage + 1}
-            </span>
+            <span className="game-title text-sm block text-black/80 leading-none mb-1">STAGE</span>
+            <span className="game-title text-4xl leading-tight block">{stage + 1}</span>
           </span>
         </div>
 
@@ -91,6 +85,7 @@ const StagePreview: React.FC<StagePreviewProps> = ({
           variant="primary-cta"
           size="lg"
           onClick={onStartStage}
+          className="btn-block btn-block-green"
         >
           Start stage!
         </Button>

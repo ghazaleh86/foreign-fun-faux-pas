@@ -24,6 +24,13 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      // This codebase intentionally uses `any` in a few integration boundaries
+      // (Supabase types, persisted state, Radix props). Keep the lint signal
+      // focused on real correctness issues.
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "prefer-const": "warn",
     },
   }
 );

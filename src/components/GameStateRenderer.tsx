@@ -159,6 +159,7 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
     return (
       <QuizCard
         phrase={phrase}
+        profile={profile}
         stage={stage}
         totalStages={totalStages}
         current={current}

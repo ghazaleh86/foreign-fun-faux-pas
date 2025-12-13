@@ -77,10 +77,10 @@ const Index = () => {
       <div className="flex flex-col items-center justify-center px-4 py-4 min-h-screen relative overflow-hidden">
         {/* Floating background elements - reduced size */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-16 left-8 w-2 h-2 bg-pink-300 rounded-full opacity-60 animate-bounce" style={{ animationDelay: "0s", animationDuration: "3s" }}></div>
-          <div className="absolute top-24 right-12 w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-50 animate-bounce" style={{ animationDelay: "1s", animationDuration: "2.5s" }}></div>
-          <div className="absolute bottom-32 left-16 w-3 h-3 bg-purple-300 rounded-full opacity-40 animate-bounce" style={{ animationDelay: "0.5s", animationDuration: "3.5s" }}></div>
-          <div className="absolute bottom-16 right-8 w-2 h-2 bg-blue-300 rounded-full opacity-50 animate-bounce" style={{ animationDelay: "2s", animationDuration: "2s" }}></div>
+          <div className="absolute top-16 left-8 w-2 h-2 bg-pink-300 opacity-60 animate-bounce" style={{ animationDelay: "0s", animationDuration: "3s" }}></div>
+          <div className="absolute top-24 right-12 w-1.5 h-1.5 bg-yellow-300 opacity-50 animate-bounce" style={{ animationDelay: "1s", animationDuration: "2.5s" }}></div>
+          <div className="absolute bottom-32 left-16 w-3 h-3 bg-purple-300 opacity-40 animate-bounce" style={{ animationDelay: "0.5s", animationDuration: "3.5s" }}></div>
+          <div className="absolute bottom-16 right-8 w-2 h-2 bg-blue-300 opacity-50 animate-bounce" style={{ animationDelay: "2s", animationDuration: "2s" }}></div>
         </div>
 
         {/* Enhanced Chippy Hero Image with spotlight effect */}
@@ -111,10 +111,10 @@ const Index = () => {
             ? "opacity-100 transform translate-y-0" 
             : "opacity-0 transform translate-y-4"
         }`}>
-          <h1 className="text-4xl md:text-6xl font-game font-medium text-gray-800 drop-shadow-lg">
-            Guess that Phrase
+          <h1 className="text-3xl md:text-5xl game-title text-gray-900 drop-shadow-lg">
+            GUESS THAT PHRASE
           </h1>
-          <div className="w-24 h-1 bg-pink-400 mx-auto rounded-full"></div>
+          <div className="w-28 h-1 bg-black/70 mx-auto"></div>
         </div>
 
         {/* Updated subtitle to reference Chippy - reduced size */}
@@ -138,6 +138,7 @@ const Index = () => {
             variant="primary-cta"
             onClick={handleChallengeClick}
             size="lg"
+            className="btn-block btn-block-green"
           >
             <span className="flex items-center gap-3">
               🎮 Challenge Chippy
@@ -169,7 +170,7 @@ const Index = () => {
           variant="outline"
           size="sm"
           onClick={handleBackToLanding}
-          className="bg-white/90 backdrop-blur-sm border-pink-300 hover:bg-pink-50 shadow-lg"
+          className="btn-block btn-block-gray bg-white/80"
         >
           <Home className="w-4 h-4 mr-2" />
           Back to start

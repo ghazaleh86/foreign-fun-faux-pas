@@ -6,6 +6,8 @@ import {
 } from "@/utils/quizHelpers";
 import { Option } from "@/components/MultipleChoiceOptions";
 import { Phrase } from "@/types/quiz";
+import { toast } from "@/components/ui/sonner";
+import { addLootToHotbar, addStuds, getLootItem, rollLootDrop } from "@/utils/gameRewards";
 
 interface UseAnswerSelectionProps {
   selected: number | null;
@@ -76,6 +78,17 @@ export function useAnswerSelection({
       updateStageScores(stage, 1);
       updateStageCorrectCounts(stage, 1);
       setFeedback(`🎉 Correct! Time: ${timeTaken}s`);
+
+      // Roblox/Minecraft-ish rewards: small currency + occasional loot drop
+      addStuds(1);
+      const drop = rollLootDrop("correct");
+      if (drop) {
+        addLootToHotbar(drop, 1);
+        const item = getLootItem(drop);
+        toast(`${item.emoji} Loot drop!`, {
+          description: `${item.name} added to your hotbar.`,
+        });
+      }
       
       // Mark phrase as learned immediately when answered correctly
       if (phrase) {

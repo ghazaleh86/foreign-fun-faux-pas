@@ -48,7 +48,7 @@ const GameActionButton: React.FC<GameActionButtonProps> = ({ showOnHomePage = fa
       <Button
         variant="default"
         size="lg"
-        className="h-14 px-6 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        className="btn-block btn-block-green h-14 px-6"
         onClick={handleGameAction}
       >
         {activeGame ? (

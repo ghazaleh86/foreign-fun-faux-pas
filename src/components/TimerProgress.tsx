@@ -9,9 +9,9 @@ const TimerProgress: React.FC<TimerProgressProps> = ({ timer, maxTime }) => {
   const progressPercentage = Math.min(100, (timer / maxTime) * 100);
   
   return (
-    <div className="mb-3 w-full h-3 bg-gray-200 rounded-lg overflow-hidden shadow-inner">
+    <div className="mb-3 w-full h-3 xp-bar overflow-hidden">
       <div
-        className="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-1000 ease-linear"
+        className="h-full xp-bar__fill transition-all duration-1000 ease-linear"
         style={{
           width: `${progressPercentage.toFixed(1)}%`
         }}

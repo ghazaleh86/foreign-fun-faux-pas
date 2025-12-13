@@ -80,8 +80,8 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-2 z-50">
-      <div className="max-w-lg mx-auto flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 px-4 py-2 z-50">
+      <div className="max-w-lg mx-auto hotbar game-panel-inset px-3 py-2 flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
           
@@ -92,16 +92,16 @@ const BottomNavigation = () => {
                 <Button
                   variant="ghost"
                   onClick={item.onClick}
-                  className={`w-full h-14 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-200 ${
+                  className={`w-full h-14 flex flex-col items-center justify-center gap-1 transition-all duration-200 font-pixel text-[10px] uppercase tracking-wide ${
                     item.isActive
-                      ? "bg-pink-100 text-pink-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                      ? "bg-yellow-200/70 text-black"
+                      : "text-black/70 hover:text-black hover:bg-white/40"
                   }`}
                 >
                   <div className="relative">
                     <Icon 
                       className={`w-6 h-6 ${
-                        item.isActive ? "text-pink-600" : "text-current"
+                        item.isActive ? "text-black" : "text-current"
                       }`} 
                     />
                     {item.badge && item.badge > 0 && (
@@ -110,11 +110,7 @@ const BottomNavigation = () => {
                       </span>
                     )}
                   </div>
-                  <span className={`text-xs font-medium ${
-                    item.isActive ? "text-pink-600" : "text-current"
-                  }`}>
-                    {item.label}
-                  </span>
+                  <span className={`${item.isActive ? "text-black" : "text-current"}`}>{item.label}</span>
                 </Button>
               </div>
             );
@@ -125,16 +121,16 @@ const BottomNavigation = () => {
             <Link key={item.path} to={item.path} className="flex-1">
               <Button
                 variant="ghost"
-                className={`w-full h-14 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-200 ${
+                className={`w-full h-14 flex flex-col items-center justify-center gap-1 transition-all duration-200 font-pixel text-[10px] uppercase tracking-wide ${
                   item.isActive
-                    ? "bg-pink-100 text-pink-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                    ? "bg-yellow-200/70 text-black"
+                    : "text-black/70 hover:text-black hover:bg-white/40"
                 }`}
               >
                 <div className="relative">
                   <Icon 
                     className={`w-6 h-6 ${
-                      item.isActive ? "text-pink-600" : "text-current"
+                      item.isActive ? "text-black" : "text-current"
                     }`} 
                   />
                   {item.badge && item.badge > 0 && (
@@ -143,11 +139,7 @@ const BottomNavigation = () => {
                     </span>
                   )}
                 </div>
-                <span className={`text-xs font-medium ${
-                  item.isActive ? "text-pink-600" : "text-current"
-                }`}>
-                  {item.label}
-                </span>
+                <span className={`${item.isActive ? "text-black" : "text-current"}`}>{item.label}</span>
               </Button>
             </Link>
           );
