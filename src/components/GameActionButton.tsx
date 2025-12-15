@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Play, RotateCcw } from "lucide-react";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
-import { hasActiveGame } from "@/utils/gameStateManager";
+import { loadGameState as loadNewGameState } from "@/game/storage";
 
 type GameActionButtonProps = {
   showOnHomePage?: boolean;
@@ -17,7 +17,7 @@ const GameActionButton: React.FC<GameActionButtonProps> = ({ showOnHomePage = fa
   
   // Check for active game on mount and when location changes
   useEffect(() => {
-    const gameState = hasActiveGame();
+    const gameState = !!loadNewGameState();
     console.log("🔍 GameActionButton: Checking active game state:", gameState);
     setActiveGame(gameState);
   }, []);

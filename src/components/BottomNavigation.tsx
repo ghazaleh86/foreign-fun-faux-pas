@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, BookOpen, Info } from "lucide-react";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 import { getLearnedPhrases } from "@/utils/learnedPhrases";
-import { hasActiveGame } from "@/utils/gameStateManager";
+import { loadGameState as loadNewGameState } from "@/game/storage";
 
 const BottomNavigation = () => {
   const location = useLocation();
@@ -19,7 +19,7 @@ const BottomNavigation = () => {
 
   // Check for active game on mount and when route changes
   useEffect(() => {
-    const gameState = hasActiveGame();
+    const gameState = !!loadNewGameState();
     console.log("🔍 BottomNavigation: Checking active game state:", gameState);
     console.log("🔍 BottomNavigation: Current path:", currentPath);
     setActiveGame(gameState);
@@ -27,7 +27,7 @@ const BottomNavigation = () => {
 
   // Also check when the component mounts
   useEffect(() => {
-    const gameState = hasActiveGame();
+    const gameState = !!loadNewGameState();
     console.log("🔍 BottomNavigation: Initial active game check:", gameState);
     setActiveGame(gameState);
   }, []);
@@ -50,7 +50,7 @@ const BottomNavigation = () => {
     
     // Update active game status after navigation
     setTimeout(() => {
-      const newGameState = hasActiveGame();
+      const newGameState = !!loadNewGameState();
       console.log("🔄 BottomNavigation: Updated game state after navigation:", newGameState);
       setActiveGame(newGameState);
     }, 100);
