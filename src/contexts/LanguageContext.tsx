@@ -10,6 +10,16 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const LANGUAGE_STORAGE_KEY = 'selectedLanguage';
 
+function normalizeStoredLanguage(value: string | null): string | null {
+  if (!value) return null;
+  const v = value.trim();
+  if (!v) return null;
+  const lowered = v.toLowerCase();
+  // Common stale values from previous UI versions
+  if (lowered === 'null' || lowered === 'all languages' || lowered === 'all') return null;
+  return lowered;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [selectedLanguage, setSelectedLanguageState] = useState<string | null>(null);
 
@@ -17,21 +27,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored && stored !== 'null') {
-        setSelectedLanguageState(stored);
-      }
+      const normalized = normalizeStoredLanguage(stored);
+      setSelectedLanguageState(normalized);
+      if (!normalized) localStorage.removeItem(LANGUAGE_STORAGE_KEY);
     } catch (error) {
       console.warn('Failed to load selected language from localStorage:', error);
     }
   }, []);
 
   const setSelectedLanguage = (language: string | null) => {
-    setSelectedLanguageState(language);
+    const normalized = normalizeStoredLanguage(language);
+    setSelectedLanguageState(normalized);
     
     // Persist to localStorage
     try {
-      if (language) {
-        localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+      if (normalized) {
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, normalized);
       } else {
         localStorage.removeItem(LANGUAGE_STORAGE_KEY);
       }

@@ -9,7 +9,8 @@ function normalizeLang(lang: string) {
 
 export async function fetchPhrases(selectedLanguage: string | null): Promise<Phrase[]> {
   // Local-only repository (no Supabase). Keep behavior consistent with old code.
-  const lang = selectedLanguage ? normalizeLang(selectedLanguage) : null;
+  const normalized = selectedLanguage ? normalizeLang(selectedLanguage) : null;
+  const lang = normalized && normalized !== "all languages" && normalized !== "all" && normalized !== "null" ? normalized : null;
   const list = PHRASES
     .filter((p) => !lang || normalizeLang(p.language) === lang)
     .slice()

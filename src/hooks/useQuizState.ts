@@ -14,7 +14,7 @@ export function useQuizState() {
   const [selected, setSelected] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const { selectedLanguage } = useLanguage();
+  const { selectedLanguage, setSelectedLanguage } = useLanguage();
 
   // Fetch phrases on mount with weighted selection and rotation logic
   // Re-fetch when selectedLanguage changes
@@ -29,8 +29,15 @@ export function useQuizState() {
       }
 
       try {
-        const all = await fetchLocalPhrases(selectedLanguage);
-        console.log(`📦 Local phrases loaded: ${all.length}`);
+        let all = await fetchLocalPhrases(selectedLanguage);
+        console.log(`📦 Local phrases loaded: ${all.length}`, { selectedLanguage });
+
+        // If a stale/unknown language filter yields zero phrases, auto-fallback to All Languages.
+        if (all.length === 0 && selectedLanguage) {
+          console.warn("⚠️ No local phrases for selected language; falling back to All Languages.", { selectedLanguage });
+          setSelectedLanguage(null);
+          all = await fetchLocalPhrases(null);
+        }
 
         // Filter out phrases that have been played before
         const unplayedPhrases = all.filter((p: Phrase) => !playedIds.includes(p.id));
