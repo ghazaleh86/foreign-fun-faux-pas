@@ -35,7 +35,7 @@ const MultipleChoiceOptions: React.FC<MultipleChoiceOptionsProps> = ({
           disabled={showAnswer}
           variant="outline"
           className={cn(
-            "justify-start w-full border-2 text-lg font-bold py-6 transition-all duration-200 min-h-[60px] h-auto whitespace-normal text-left break-words",
+            "btn-block btn-block-gray justify-start w-full py-5 md:py-6 transition-all duration-200 min-h-[60px] h-auto whitespace-normal text-left break-words font-pixel text-sm md:text-base",
             showAnswer
               ? option.isCorrect
                 ? "animate-bounce-in"

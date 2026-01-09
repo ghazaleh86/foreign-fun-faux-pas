@@ -22,6 +22,7 @@ export default {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
 				game: ['Quicksand', 'sans-serif'],
+				pixel: ['Silkscreen', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

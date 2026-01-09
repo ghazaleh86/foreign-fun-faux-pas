@@ -9,9 +9,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Globe, ChevronDown } from 'lucide-react';
 import { languageToFlag } from '@/utils/languageToFlag';
-import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { clearGameState } from '@/utils/gameStateManager';
+import { getTtsProvider, setTtsProvider, type TtsProvider } from "@/utils/ttsPreferences";
+import { toast } from "@/components/ui/sonner";
+import { fetchLanguageCounts } from "@/lib/phraseRepository";
 
 interface LanguageInfo {
   language: string;
@@ -26,28 +28,9 @@ export function LanguageToggle() {
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const { data, error } = await supabase
-          .from('phrases')
-          .select('language')
-          .order('language');
-
-        if (error) {
-          console.error('Error fetching languages:', error);
-          return;
-        }
-
-        // Count phrases per language
-        const languageCounts = data.reduce((acc: Record<string, number>, row) => {
-          acc[row.language] = (acc[row.language] || 0) + 1;
-          return acc;
-        }, {});
-
-        // Convert to array and sort alphabetically
-        const languageArray = Object.entries(languageCounts)
-          .map(([language, count]) => ({ language, count }))
-          .sort((a, b) => a.language.localeCompare(b.language));
-
-        setLanguages(languageArray);
+        const languageArray = await fetchLanguageCounts();
+        // Toggle wants alphabetical list
+        setLanguages([...languageArray].sort((a, b) => a.language.localeCompare(b.language)));
       } catch (error) {
         console.error('Error processing languages:', error);
       } finally {
@@ -65,6 +48,14 @@ export function LanguageToggle() {
     
     // Reload the page to restart with new language
     window.location.reload();
+  };
+
+  const handleTtsChange = (provider: TtsProvider) => {
+    setTtsProvider(provider);
+    toast(
+      provider === "browser" ? "Audio: Device voice (no ElevenLabs)" : "Audio: ElevenLabs",
+      { description: provider === "browser" ? "Using your browser/device voice." : "Will try ElevenLabs first, then fallback." }
+    );
   };
 
   const getCurrentDisplayText = () => {
@@ -104,6 +95,23 @@ export function LanguageToggle() {
           <span>All Languages</span>
         </DropdownMenuItem>
         
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={() => handleTtsChange("browser")}
+          className={`cursor-pointer ${getTtsProvider() === "browser" ? "bg-blue-50" : ""}`}
+        >
+          <span className="mr-3 text-base">🗣️</span>
+          <span>Audio: Device voice</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleTtsChange("elevenlabs")}
+          className={`cursor-pointer ${getTtsProvider() === "elevenlabs" ? "bg-blue-50" : ""}`}
+        >
+          <span className="mr-3 text-base">🎙️</span>
+          <span>Audio: ElevenLabs</span>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         
         {languages.map(({ language, count }) => (

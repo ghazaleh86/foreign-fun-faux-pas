@@ -10,9 +10,11 @@ import QuizFooter from "./QuizFooter";
 import MultipleChoiceOptions from "./MultipleChoiceOptions";
 import { Button } from "@/components/ui/button";
 import { Volume2 } from "lucide-react";
+import GameHud from "./GameHud";
 
 type QuizCardProps = {
   phrase: Phrase;
+  profile: any;
   stage: number;
   totalStages: number;
   current: number;
@@ -40,6 +42,7 @@ function isMobileDevice(): boolean {
 
 const QuizCard: React.FC<QuizCardProps> = ({
   phrase,
+  profile,
   stage,
   totalStages,
   current,
@@ -59,8 +62,21 @@ const QuizCard: React.FC<QuizCardProps> = ({
   onNext,
   onPlayAudio,
 }) => {
+  const hearts = profile?.hearts ?? 3;
+  const maxHearts = profile?.max_hearts ?? 3;
+  const totalStars = profile?.total_stars ?? 0;
+
   return (
-    <Card className="max-w-xl w-full shadow-2xl bg-white/90 border-2 border-pink-200/40">
+    <Card className="max-w-xl w-full game-panel">
+      <div className="px-6 pt-5">
+        <GameHud
+          hearts={hearts}
+          maxHearts={maxHearts}
+          totalStars={totalStars}
+          stage={stage}
+          totalStages={totalStages}
+        />
+      </div>
       <QuizHeader
         phrase={phrase}
         stage={stage}
@@ -75,7 +91,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
       <CardContent className="pb-6">
         {/* Timer Progress Bar */}
         <div className="mb-4">
-          <div className="text-xs text-muted-foreground mb-1 flex justify-between">
+          <div className="font-pixel text-[10px] uppercase tracking-wide text-black/70 mb-1 flex justify-between">
             <span>Time</span>
             <span>{timer}s / 30s</span>
           </div>
@@ -88,7 +104,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
             onClick={onPlayAudio}
             variant="outline"
             size={isMobileDevice() ? "lg" : "default"}
-            className="px-6 py-3 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 font-semibold"
+            className="btn-block btn-block-blue px-6 py-3"
           >
             <Volume2 className="w-5 h-5 mr-2" />
             Play Audio
@@ -125,7 +141,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
               onClick={onNext}
               variant="primary-cta"
               size="lg"
-              className="px-12 py-3"
+              className="btn-block btn-block-green px-12 py-3"
             >
               Next
             </Button>

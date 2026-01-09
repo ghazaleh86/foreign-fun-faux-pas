@@ -6,6 +6,8 @@ import GameSummary from "./GameSummary";
 import QuizCard from "./QuizCard";
 import { State, Phrase } from "@/types/quiz";
 import { Option } from "./MultipleChoiceOptions";
+import { Button } from "@/components/ui/button";
+import { setPlayedPhraseIds } from "@/utils/playedPhraseIds";
 
 type GameStateRendererProps = {
   state: State;
@@ -105,15 +107,39 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
 
   // All phrases played state
   if (state === "quiz" && phrases.length === 0) {
+    const isError = typeof feedback === "string" && feedback.toLowerCase().includes("error");
     return (
       <Card className="max-w-xl w-full">
         <CardContent className="p-6">
-          <div className="text-center my-10 text-pink-700 font-bold">
-            <p className="mb-2">
-              You have played all available phrases!
-              <br />
-              The rotation system will automatically reset and show you phrases again.
+          <div className="text-center my-8 text-black font-bold space-y-3">
+            <div className="game-title text-lg">
+              {isError ? "Couldn’t load phrases" : "No phrases available"}
+            </div>
+            <p className="text-sm text-black/70 font-medium">
+              {feedback
+                ? feedback
+                : "You may have finished the current rotation, or the phrase list is empty for the selected language."}
             </p>
+
+            <div className="pt-3 flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                variant="outline"
+                className="btn-block btn-block-blue"
+                onClick={() => window.location.reload()}
+              >
+                Retry
+              </Button>
+              <Button
+                variant="outline"
+                className="btn-block btn-block-gray"
+                onClick={() => {
+                  setPlayedPhraseIds([]);
+                  window.location.reload();
+                }}
+              >
+                Reset phrase rotation
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -159,6 +185,7 @@ const GameStateRenderer: React.FC<GameStateRendererProps> = ({
     return (
       <QuizCard
         phrase={phrase}
+        profile={profile}
         stage={stage}
         totalStages={totalStages}
         current={current}

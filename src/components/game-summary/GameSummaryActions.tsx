@@ -13,7 +13,7 @@ const GameSummaryActions: React.FC<GameSummaryActionsProps> = ({ onPlayAgain }) 
         onClick={onPlayAgain}
         variant="primary-cta"
         size="lg"
-        className="w-full min-h-[56px] text-lg font-bold px-8 shadow-lg"
+        className="btn-block btn-block-green w-full min-h-[56px] px-8"
       >
         <span>Play Again</span>
         <ArrowRight className="ml-3 w-5 h-5" />

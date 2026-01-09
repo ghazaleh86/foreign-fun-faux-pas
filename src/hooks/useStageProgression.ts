@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { STAGE_SIZE, MAX_STAGES } from "@/utils/quizHelpers";
 import { Phrase } from "@/types/quiz";
 import { calculateStars } from "@/utils/starSystem";
+import { toast } from "@/components/ui/sonner";
+import { addLootToHotbar, addStuds, getLootItem, rollLootDrop } from "@/utils/gameRewards";
 
 interface UseStageProgressionProps {
   roundCorrect: number;
@@ -47,6 +49,21 @@ export function useStageProgression({
     
     // Award stars for stage completion
     addStars(stageStars);
+
+    // Reward chest: studs + guaranteed loot on stage end
+    const studsEarned = stageStars * 5 + Math.max(0, roundCorrect - 2);
+    addStuds(studsEarned);
+    const drop = rollLootDrop("stage");
+    if (drop) {
+      // Better stages feel more rewarding
+      addLootToHotbar(drop, stageStars === 3 ? 2 : 1);
+      const item = getLootItem(drop);
+      toast(`🎁 Stage chest opened! +${studsEarned} studs`, {
+        description: `${item.emoji} ${item.name} added to your hotbar.`,
+      });
+    } else {
+      toast(`🎁 Stage chest opened! +${studsEarned} studs`);
+    }
     
     // Assess if user passed (3+ correct) 
     if (roundCorrect >= 3) {

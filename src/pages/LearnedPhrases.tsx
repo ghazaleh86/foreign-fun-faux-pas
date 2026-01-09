@@ -50,8 +50,9 @@ const LearnedPhrases = () => {
 
   const handlePlayAudio = (phrase: LearnedPhraseLocal["phrase"]) => {
     const ttsText = phrase.phrase_text;
-    import("@/lib/elevenlabsTtsClient").then(({ playWithElevenLabsTTS }) =>
-      playWithElevenLabsTTS({ text: ttsText, voiceId: "9BWtsMINqrJLrRacOk9x" }).catch(() => {
+    import("@/lib/tts/browserTts").then(({ playWithBrowserTTS }) => {
+      playWithBrowserTTS(ttsText, phrase.language || "en").catch(() => {
+        // last-chance fallback
         if ("speechSynthesis" in window) {
           window.speechSynthesis.cancel();
           const u = new window.SpeechSynthesisUtterance(ttsText);
@@ -59,8 +60,8 @@ const LearnedPhrases = () => {
           u.rate = 0.98;
           window.speechSynthesis.speak(u);
         }
-      })
-    );
+      });
+    });
   };
 
   return (

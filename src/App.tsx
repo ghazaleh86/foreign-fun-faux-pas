@@ -17,11 +17,10 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const isLandingPage = location.pathname === "/";
   // Check for any game-related view: active game or game states like stage summary
   const isGameView = location.search.includes("startGame=true") || 
                      location.pathname === "/" || 
-                     (location.pathname === "/" && typeof window !== 'undefined' && localStorage.getItem('currentGameState_v1'));
+                     (location.pathname === "/" && typeof window !== 'undefined' && localStorage.getItem('gqp_game_v1'));
 
   // Stop all audio when navigating between routes
   useEffect(() => {
@@ -30,7 +29,7 @@ const AppContent = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-200/60 to-fuchsia-100/90 overflow-hidden">
+    <div className="min-h-screen bg-game-world overflow-hidden">
       <div className={`${isGameView ? '' : 'pb-20'} min-h-screen max-h-screen overflow-auto`}>
         <Routes>
           <Route path="/" element={<Index />} />

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, BookOpen, Info } from "lucide-react";
 import { usePlayerProfile } from "@/hooks/usePlayerProfile";
 import { getLearnedPhrases } from "@/utils/learnedPhrases";
-import { hasActiveGame } from "@/utils/gameStateManager";
+import { loadGameState as loadNewGameState } from "@/game/storage";
 
 const BottomNavigation = () => {
   const location = useLocation();
@@ -19,7 +19,7 @@ const BottomNavigation = () => {
 
   // Check for active game on mount and when route changes
   useEffect(() => {
-    const gameState = hasActiveGame();
+    const gameState = !!loadNewGameState();
     console.log("🔍 BottomNavigation: Checking active game state:", gameState);
     console.log("🔍 BottomNavigation: Current path:", currentPath);
     setActiveGame(gameState);
@@ -27,7 +27,7 @@ const BottomNavigation = () => {
 
   // Also check when the component mounts
   useEffect(() => {
-    const gameState = hasActiveGame();
+    const gameState = !!loadNewGameState();
     console.log("🔍 BottomNavigation: Initial active game check:", gameState);
     setActiveGame(gameState);
   }, []);
@@ -50,7 +50,7 @@ const BottomNavigation = () => {
     
     // Update active game status after navigation
     setTimeout(() => {
-      const newGameState = hasActiveGame();
+      const newGameState = !!loadNewGameState();
       console.log("🔄 BottomNavigation: Updated game state after navigation:", newGameState);
       setActiveGame(newGameState);
     }, 100);
@@ -80,8 +80,8 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-2 z-50">
-      <div className="max-w-lg mx-auto flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 px-4 py-2 z-50">
+      <div className="max-w-lg mx-auto hotbar game-panel-inset px-3 py-2 flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
           
@@ -92,16 +92,16 @@ const BottomNavigation = () => {
                 <Button
                   variant="ghost"
                   onClick={item.onClick}
-                  className={`w-full h-14 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-200 ${
+                  className={`w-full h-14 flex flex-col items-center justify-center gap-1 transition-all duration-200 font-pixel text-[10px] uppercase tracking-wide ${
                     item.isActive
-                      ? "bg-pink-100 text-pink-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                      ? "bg-yellow-200/70 text-black"
+                      : "text-black/70 hover:text-black hover:bg-white/40"
                   }`}
                 >
                   <div className="relative">
                     <Icon 
                       className={`w-6 h-6 ${
-                        item.isActive ? "text-pink-600" : "text-current"
+                        item.isActive ? "text-black" : "text-current"
                       }`} 
                     />
                     {item.badge && item.badge > 0 && (
@@ -110,11 +110,7 @@ const BottomNavigation = () => {
                       </span>
                     )}
                   </div>
-                  <span className={`text-xs font-medium ${
-                    item.isActive ? "text-pink-600" : "text-current"
-                  }`}>
-                    {item.label}
-                  </span>
+                  <span className={`${item.isActive ? "text-black" : "text-current"}`}>{item.label}</span>
                 </Button>
               </div>
             );
@@ -125,16 +121,16 @@ const BottomNavigation = () => {
             <Link key={item.path} to={item.path} className="flex-1">
               <Button
                 variant="ghost"
-                className={`w-full h-14 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-200 ${
+                className={`w-full h-14 flex flex-col items-center justify-center gap-1 transition-all duration-200 font-pixel text-[10px] uppercase tracking-wide ${
                   item.isActive
-                    ? "bg-pink-100 text-pink-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                    ? "bg-yellow-200/70 text-black"
+                    : "text-black/70 hover:text-black hover:bg-white/40"
                 }`}
               >
                 <div className="relative">
                   <Icon 
                     className={`w-6 h-6 ${
-                      item.isActive ? "text-pink-600" : "text-current"
+                      item.isActive ? "text-black" : "text-current"
                     }`} 
                   />
                   {item.badge && item.badge > 0 && (
@@ -143,11 +139,7 @@ const BottomNavigation = () => {
                     </span>
                   )}
                 </div>
-                <span className={`text-xs font-medium ${
-                  item.isActive ? "text-pink-600" : "text-current"
-                }`}>
-                  {item.label}
-                </span>
+                <span className={`${item.isActive ? "text-black" : "text-current"}`}>{item.label}</span>
               </Button>
             </Link>
           );

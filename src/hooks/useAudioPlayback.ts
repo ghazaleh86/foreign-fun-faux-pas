@@ -4,6 +4,7 @@ import { playWithElevenLabsTTS, getOptimalVoice, normalizeLanguageForVoice } fro
 import { guessSpeechLang } from "@/utils/guessSpeechLang";
 import { getNativeVoiceForLanguage, getLanguageVoiceSettings } from "@/utils/quizHelpers";
 import { audioManager } from "@/lib/tts/audioManager";
+import { getTtsProvider, setTtsProvider } from "@/utils/ttsPreferences";
 
 // Check if we're on a mobile device
 function isMobileDevice(): boolean {
@@ -12,6 +13,7 @@ function isMobileDevice(): boolean {
 
 // Global user interaction state
 let globalUserHasInteracted = false;
+let elevenLabsDisabledForSession = false;
 
 if (typeof window !== 'undefined') {
   const markUserInteraction = () => {
@@ -69,16 +71,24 @@ export function useAudioPlayback(triggerKey: any[], text: string, pronunciation:
       const normalizedLanguage = normalizeLanguageForVoice(language);
       const optimalVoice = getOptimalVoice(normalizedLanguage);
       const languageSettings = getLanguageVoiceSettings(normalizedLanguage);
+      const provider = getTtsProvider();
 
       console.log(`🎵 Enhanced Audio Debug - Using Optimized Voice Selection:`, {
         originalLanguage: language,
         normalizedLanguage,
         optimalVoice,
         languageSettings,
+        provider,
         text: text.slice(0, 30)
       });
 
       try {
+        if (provider === "browser" || elevenLabsDisabledForSession) {
+          const { playWithBrowserTTS } = await import("@/lib/tts/browserTts");
+          await playWithBrowserTTS(text, normalizedLanguage);
+          return;
+        }
+
         console.log(`🎵 Attempting ElevenLabs TTS for ${normalizedLanguage} with optimized voice:`, optimalVoice);
 
         // Use the enhanced ElevenLabs TTS with native voice optimization
@@ -99,6 +109,10 @@ export function useAudioPlayback(triggerKey: any[], text: string, pronunciation:
           voiceId: optimalVoice,
           stack: elevenLabsError.stack
         });
+
+        // Don’t keep hammering ElevenLabs if it’s not configured.
+        elevenLabsDisabledForSession = true;
+        setTtsProvider("browser");
         
         console.log('🔄 Falling back to browser TTS (ROBOTIC VOICE)');
         

@@ -15,9 +15,8 @@ const QuizFooter: React.FC<QuizFooterProps> = ({
 }) => {
   return (
     <CardFooter className="flex justify-center items-center">
-      <div>
-        Stage {stage + 1} Correct:{" "}
-        <span className="font-bold">{stageScore}</span>
+      <div className="font-pixel text-[10px] uppercase tracking-wide text-black/70">
+        Stage {stage + 1} Correct: <span className="text-black">{stageScore}</span>
       </div>
     </CardFooter>
   );
